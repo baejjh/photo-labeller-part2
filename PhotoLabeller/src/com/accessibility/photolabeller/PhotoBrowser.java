@@ -88,11 +88,7 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
         ImageView iv = (ImageView) findViewById(R.id.zero);
         //ImageView iv = new ImageView(this);
         mp.setOnPreparedListener(this);
-        if (iv == null) {
-        	Log.d("TAG", "iv isss null!");
-        }
         
-
         //File data_directory = new File(DATA_DIRECTORY);
         File data_directory = getFilesDir();
         Log.d("TAG", data_directory.toString());
@@ -194,40 +190,24 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
         
         Log.d("TAG", "5");
 
-        /*viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this,
-                android.R.anim.fade_in));*/
+        viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this,
+                android.R.anim.fade_in));
         
         Log.d("TAG", "6");
         
-        /*viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this,
-                android.R.anim.fade_out));*/
+        viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this,
+                android.R.anim.fade_out));
         
         Log.d("TAG", "just before iv.setImageDrawable");
         String s = ImageList.get(currentIndex);
         Log.d("TAG", "picture path is: " + s);
-        if (iv == null) {
-        	Log.d("TAG", "iv is null");
-        }
         iv.setImageDrawable(Drawable.createFromPath(s));
-        // creating audio file path
-        String audioPath = s.replace(".jpg", ".3gp");
-        // get file name only
-        int startIndex = audioPath.indexOf("tm_file");
-        String filename = audioPath.substring(startIndex);
-        Log.d(TAG, "audio file name : " + filename);
-        
-        //Log.d(TAG, "Audio Path: " + audioPath);
-        if (true/*AudioList.contains(audioPath)*/){
-        	Log.d(TAG, Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename);
-        	String extPath =  Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename;
-        	playTag(extPath);
-        }
-        
-        
-        
         Log.d("TAG", "just after iv.setImageDrawable");
         System.gc();
         
+        // play picture audio tag
+        playTag(s);
+          
         gestureDetector = new GestureDetector(new MyGestureDetector());
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -240,31 +220,36 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
 
     }
     
-    private void playTag(String audioPath){
-		    
-    		try {
-				mp.setDataSource(audioPath);
-			} catch (IllegalArgumentException e) {
-				Log.e(TAG, e.getMessage().toString());
-				e.printStackTrace();
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage().toString());
-				e.printStackTrace();
-			}
+    private void playTag(String s){
     	
-		try {
-			//mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			//mp.setDataSource(audioPath);
-			
+    	String internalAudioPath = s.replace(".jpg", ".3gp");
+        // get file name only
+        int startIndex = internalAudioPath.indexOf("tm_file");
+        String filename = internalAudioPath.substring(startIndex);
+        Log.d(TAG, "audio file name : " + filename);
+    	Log.d(TAG, Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename);
+    	String externalAudioPath =  Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename;	
+    	try
+    	{
+			mp.setDataSource(externalAudioPath);
+		} 
+    	catch (IllegalArgumentException e)
+    	{
+			Log.e(TAG, e.getMessage().toString());
+			e.printStackTrace();
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage().toString());
+			e.printStackTrace();
+		}
+		try
+		{	
 			mp.prepareAsync();
-		} catch (IllegalStateException e) {
+		}
+		catch (IllegalStateException e)
+		{
 			Log.e(TAG, e.getMessage().toString());
 			//e.printStackTrace();
 		}
-		
-		
-    	
-		
 	}
 
 	@Override
@@ -405,6 +390,7 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
                 float velocityY) {
+        	String s;
             try {
                 if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
                     return false;
@@ -422,24 +408,26 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
                     if (currentView == 0) {
                         currentView = 1;
                         ImageView iv = (ImageView) findViewById(R.id.one);
-                        iv.setImageDrawable(Drawable.createFromPath(ImageList
-                                .get(currentIndex)));
+                        s = ImageList.get(currentIndex);
+                        iv.setImageDrawable(Drawable.createFromPath(s));
                         System.gc();
                     } else if (currentView == 1) {
                         currentView = 2;
                         ImageView iv = (ImageView) findViewById(R.id.two);
-                        iv.setImageDrawable(Drawable.createFromPath(ImageList
-                                .get(currentIndex)));
+                        s = ImageList.get(currentIndex);
+                        iv.setImageDrawable(Drawable.createFromPath(s));
                         System.gc();
                     } else {
                         currentView = 0;
                         ImageView iv = (ImageView) findViewById(R.id.zero);
-                        iv.setImageDrawable(Drawable.createFromPath(ImageList
-                                .get(currentIndex)));
+                        s = ImageList.get(currentIndex);
+                        iv.setImageDrawable(Drawable.createFromPath(s));
                         System.gc();
                     }
                     Log.v("ImageViewFlipper", "Current View: " + currentView);
                     viewFlipper.showNext();
+                    playTag(s);
+                    
                 } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
                         && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     viewFlipper.setInAnimation(slideRightIn);
@@ -452,21 +440,22 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
                     if (currentView == 0) {
                         currentView = 2;
                         ImageView iv = (ImageView) findViewById(R.id.two);
-                        iv.setImageDrawable(Drawable.createFromPath(ImageList
-                                .get(currentIndex)));
+                        s = ImageList.get(currentIndex);
+                        iv.setImageDrawable(Drawable.createFromPath(s));
                     } else if (currentView == 2) {
                         currentView = 1;
                         ImageView iv = (ImageView) findViewById(R.id.one);
-                        iv.setImageDrawable(Drawable.createFromPath(ImageList
-                                .get(currentIndex)));
+                        s = ImageList.get(currentIndex);
+                        iv.setImageDrawable(Drawable.createFromPath(s));
                     } else {
                         currentView = 0;
                         ImageView iv = (ImageView) findViewById(R.id.zero);
-                        iv.setImageDrawable(Drawable.createFromPath(ImageList
-                                .get(currentIndex)));
+                        s = ImageList.get(currentIndex);
+                        iv.setImageDrawable(Drawable.createFromPath(s));
                     }
                     Log.v("ImageViewFlipper", "Current View: " + currentView);
                     viewFlipper.showPrevious();
+                    playTag(s);
                 }
             } catch (Exception e) {
                 // nothing
@@ -501,6 +490,9 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
 
 	@Override
 	public void onPrepared(MediaPlayer arg0) {
+		if(mp.isPlaying()) {
+			mp.stop();
+		}
 		mp.start();
 		Log.d(TAG, "ONPREPARED_LISTENER");
 	}
