@@ -426,6 +426,8 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
                     }
                     Log.v("ImageViewFlipper", "Current View: " + currentView);
                     viewFlipper.showNext();
+                    mp.reset();
+                    //mp.prepareAsync();
                     playTag(s);
                     
                 } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
@@ -455,6 +457,9 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
                     }
                     Log.v("ImageViewFlipper", "Current View: " + currentView);
                     viewFlipper.showPrevious();
+                    //mp.stop();
+                    mp.reset();
+                    //mp.prepareAsync();
                     playTag(s);
                 }
             } catch (Exception e) {
@@ -490,9 +495,6 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
 
 	@Override
 	public void onPrepared(MediaPlayer arg0) {
-		if(mp.isPlaying()) {
-			mp.stop();
-		}
 		mp.start();
 		Log.d(TAG, "ONPREPARED_LISTENER");
 	}
