@@ -231,7 +231,8 @@ public class PhotoBrowser extends Activity implements OnPreparedListener{
     	String externalAudioPath =  Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename;	
     	try
     	{
-			mp.setDataSource(externalAudioPath);
+    		FileInputStream f = new FileInputStream(internalAudioPath);
+			mp.setDataSource(f.getFD());
 		} 
     	catch (IllegalArgumentException e)
     	{
