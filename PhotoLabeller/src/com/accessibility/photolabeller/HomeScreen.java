@@ -25,7 +25,7 @@ import android.widget.Button;
  */
 public class HomeScreen extends Activity implements OnLongClickListener, OnInitListener{
 	
-	private TextToSpeech speaker;
+	private TextToSpeech speaker; //testing
 	private Button clickButton;
 	private Button browseButton;
 	private Button optionsButton;
