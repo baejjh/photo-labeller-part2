@@ -33,10 +33,10 @@ import android.util.Log;
 	  }
     
 	  String audioPath = internalStoragePath + path;
-	  //Log.d(TAG, audioPath);
-	  //return audioPath;
+	  Log.d(TAG, audioPath);
+	  return audioPath;
     
-      return Environment.getExternalStorageDirectory().getAbsolutePath() + path;
+      //return Environment.getExternalStorageDirectory().getAbsolutePath() + path;
    
   }
 
@@ -45,7 +45,7 @@ import android.util.Log;
    */
   public void start() throws IOException {
 	 
-	  String state = android.os.Environment.getExternalStorageState();
+	  /*String state = android.os.Environment.getExternalStorageState();
 	  if(!state.equals(android.os.Environment.MEDIA_MOUNTED))  {
 		  throw new IOException("SD Card is not mounted.  It is " + state + ".");
 	  }
@@ -54,7 +54,7 @@ import android.util.Log;
 	    File directory = new File(path).getParentFile();
 	    if (!directory.exists() && !directory.mkdirs()) {
 	      throw new IOException("Path to file could not be created.");
-	    }
+	    }*/
 	    
 	    
 
