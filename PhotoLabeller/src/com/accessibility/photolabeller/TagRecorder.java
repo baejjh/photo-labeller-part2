@@ -1,10 +1,9 @@
 package com.accessibility.photolabeller;
 
-
 import java.io.IOException;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,17 +20,31 @@ public class TagRecorder extends Activity implements OnClickListener{
 	private Button button;
 	private int currentFileNumber;
 	private AudioRecorder recorder;
-	private boolean isRecording = false;
+	private boolean isRecording;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.tagrecorder);
 		
-		Log.d(TAG, "Created TagRecorder")	;			
+		Log.d(TAG, "Created TagRecorder")	;
+		initializeUI();
+		isRecording = false;
+		/*mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
+		button = (Button)findViewById(R.id.StartandStop);
+		button.setOnClickListener(this);
+		
+		// get the current file counter value from Shared  Preferences
+		currentFileNumber = getCurrentFileNumber();*/
+	}
+	
+	private void initializeUI() {
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
 		button = (Button)findViewById(R.id.StartandStop);
 		button.setOnClickListener(this);
+		if(isRecording) {
+			button.setText(R.string.stopRecording);
+		}
 		
 		// get the current file counter value from Shared  Preferences
 		currentFileNumber = getCurrentFileNumber();
@@ -93,6 +106,17 @@ public class TagRecorder extends Activity implements OnClickListener{
 		fileNumber = fileNumber + 1;
 		editor.putInt(FILE_NUMBER_KEY, fileNumber);
 		editor.commit();
+	}
+	
+	//this is called when the screen rotates.
+	// (onCreate is no longer called when screen rotates due to manifest, see: android:configChanges)
+	@Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{
+	    super.onConfigurationChanged(newConfig);
+	    setContentView(R.layout.tagrecorder);
+
+	    initializeUI();
 	}
 	
 
