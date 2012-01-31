@@ -9,6 +9,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+/*
+ * Activity that allows user to either proceed with voice tagging
+ * or skip tagging and go back to taking another picture.
+ */
 public class TagOrSkip extends Activity implements OnClickListener {
 	
 	private static final String FILE_NUMBER_KEY = "fileNum";
@@ -45,10 +49,16 @@ public class TagOrSkip extends Activity implements OnClickListener {
 		
 	}
 	
+	/*
+	 * get the current index for file numbering
+	 */
 	private int getCurrentFileNumber() {
 		return mPreferences.getInt(FILE_NUMBER_KEY, -1);
 	}
 	
+	/*
+	 * increment the index used for file numbering, stored in the Shared Preferences
+	 */
 	private void updateCurrentFileNumber(int fileNumber) {
 		SharedPreferences.Editor editor = mPreferences.edit();
 		fileNumber = fileNumber + 1;
@@ -56,9 +66,28 @@ public class TagOrSkip extends Activity implements OnClickListener {
 		editor.commit();
 	}
 	
+	/*
+	 * calls TagRecorder activity
+	 */
 	private void recordTag() {
+		
 		Intent recordIntent = new Intent(this, TagRecorder.class);
 		startActivity(recordIntent);
+		// finish after calling TagRecorder activity, so that TagRecorder on finishing
+		// return directly to camera
+		finish(); 
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		//finish();
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		//finish();
 	}
 		
 
