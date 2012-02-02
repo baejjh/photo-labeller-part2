@@ -138,7 +138,7 @@ public class HomeScreen extends Activity implements OnLongClickListener, OnInitL
 		}
 		case R.id.browseButton: { // go to BrowsePicture activity
 			Log.v(TAG, "Pressed Browse Button :" + R.id.browseButton);
-			Intent browseIntent = new Intent(this, PhotoBrowser.class);
+			Intent browseIntent = new Intent(this, PhotoBrowse.class);
 			startActivity(browseIntent);
 			break;
 
