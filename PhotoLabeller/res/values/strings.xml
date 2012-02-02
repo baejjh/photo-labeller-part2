@@ -3,7 +3,7 @@
 
      <string name="app_name">TalkingMemories</string>
     <string name="homescreen_text">Talking Memories</string>
-    <string name="click_button">Click</string>
+    <string name="click_button">Capture</string>
     <string name="browse_button">Browse</string>
     <string name="options_button">Options</string>
     <string name="tagItButton">Tag</string>
