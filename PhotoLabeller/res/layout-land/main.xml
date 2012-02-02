@@ -14,7 +14,9 @@
         android:layout_gravity="top"
         android:gravity="center"
         android:text="@string/homescreen_text"
-        android:textSize="20dip" />
+        android:textSize="20dip"
+        android:textStyle="italic"
+        android:textColor="@color/yellow"/>
     
     <Button
         android:id="@+id/clickButton"
