@@ -7,7 +7,6 @@
     android:gravity="center|top"
     android:orientation="vertical" >
 
-    
     <TextView
         android:id="@+id/title_header"
         android:layout_width="fill_parent"
@@ -16,7 +15,6 @@
         android:gravity="center"
         android:text="@string/homescreen_text"
         android:textSize="30dip" />
-
 
     <Button
         android:id="@+id/clickButton"
@@ -31,8 +29,6 @@
         android:background="@drawable/click_button"
         android:layout_marginBottom="8dp" />
 
-
-
     <Button
         android:id="@+id/browseButton"
         android:layout_width="fill_parent"
@@ -45,7 +41,6 @@
         android:textColor="@color/white"
         android:background="@drawable/browse_button"
         android:layout_marginBottom="8dp" />
-
 
     <Button
         android:id="@+id/optionsButton"
