@@ -2,14 +2,9 @@ package com.accessibility.photolabeller;
 
 import android.app.Activity;
 import android.os.Bundle;
-
-import java.io.File;
 import java.util.Locale;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
@@ -18,7 +13,6 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 /*
  * Home Screen Activity which presents user with three buttons:

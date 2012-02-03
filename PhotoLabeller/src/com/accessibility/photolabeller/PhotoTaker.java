@@ -14,11 +14,19 @@ import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
 
+/*
+ * Camera screen: Displays camera preview on the screen
+ * Actions: Single tap on screen : Takes a photo
+ * 			Double tap on screen : Goes back to the homescreen
+ */
 public class PhotoTaker extends Activity implements SurfaceHolder.Callback, ShutterCallback,
 														PictureCallback, OnClickListener{
 	
@@ -26,9 +34,12 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	private static final String TAG = "PHOTO_TAKER";
 	private SharedPreferences mPreferences;
 	private static final String picFileName = "tm_file";
+	private GestureDetector gestureDetector;
 	public static final String PREF_NAME = "myPreferences";
 	
-	Camera mCamera;
+	
+    View.OnTouchListener gestureListener;
+    Camera mCamera;
 	SurfaceView mPreview;
 	
 	
@@ -37,9 +48,21 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.clickpicture);
 		
+		// Gesture detection
+        gestureDetector = new GestureDetector(new MyGestureDetector());
+        gestureListener = new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (gestureDetector.onTouchEvent(event))
+                    return true;
+                else
+                    return false;
+            }
+        };
+		        
 		mPreview = (SurfaceView)findViewById(R.id.mPreview);
 		mPreview.setOnClickListener(this);
-		mPreview.getHolder().addCallback(this);
+		mPreview.setOnTouchListener(gestureListener);
+        mPreview.getHolder().addCallback(this);
 		mPreview.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_PRIVATE);
@@ -53,7 +76,6 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		mCamera.stopPreview();
 	}
 	
-
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -88,15 +110,12 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	}
 	
 	/*
-	 * (non-Javadoc)
-	 * @see android.view.View.OnClickListener#onClick(android.view.View)
-	 * 
 	 * Action on clicking preview screen
 	 * Snaps a picture with callback only when JPEG image ready
 	 */
 	public void onClick(View v) {
-		mCamera.takePicture(this, null, null, this);
-		
+		Log.d(TAG,"IN ON_CLICK");
+		//mCamera.takePicture(this, null, null, this);
 	}
 
 	public void onPictureTaken(byte[] data, Camera camera) {
@@ -185,5 +204,43 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void takePhoto(){
+		mCamera.takePicture(this, null, null, this);
+	}
+	
+	/*
+	 * Inner GestureDetector class
+	 */
+	class MyGestureDetector extends SimpleOnGestureListener {
+		
+		/*
+		 * Clicks picture on single tap
+		 */
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            takePhoto();
+            return true;
+        }
+        
+        public boolean onSingleTapUp(MotionEvent e) {
+           return false;
+        }
 
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+        	float velocityY) {
+            return false;
+        }
+        
+        /*
+         *  return to home screen on a double tap
+         * 
+         */
+        public boolean onDoubleTap(MotionEvent e) {
+        	finish();
+			return true;
+        }
+
+    }
+
+	
 }
