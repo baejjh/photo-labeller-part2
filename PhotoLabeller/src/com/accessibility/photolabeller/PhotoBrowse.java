@@ -6,8 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -16,6 +18,8 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -29,7 +33,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
 
-public class PhotoBrowse extends Activity implements OnClickListener, OnPreparedListener
+public class PhotoBrowse extends Activity implements OnClickListener, OnPreparedListener, OnInitListener
 {
 	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 250;
@@ -48,11 +52,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     MediaPlayer mp = new MediaPlayer();
     int imageCount;
     int index = 0;
+    String s;
+    TextToSpeech talker;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photobrowse);
+		
+		// check if TTS installed on device
+		Intent checkIntent = new Intent();
+		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+		startActivityForResult(checkIntent, 0);
+		
 		imageFrame = (ViewFlipper) findViewById(R.id.imageFrames);
 
 		File parentFolder = getFilesDir();
@@ -98,7 +110,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     	AudioList = new ArrayList<String>();
 		imageCount = parent.listFiles().length;
 		for (int count = 0; count < imageCount; count++) {
-			String s = parent.listFiles()[count].getAbsolutePath();
+			s = parent.listFiles()[count].getAbsolutePath();
 			if (s.endsWith(".jpg"))
 			{
 				ImageList.add(s);
@@ -110,7 +122,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		}
 		//ImageView imageView = new ImageView(this);
 		imageCount = ImageList.size();
-		String s = ImageList.get(index);
+		s = ImageList.get(index);
 		try 
 		{
 			imageView = new ImageView(this);
@@ -144,6 +156,8 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		@SuppressWarnings("static-access")
 		public boolean onSingleTapConfirmed(MotionEvent e)
 		{
+			mp.reset();
+			playTag(s);
 			// TODO Auto-generated method stub
 			slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
 			slideShowBtn.setVisibility(slideShowBtn.VISIBLE);
@@ -185,19 +199,20 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 					return false;
 				// right to left swipe
 				if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+					playSoundEffects();
 					handler.removeCallbacks(runnable);
 					imageFrame.setInAnimation(inFromRightAnimation());
 					imageFrame.setOutAnimation(outToLeftAnimation());
 					
 					Log.d("imageCount", String.valueOf(imageCount));
 					
-					if (index == imageCount) {
+					if (index == imageCount - 1) {
 						index = 0;
 					}
 					else {
 						index++;
 					}
-					String s = ImageList.get(index);
+					s = ImageList.get(index);
 					try 
 					{
 						params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
@@ -229,17 +244,18 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 				}
 				else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY)
 				{
+					playSoundEffects();
 					handler.removeCallbacks(runnable);
 					imageFrame.setInAnimation(inFromLeftAnimation());
 					imageFrame.setOutAnimation(outToRightAnimation());
 					
 					if (index == 0) {
-						index = imageCount;
+						index = imageCount - 1;
 					}
 					else {
 						index--;
 					}
-					String s = ImageList.get(index);
+					s = ImageList.get(index);
 					try 
 					{
 						params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
@@ -333,30 +349,40 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         Log.d(TAG, "audio file name : " + filename);
     	//Log.d(TAG, Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename);
     	//String externalAudioPath =  Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename;	
-    	try
-    	{
-    		FileInputStream f = new FileInputStream(internalAudioPath);
-			mp.setDataSource(f.getFD());
-		} 
-    	catch (IllegalArgumentException e)
-    	{
-			Log.e(TAG, e.getMessage().toString());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage().toString());
-			e.printStackTrace();
-		}
-		try
-		{	
-			Log.d("TAG", "just before prepareAsync");
-			Log.d("TAG", internalAudioPath);
-			mp.prepareAsync();
-		}
-		catch (IllegalStateException e)
-		{
-			Log.e(TAG, e.getMessage().toString());
-			//e.printStackTrace();
-		}
+        
+        if (AudioList.contains(internalAudioPath))
+        {
+        	try
+        	{
+        		FileInputStream f = new FileInputStream(internalAudioPath);
+    			mp.setDataSource(f.getFD());
+    		} 
+        	catch (IllegalArgumentException e)
+        	{
+    			Log.e(TAG, e.getMessage().toString());
+    			e.printStackTrace();
+    		} catch (IOException e) {
+    			Log.e(TAG, e.getMessage().toString());
+    			e.printStackTrace();
+    		}
+    		try
+    		{	
+    			Log.d("TAG", "just before prepareAsync");
+    			Log.d("TAG", internalAudioPath);
+    			mp.prepareAsync();
+    		}
+    		catch (IllegalStateException e)
+    		{
+    			Log.e(TAG, e.getMessage().toString());
+    			//e.printStackTrace();
+    		}
+        }
+        else
+        {
+        	
+        	say("No Tag Found");
+        }
+    	
 	}
 
 	@Override
@@ -366,5 +392,48 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void onInit(int arg0) {
+		talker.setLanguage(Locale.US);
+		// say("Welcome to Talking Memories.");
+	}
+	
+	/*
+	 * TTS speaks the string parameter
+	 */
+	private void say(String text2say) {
+		Log.d("TAG", "inside say");
+		talker.speak(text2say, TextToSpeech.QUEUE_FLUSH, null);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onActivityResult(int, int,
+	 * android.content.Intent)
+	 * 
+	 * Initialize TTS if already installed on device, otherwise install it
+	 */
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 0) {
+			if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+				// success, create the TTS instance
+				talker = new TextToSpeech(this, this);
+			} else {
+				// missing data, install it
+				Intent installIntent = new Intent();
+				installIntent
+						.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+				startActivity(installIntent);
+			}
+		}
+	}
+	
+	
+	private void playSoundEffects()
+	{	
+    	MediaPlayer m = MediaPlayer.create(this, R.raw.imagechange);
+    	m.start();
+    }	
 }
 
