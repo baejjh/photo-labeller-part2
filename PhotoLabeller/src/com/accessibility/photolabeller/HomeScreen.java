@@ -2,17 +2,19 @@ package com.accessibility.photolabeller;
 
 import android.app.Activity;
 import android.os.Bundle;
+
+import java.sql.Timestamp;
 import java.util.Locale;
+import java.util.Stack;
+
+import com.accessibility.photolabeller.HomeView.Button;
+import com.accessibility.photolabeller.HomeView.RowListener;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnLongClickListener;
-import android.view.View.OnTouchListener;
-import android.widget.Button;
 
 /*
  * Home Screen Activity which presents user with three buttons:
@@ -20,31 +22,34 @@ import android.widget.Button;
  * Browse - Takes user to Browse Activity to browse images and listen to tags
  * Options - Present options menu for voice instructions, camera options, etc.
  */
-public class HomeScreen extends Activity implements OnLongClickListener, OnInitListener, OnTouchListener {
+public class HomeScreen extends Activity implements OnInitListener {
 
 	private TextToSpeech speaker;
-	private Button clickButton;
-	private Button browseButton;
-	private Button optionsButton;
 	private SharedPreferences mPreferences;
-	private int lastViewID;
-	private static final String TAG = "HOMESCREEN";
+	private HomeView homeView;
+	private Stack<ClickEntry> clickStack;
+	private static final String TAG = "HOME SCREEN";
 	private static final int MY_DATA_CHECK_CODE = 0;
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
+	private static final int DOUBLE_CLICK_DELAY = 1000; // 1 second = 1000
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
-		/**
-		 * roll over testing code LinearLayout mainView =
-		 * (LinearLayout)findViewById(R.id.mainView);
-		 * mainView.setOnTouchListener((OnTouchListener) this);
-		 **/
-
+		
+		homeView = (HomeView) findViewById(R.id.home_view);
+		
+		homeView.setFocusable(true);
+		homeView.setFocusableInTouchMode(true);
+		homeView.setRowListener(new MyRowListener());
+		
+		clickStack = new Stack<ClickEntry>();
+		ClickEntry entry = new ClickEntry(Button.NOTHING, new Timestamp(System.currentTimeMillis()));
+		clickStack.push(entry);
+		
 		// check if TTS installed on device
 		Intent checkIntent = new Intent();
 		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -53,6 +58,75 @@ public class HomeScreen extends Activity implements OnLongClickListener, OnInitL
 		setFileNumbering();
 		initializeButtons();
 	}
+	
+	protected class ClickEntry {
+		protected Button button;
+		protected Timestamp time;
+		
+		ClickEntry(Button button, Timestamp time) {
+			this.button = button;
+			this.time = time;
+		}
+	}
+	
+    private class MyRowListener implements RowListener {
+        public void onRowOver() {
+			Button focusedButton = homeView.getFocusedButton();
+			ClickEntry entry = new ClickEntry(focusedButton, new Timestamp(System.currentTimeMillis()));
+			boolean doubleClicked = false;
+			if (clickStack.size() == 3) {
+				clickStack.remove(0);
+			}
+
+			clickStack.push(entry);
+			if (clickStack.size() == 3) {
+				ClickEntry entry1 = clickStack.get(1);
+				ClickEntry entry2 = clickStack.get(2);
+				if (entry1.button == entry2.button)
+					doubleClicked = Math.abs((entry1.time.getTime() - entry2.time.getTime())) < DOUBLE_CLICK_DELAY;
+			}
+			
+			if (focusedButton == Button.CAPTURE) {
+				if (doubleClicked) {
+					Log.v(TAG, "Double Clicked - Capture");
+					launchPhotoTaker();
+				} else {
+					Log.v(TAG, "CAPTURE OVER!");
+					say("Take Photos");
+				}
+			} else if (focusedButton == Button.BROWSE) {
+				if (doubleClicked) {
+					Log.v(TAG, "Double Clicked - Browse");
+					launchPhotoBrowse();
+				} else {
+					Log.v(TAG, "BROWSE OVER!");
+					say("Browse Photos");
+				}
+			} else if (focusedButton == Button.OPTIONS) {
+				if (doubleClicked) {
+					Log.v(TAG, "Double Clicked - Options");
+				} else {
+					Log.v(TAG, "OPTIONS OVER!");
+					say("Go to Options");
+				}
+			}
+
+		}
+        
+        public void focusChanged() {
+        	clickStack.removeAllElements();
+        	ClickEntry entry = new ClickEntry(Button.NOTHING, new Timestamp(System.currentTimeMillis()));
+    		clickStack.push(entry);
+        }
+	}
+    
+    public void launchPhotoTaker() {
+    	startActivity(new Intent(this, PhotoTaker.class));
+    }
+    
+    public void launchPhotoBrowse() {
+    	startActivity(new Intent(this, PhotoBrowse.class));
+    }
 
 	/*
 	 * Sets the file number counter in the application Shared Preferences for
@@ -72,78 +146,7 @@ public class HomeScreen extends Activity implements OnLongClickListener, OnInitL
 	 * Sets Long Click Listeners to the three buttons
 	 */
 	private void initializeButtons() {
-		clickButton = (Button) findViewById(R.id.clickButton);
-		browseButton = (Button) findViewById(R.id.browseButton);
-		optionsButton = (Button) findViewById(R.id.optionsButton);
-
-		clickButton.setOnLongClickListener(this);
-		browseButton.setOnLongClickListener(this);
-		optionsButton.setOnLongClickListener(this);
-
-		clickButton.setOnTouchListener(this);
-		browseButton.setOnTouchListener(this);
-		optionsButton.setOnTouchListener(this);
-	}
-
-	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-		int viewId = v.getId();
-		if (viewId != lastViewID) {
-			switch (viewId) {
-			case R.id.clickButton: {
-				Log.v(TAG, "Clicked Click Button :" + R.id.clickButton);
-				say("Take Photos");
-				break;
-
-			}
-			case R.id.browseButton: {
-				Log.v(TAG, "Clicked Browse Button :" + R.id.browseButton);
-				say("Browse Photos");
-				break;
-
-			}
-			case R.id.optionsButton: {
-				Log.v(TAG, "Clicked Options Button :" + R.id.optionsButton);
-				say("Go to Options");
-				break;
-			}
-			}
-		}
-		lastViewID = viewId;
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.view.View.OnLongClickListener#onLongClick(android.view.View)
-	 * 
-	 * Performs actions when any of the three buttons are long pressed
-	 */
-	public boolean onLongClick(View v) {
-		int viewId = v.getId();
-		switch (viewId) {
-		case R.id.clickButton: { // go to ClickPicture activity
-			Log.v(TAG, "Pressed Click Button :" + R.id.clickButton);
-			Intent clickPictureIntent = new Intent(this, PhotoTaker.class);
-			startActivity(clickPictureIntent);
-			break;
-
-		}
-		case R.id.browseButton: { // go to BrowsePicture activity
-			Log.v(TAG, "Pressed Browse Button :" + R.id.browseButton);
-			Intent browseIntent = new Intent(this, PhotoBrowse.class);
-			startActivity(browseIntent);
-			break;
-
-		}
-		case R.id.optionsButton: { // go to SetOptions activity
-			Log.v(TAG, "Pressed Options Button :" + R.id.optionsButton);
-			break;
-		}
-		}
-		lastViewID = 0;
-		return true;
+		
 	}
 
 	public void onInit(int arg0) {
@@ -180,4 +183,5 @@ public class HomeScreen extends Activity implements OnLongClickListener, OnInitL
 			}
 		}
 	}
+
 }
