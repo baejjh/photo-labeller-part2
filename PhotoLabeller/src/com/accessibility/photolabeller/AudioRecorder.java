@@ -75,7 +75,6 @@ import android.util.Log;
   public void stop() throws IOException {
 	  recorder.stop();
 	  recorder.release();
-	 
   }
   
 

@@ -6,9 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
@@ -37,6 +40,11 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	private GestureDetector gestureDetector;
 	public static final String PREF_NAME = "myPreferences";
 	
+	//DATABASE globals
+	DbHelper mHelper;
+	SQLiteDatabase mDb;
+	Cursor mCursor;
+	
 	
     View.OnTouchListener gestureListener;
     Camera mCamera;
@@ -47,6 +55,13 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.clickpicture);
+		
+		//Initialize database
+		mHelper = new DbHelper(this);
+		//Open data base Connections
+		mDb = mHelper.getWritableDatabase();
+		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
+		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
 		
 		// Gesture detection
         gestureDetector = new GestureDetector(new MyGestureDetector());
@@ -74,6 +89,9 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	public void onPause() {
 		super.onPause();
 		mCamera.stopPreview();
+		//Close all database connections
+		//mDb.close();
+		//mCursor.close();
 	}
 	
 	@Override
@@ -81,6 +99,8 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		super.onDestroy();
 		mCamera.release();
 		Log.d(TAG, "DESTROY");
+		mDb.close();
+		mCursor.close();
 	}
 	
 	// Surface call back methods
@@ -152,7 +172,14 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 				Log.d(TAG, "FILENAME: " + picFileName + fileNumber +".jpg");
 				Log.d("TAG", s.getPath().toString());
 				
-				
+				// add new image path to the data base.
+				ContentValues cv = new ContentValues(2);
+				cv.put(DbHelper.COL_IMG, s.getPath().toString() + "/"+picFileName + fileNumber + ".jpg");
+				cv.put(DbHelper.COL_AUD, "NoTag");
+				mDb.insert(DbHelper.TABLE_NAME, null, cv);
+				//Refresh the list
+				mCursor.requery();
+				mCursor.moveToLast();
 				/*
 				File folder = Environment.getExternalStorageDirectory();
 				File outputFile= new File(folder, "test.jpg");

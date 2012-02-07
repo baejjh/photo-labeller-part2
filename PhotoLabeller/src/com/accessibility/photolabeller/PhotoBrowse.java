@@ -10,6 +10,9 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -51,19 +54,34 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     List<String> AudioList;
     MediaPlayer mp = new MediaPlayer();
     int imageCount;
-    int index = 0;
     String s;
+    String audioPath;
     TextToSpeech talker;
+    
+  //DATABASE globals
+	DbHelper mHelper;
+	SQLiteDatabase mDb;
+	Cursor mCursor;
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photobrowse);
 		
+		//Initialize database
+		mHelper = new DbHelper(this);
+		//Open data base Connections
+		mDb = mHelper.getWritableDatabase();
+		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
+		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
+		
 		// check if TTS installed on device
-		Intent checkIntent = new Intent();
-		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-		startActivityForResult(checkIntent, 0);
+		//Intent checkIntent = new Intent();
+		//checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+		//startActivityForResult(checkIntent, 0);
+		talker = new TextToSpeech(this, this);
 		
 		imageFrame = (ViewFlipper) findViewById(R.id.imageFrames);
 
@@ -106,10 +124,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 
 	private void addFlipperImages(ViewFlipper flipper, File parent)
 	{
-		ImageList = new ArrayList<String>();
-    	AudioList = new ArrayList<String>();
-		imageCount = parent.listFiles().length;
-		for (int count = 0; count < imageCount; count++) {
+		//ImageList = new ArrayList<String>();
+    	//AudioList = new ArrayList<String>();
+		//imageCount = parent.listFiles().length;
+		/*for (int count = 0; count < imageCount; count++) {
 			s = parent.listFiles()[count].getAbsolutePath();
 			if (s.endsWith(".jpg"))
 			{
@@ -119,37 +137,53 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			{
 				AudioList.add(s);
 			}
-		}
+		}*/
 		//ImageView imageView = new ImageView(this);
-		imageCount = ImageList.size();
-		s = ImageList.get(index);
-		try 
-		{
+		//imageCount = ImageList.size();
+		if (isDataBaseEmpty()) {
+			say("No images found");
+			say("No images found");
 			imageView = new ImageView(this);
 			params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
-			FileInputStream imageStream = new FileInputStream(s);
-			BitmapFactory.Options o = new BitmapFactory.Options();
-			o.inPurgeable = true;
-			o.inInputShareable = true;
-			Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
+			Bitmap imbm = BitmapFactory.decodeResource(getResources(), R.drawable.noimagefound);
 			imageView.setImageBitmap(imbm);
 			imageView.setLayoutParams(params);
 			flipper.addView(imageView);
-		} 	
-		catch (FileNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.d("TAG", "just before say");
+			Log.d("TAG", "just after say");
 		}
-		//imageView.setImageDrawable(Drawable.createFromPath(imagePath));
-		//System.gc();
-		
-		playTag(s);
+		else {
+			mCursor.moveToLast();
+			s = mCursor.getString(1);
+			audioPath = mCursor.getString(2);
+			try 
+			{
+				imageView = new ImageView(this);
+				params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
+				FileInputStream imageStream = new FileInputStream(s);
+				BitmapFactory.Options o = new BitmapFactory.Options();
+				o.inPurgeable = true;
+				o.inInputShareable = true;
+				Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
+				imageView.setImageBitmap(imbm);
+				imageView.setLayoutParams(params);
+				flipper.addView(imageView);
+			} 	
+			catch (FileNotFoundException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//imageView.setImageDrawable(Drawable.createFromPath(imagePath));
+			//System.gc();
+			
+			playTag(audioPath);
+		}
 	}
 	class MyGestureDetector extends SimpleOnGestureListener
 	{
@@ -157,7 +191,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		public boolean onSingleTapConfirmed(MotionEvent e)
 		{
 			mp.reset();
-			playTag(s);
+			playTag(audioPath);
 			// TODO Auto-generated method stub
 			slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
 			slideShowBtn.setVisibility(slideShowBtn.VISIBLE);
@@ -204,39 +238,44 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 					imageFrame.setInAnimation(inFromRightAnimation());
 					imageFrame.setOutAnimation(outToLeftAnimation());
 					
-					Log.d("imageCount", String.valueOf(imageCount));
-					
-					if (index == imageCount - 1) {
-						index = 0;
-					}
-					else {
-						index++;
-					}
-					s = ImageList.get(index);
-					try 
-					{
-						params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
-						FileInputStream imageStream = new FileInputStream(s);
-						BitmapFactory.Options o = new BitmapFactory.Options();
-						o.inPurgeable = true;
-						o.inInputShareable = true;
-						Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
-						imageView.setImageBitmap(imbm);
-						//imageView.setLayoutParams(params);
-						//imageFrame.addView(imageView);
-						Log.d("TAG", "just before mp.reset");
-						mp.reset();
-						playTag(s);
-					} 	
-					catch (FileNotFoundException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} 
-					catch (IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if (!isDataBaseEmpty()) {
+						int index = mCursor.getInt(0);
+						if (index == 1) {
+							mCursor.moveToLast();
+						}
+						else {
+							mCursor.moveToPrevious();
+						}
+						
+						s = mCursor.getString(1);
+						audioPath = mCursor.getString(2);
+						
+						try 
+						{
+							params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
+							FileInputStream imageStream = new FileInputStream(s);
+							BitmapFactory.Options o = new BitmapFactory.Options();
+							o.inPurgeable = true;
+							o.inInputShareable = true;
+							Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
+							imageView.setImageBitmap(imbm);
+							//imageView.setLayoutParams(params);
+							//imageFrame.addView(imageView);
+							Log.d("TAG", "just before mp.reset");
+							mp.reset();
+							playTag(audioPath);
+						} 	
+						catch (FileNotFoundException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} 
+						catch (IOException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
 					}
 					//imageView.setImageDrawable(Drawable.createFromPath(imagePath));
 					//System.gc();
@@ -249,37 +288,43 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 					imageFrame.setInAnimation(inFromLeftAnimation());
 					imageFrame.setOutAnimation(outToRightAnimation());
 					
-					if (index == 0) {
-						index = imageCount - 1;
-					}
-					else {
-						index--;
-					}
-					s = ImageList.get(index);
-					try 
-					{
-						params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
-						FileInputStream imageStream = new FileInputStream(s);
-						BitmapFactory.Options o = new BitmapFactory.Options();
-						o.inPurgeable = true;
-						o.inInputShareable = true;
-						Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
-						imageView.setImageBitmap(imbm);
-						//imageView.setLayoutParams(params);
-						//imageFrame.addView(imageView);
-						Log.d("TAG", "just before mp.reset");
-						mp.reset();
-						playTag(s);
-					} 	
-					catch (FileNotFoundException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} 
-					catch (IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if (!isDataBaseEmpty()) {
+						int index = mCursor.getInt(0);
+						if (index == mCursor.getCount()) {
+							mCursor.moveToFirst();
+						}
+						else {
+							mCursor.moveToNext();
+						}
+						
+						s = mCursor.getString(1);
+						audioPath = mCursor.getString(2);
+						
+						try 
+						{
+							params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
+							FileInputStream imageStream = new FileInputStream(s);
+							BitmapFactory.Options o = new BitmapFactory.Options();
+							o.inPurgeable = true;
+							o.inInputShareable = true;
+							Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
+							imageView.setImageBitmap(imbm);
+							//imageView.setLayoutParams(params);
+							//imageFrame.addView(imageView);
+							Log.d("TAG", "just before mp.reset");
+							mp.reset();
+							playTag(audioPath);
+						} 	
+						catch (FileNotFoundException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} 
+						catch (IOException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					/*imageFrame.showPrevious();*/
 				}
@@ -342,19 +387,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	
 	private void playTag(String s)
 	{	
-    	String internalAudioPath = s.replace(".jpg", ".3gp");
+    	//String internalAudioPath = s.replace(".jpg", ".3gp");
         // get file name only
-        int startIndex = internalAudioPath.indexOf("tm_file");
-        String filename = internalAudioPath.substring(startIndex);
-        Log.d(TAG, "audio file name : " + filename);
+        //int startIndex = internalAudioPath.indexOf("tm_file");
+        //String filename = internalAudioPath.substring(startIndex);
+        //Log.d(TAG, "audio file name : " + filename);
     	//Log.d(TAG, Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename);
     	//String externalAudioPath =  Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename;	
         
-        if (AudioList.contains(internalAudioPath))
+        if (!s.equalsIgnoreCase("NoTag"))
         {
         	try
         	{
-        		FileInputStream f = new FileInputStream(internalAudioPath);
+        		FileInputStream f = new FileInputStream(s);
     			mp.setDataSource(f.getFD());
     		} 
         	catch (IllegalArgumentException e)
@@ -368,7 +413,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     		try
     		{	
     			Log.d("TAG", "just before prepareAsync");
-    			Log.d("TAG", internalAudioPath);
+    			Log.d("TAG", s);
     			mp.prepareAsync();
     		}
     		catch (IllegalStateException e)
@@ -379,7 +424,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         }
         else
         {
-        	
         	say("No Tag Found");
         }
     	
@@ -434,6 +478,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	{	
     	MediaPlayer m = MediaPlayer.create(this, R.raw.imagechange);
     	m.start();
-    }	
+    }
+	
+	private boolean isDataBaseEmpty() {
+		Cursor cur = mDb.rawQuery("SELECT COUNT(*) FROM " + DbHelper.TABLE_NAME, null);
+		if (cur != null) {
+		    cur.moveToFirst();                       // Always one row returned.
+		    if (cur.getInt (0) == 0)
+		    {               // Zero count means empty table.
+		        return true;
+	        }
+		    return false;
+	    }
+		return false;
+	}
 }
 
