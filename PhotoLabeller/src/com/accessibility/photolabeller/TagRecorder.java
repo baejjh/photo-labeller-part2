@@ -2,8 +2,11 @@ package com.accessibility.photolabeller;
 
 import java.io.IOException;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,10 +25,23 @@ public class TagRecorder extends Activity implements OnClickListener{
 	private AudioRecorder recorder;
 	private boolean isRecording;
 	
+	//DataBase globals
+	DbHelper mHelper;
+	SQLiteDatabase mDb;
+	Cursor mCursor;
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.tagrecorder);
+		
+		//Initialize database
+		mHelper = new DbHelper(this);
+		//Open data base Connections
+		mDb = mHelper.getWritableDatabase();
+		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
+		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
 		
 		Log.d(TAG, "Created TagRecorder")	;
 		initializeUI();
@@ -75,6 +91,13 @@ public class TagRecorder extends Activity implements OnClickListener{
 				// stop recording, update the file number counter in Shared Preferences
 				// and exit activity to return to camera
 				recorder.stop();
+				mCursor.moveToLast();
+				ContentValues cv = new ContentValues(1);
+				cv.put(DbHelper.COL_AUD, mCursor.getString(1).replace(".jpg", ".3gp")); 
+				mDb.update(DbHelper.TABLE_NAME, cv, "iFile = ?", new String[] {mCursor.getString(1)});
+				mCursor.requery();
+				mCursor.moveToLast();
+				Log.d(TAG, mCursor.getString(0) + ", " + mCursor.getString(1) + ", " + mCursor.getString(2));
 				updateCurrentFileNumber(currentFileNumber);
 				button.setText(R.string.startRecording);
 				isRecording = false;
