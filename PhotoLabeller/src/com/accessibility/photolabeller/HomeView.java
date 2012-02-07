@@ -2,10 +2,14 @@ package com.accessibility.photolabeller;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -96,25 +100,43 @@ public class HomeView extends View {
     }
     
     private void drawBoard() {
-        _canvas.drawLine(_firstHorizontalLine[0].x, _firstHorizontalLine[0].y,
-                _firstHorizontalLine[1].x, _firstHorizontalLine[1].y, _paint);
-     
-        _canvas.drawLine(_secondHorizontalLine[0].x,
-                _secondHorizontalLine[0].y, _secondHorizontalLine[1].x,
-                _secondHorizontalLine[1].y, _paint);
-     
+        Paint p = new Paint();
+        p.setDither(true);
+        p.setAntiAlias(true);
+        
+        // draw borders
+        p.setColor(Color.rgb(192, 192, 192));
+        p.setStrokeWidth(7);
+        _canvas.drawRect(0, 7, _width, _height / 3 - 7, p);
+        _canvas.drawRect(0, _height / 3 + 7, _width, _height * 2 / 3 - 7, p);
+        _canvas.drawRect(0, _height * 2 / 3 + 7, _width, _height - 7, p);
+        p.setStrokeWidth(0);
+        
+        // draw gradient rectangles
+        LinearGradient gradient = new LinearGradient(7, 14, _width - 7, _height / 3 - 14, Color.RED, Color.rgb(155, 0, 0), Shader.TileMode.MIRROR);
+        p.setShader(gradient);
+        _canvas.drawRect(7, 14, _width - 7, _height / 3 - 14, p);
+        gradient = new LinearGradient(7, _height / 3 + 14, _width - 7, _height * 2 / 3 - 14, Color.BLUE, Color.rgb(0, 0, 110), Shader.TileMode.MIRROR);
+        p.setShader(gradient);
+        _canvas.drawRect(7, _height / 3 + 14, _width - 7, _height * 2 / 3 - 14, p);
+        gradient = new LinearGradient(7, _height * 2 / 3 + 14, _width - 7, _height - 14, Color.MAGENTA, Color.rgb(78, 0, 78), Shader.TileMode.MIRROR);
+        p.setShader(gradient);
+        _canvas.drawRect(7, _height * 2 / 3 + 14, _width - 7, _height - 14, p);
+    	
+        // draw texts
 		_paint.setStyle(Paint.Style.FILL);
 		_paint.setAntiAlias(true);
-		_paint.setTextSize(60);
-		float canvasWidth = _canvas.getWidth();
-		float text1Width = _paint.measureText("Capture");
-		float startPositionX = (canvasWidth - text1Width) / 2;
+		_paint.setTextSize(getResources().getDimensionPixelSize(R.dimen.font_size));
+		
+		Rect rectangle = new Rect();
+		_paint.getTextBounds("Capture", 0, 7, rectangle);
+		float textHeight = rectangle.centerY();
+		float startPositionX = (_width) / 2;
 
-		_paint.setTextAlign(Paint.Align.LEFT);
-		_canvas.translate(0, 80);
-		_canvas.drawText("Capture", startPositionX, _height * 3 / 30, _paint);
-		_canvas.drawText("Browse", startPositionX, _height * 12 / 30, _paint);
-		_canvas.drawText("Options", startPositionX, _height * 22 / 30, _paint);
+		_paint.setTextAlign(Paint.Align.CENTER);
+		_canvas.drawText("Capture", startPositionX, (_height / 3) / 2 - textHeight, _paint);
+		_canvas.drawText("Browse", startPositionX, (_height / 2) - textHeight, _paint);
+		_canvas.drawText("Options", startPositionX, _height - (_height / 3) / 2 - textHeight, _paint);
 		
         invalidate();
     }
