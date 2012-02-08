@@ -10,6 +10,10 @@
     <string name="skipTagButton">Skip</string>
     <string name="startRecording">Start Recording</string>
     <string name="stopRecording">Stop Recording</string>
+    <string name="delete_image">Delete Image</string>
+    <string name="share_image">Share Image</string>
+    <string name="confirm_delete">Confirm Delete</string>
+    <string name="cancel_delete">Cancel Delete</string>
     
 
 </resources>
