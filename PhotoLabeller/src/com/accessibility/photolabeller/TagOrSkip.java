@@ -36,7 +36,7 @@ public class TagOrSkip extends Activity implements OnClickListener, OnLongClickL
 	public static final String PREF_NAME = "myPreferences";
 	private static final String TAG = "TAG_RECORDER";
 	private static final int DOUBLE_CLICK_DELAY = 1000; // 1 second = 1000
-	private static final String VERBOSE_INST_TAGORSKIP = "Press and hold to start recording, and tap to finish recording. Double tap to skip tagging.";
+	private static final String VERBOSE_INST_TAGORSKIP = "Press and hold to start recording, and tap to finish recording, or double tap to skip tagging.";
 	
 	//DataBase globals
 	DbHelper mHelper;

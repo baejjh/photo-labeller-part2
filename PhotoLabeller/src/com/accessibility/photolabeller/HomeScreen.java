@@ -28,7 +28,7 @@ public class HomeScreen extends Activity {
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
 	private static final int DOUBLE_CLICK_DELAY = 1000; // 1 second = 1000
-	private static final String VERBOSE_INST = "Home Screen. Touch screen to navigate. Double tap to take actions.";
+	private static final String VERBOSE_INST = "Home Screen. Touch screen to navigate, and double tap to take actions.";
 
 	/** Called when the activity is first created. */
 	@Override
