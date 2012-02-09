@@ -4,25 +4,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.speech.tts.TextToSpeech;
-import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -36,7 +30,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
 
-public class PhotoBrowse extends Activity implements OnClickListener, OnPreparedListener, OnInitListener
+public class PhotoBrowse extends Activity implements OnClickListener, OnPreparedListener
 {
 	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 250;
@@ -56,12 +50,14 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     int imageCount;
     String s;
     String audioPath;
-    TextToSpeech talker;
     
-  //DATABASE globals
+    //DATABASE globals
 	DbHelper mHelper;
 	SQLiteDatabase mDb;
 	Cursor mCursor;
+	
+	// Text to speech
+	TtsProviderFactory ttsProviderImpl;
 	
 	
 	@Override
@@ -70,18 +66,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photobrowse);
 		
+		//Initialize text to speech
+		Context context = getApplicationContext();
+		ttsProviderImpl = TtsProviderFactory.getInstance();
+		if (ttsProviderImpl != null) {
+		    ttsProviderImpl.init(context);
+		}
+		
 		//Initialize database
 		mHelper = new DbHelper(this);
 		//Open data base Connections
 		mDb = mHelper.getWritableDatabase();
 		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
-		
-		// check if TTS installed on device
-		//Intent checkIntent = new Intent();
-		//checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-		//startActivityForResult(checkIntent, 0);
-		talker = new TextToSpeech(this, this);
 		
 		imageFrame = (ViewFlipper) findViewById(R.id.imageFrames);
 
@@ -140,8 +137,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		}*/
 		//ImageView imageView = new ImageView(this);
 		//imageCount = ImageList.size();
-		if (isDataBaseEmpty()) {
-			say("No images found");
+		if (isDataBaseEmpty())
+		{
+		    ttsProviderImpl.say("No images found");
+		
 			imageView = new ImageView(this);
 			params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
 			Bitmap imbm = BitmapFactory.decodeResource(getResources(), R.drawable.noimagefound);
@@ -197,21 +196,28 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		@SuppressWarnings("static-access")
 		public boolean onSingleTapConfirmed(MotionEvent e)
 		{
-			mp.reset();
-			playTag(audioPath);
-			// TODO Auto-generated method stub
-			slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
-			slideShowBtn.setVisibility(slideShowBtn.VISIBLE);
-			handler.removeCallbacks(runnable);
-			runnable = new Runnable()
-			{
-				public void run()
+			if (!isDataBaseEmpty()) {
+				mp.reset();
+				playTag(audioPath);
+				// TODO Auto-generated method stub
+				slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
+				slideShowBtn.setVisibility(slideShowBtn.VISIBLE);
+				handler.removeCallbacks(runnable);
+				runnable = new Runnable()
 				{
-					slideShowBtn.setVisibility(slideShowBtn.INVISIBLE);
-				}
-			};
-			handler.postDelayed(runnable, 2000);
-			return true;
+					public void run()
+					{
+						slideShowBtn.setVisibility(slideShowBtn.INVISIBLE);
+					}
+				};
+				handler.postDelayed(runnable, 2000);
+				return true;
+			}
+			else {
+				ttsProviderImpl.say("No images found");
+				return true;
+			}
+			
 		}
 		
 		/*
@@ -287,7 +293,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 								o.inPurgeable = true;
 								o.inInputShareable = true;
 								Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
-								playSoundEffects(R.raw.pageflip);
+								playSoundEffects(R.raw.imagechange);
 								imageView.setImageBitmap(imbm);
 								//imageView.setLayoutParams(params);
 								//imageFrame.addView(imageView);
@@ -334,7 +340,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 								o.inPurgeable = true;
 								o.inInputShareable = true;
 								Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
-								playSoundEffects(R.raw.pageflip);
+								playSoundEffects(R.raw.imagechange);
 								imageView.setImageBitmap(imbm);
 								//imageView.setLayoutParams(params);
 								//imageFrame.addView(imageView);
@@ -450,7 +456,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         }
         else
         {
-        	say("No Tag Found");
+        	ttsProviderImpl.say("No tag found");
         }
     	
 	}
@@ -462,44 +468,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		// TODO Auto-generated method stub
 		
 	}
-	
-	public void onInit(int arg0) {
-		talker.setLanguage(Locale.US);
-		// say("Welcome to Talking Memories.");
-	}
-	
-	/*
-	 * TTS speaks the string parameter
-	 */
-	private void say(String text2say) {
-		Log.d("TAG", "inside say");
-		talker.speak(text2say, TextToSpeech.QUEUE_FLUSH, null);
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onActivityResult(int, int,
-	 * android.content.Intent)
-	 * 
-	 * Initialize TTS if already installed on device, otherwise install it
-	 */
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == 0) {
-			if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-				// success, create the TTS instance
-				talker = new TextToSpeech(this, this);
-			} else {
-				// missing data, install it
-				Intent installIntent = new Intent();
-				installIntent
-						.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-				startActivity(installIntent);
-			}
-		}
-	}
-	
-	
+
 	private void playSoundEffects(int imageId)
 	{	
     	MediaPlayer m = MediaPlayer.create(this, imageId);
