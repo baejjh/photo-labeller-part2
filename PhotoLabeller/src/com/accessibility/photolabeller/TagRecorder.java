@@ -24,6 +24,9 @@ public class TagRecorder extends Activity implements OnClickListener{
 	private int currentFileNumber;
 	private AudioRecorder recorder;
 	private boolean isRecording;
+	private static final String VERBOSE_INST_RECORD = "Touch screen to begin recording. " +
+			" Touch screen again to stop recording. ";
+	
 	
 	//DataBase globals
 	DbHelper mHelper;
@@ -46,6 +49,7 @@ public class TagRecorder extends Activity implements OnClickListener{
 		Log.d(TAG, "Created TagRecorder")	;
 		initializeUI();
 		isRecording = false;
+		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_RECORD);
 		/*mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
 		button = (Button)findViewById(R.id.StartandStop);
 		button.setOnClickListener(this);

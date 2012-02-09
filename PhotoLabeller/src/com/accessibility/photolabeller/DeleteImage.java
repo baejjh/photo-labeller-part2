@@ -14,6 +14,9 @@ import android.widget.Button;
 
 public class DeleteImage extends Activity implements OnClickListener {
 	
+	private static final String VERBOSE_INST_DELETE = "Confirm Delete picture, or cancel action." +
+	"  Touch screen for button prompts.";
+	
 	//DATABASE globals
 	DbHelper mHelper;
 	SQLiteDatabase mDb;
@@ -32,7 +35,9 @@ public class DeleteImage extends Activity implements OnClickListener {
 		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
         
+		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_DELETE);
         initializeButtons();
+        
      }
 
 	private void initializeButtons() {
