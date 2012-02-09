@@ -219,14 +219,14 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
          * 
          */
         public boolean onDoubleTap(MotionEvent e) {
-        	playSoundEffects();
+        	playSoundEffects(R.raw.imagechange);
         	finish();
 			return false;
         }
         
         @Override
         public void onLongPress(MotionEvent e) {
-        	playSoundEffects();
+        	playSoundEffects(R.raw.imagechange);
         	GlobalVariables.setImagePath(s);
         	GlobalVariables.setAudioPath(audioPath);
         	GlobalVariables.setRowId(mCursor.getInt(0));
@@ -261,32 +261,24 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 				if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
 					return false;
 				// right to left swipe
-				if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-					playSoundEffects();
+				if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY)
+				{
 					handler.removeCallbacks(runnable);
 					imageFrame.setInAnimation(inFromRightAnimation());
 					imageFrame.setOutAnimation(outToLeftAnimation());
 					
-					if (!isDataBaseEmpty()) {
-						Log.d(TAG, "db not empty");
-						//int index = mCursor.getInt(0);
-						//Log.d(TAG, "index = " + index);
-						/*if (index == 1) {
+					if (!isDataBaseEmpty()) 
+					{
+						mCursor.moveToNext();
+						if(mCursor.isAfterLast())
+						{
+							playSoundEffects(R.raw.lock);
 							mCursor.moveToLast();
-							Log.d(TAG, "index is 1, mCursor count is: " + mCursor.getInt(0));
-						}
-						else {
-							mCursor.moveToPrevious();
-							Log.d(TAG, "index is not 1, mCursor count is: " + mCursor.getInt(0));
-						}*/
-						mCursor.moveToPrevious();
-						if(mCursor.isBeforeFirst()){
-							// play some sound here
-							mCursor.moveToFirst();
-						} else {
+						} else
+						{
+							mp.reset();
 							s = mCursor.getString(1);
 							audioPath = mCursor.getString(2);
-						
 							try 
 							{
 								params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
@@ -295,11 +287,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 								o.inPurgeable = true;
 								o.inInputShareable = true;
 								Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
+								playSoundEffects(R.raw.pageflip);
 								imageView.setImageBitmap(imbm);
 								//imageView.setLayoutParams(params);
 								//imageFrame.addView(imageView);
-								Log.d("TAG", "just before mp.reset");
-								mp.reset();
 								playTag(audioPath);
 							} 	
 							catch (FileNotFoundException e)
@@ -313,7 +304,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 								e.printStackTrace();
 							}
 						}
-						
 					}
 					//imageView.setImageDrawable(Drawable.createFromPath(imagePath));
 					//System.gc();
@@ -321,27 +311,21 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 				}
 				else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY)
 				{
-					playSoundEffects();
 					handler.removeCallbacks(runnable);
 					imageFrame.setInAnimation(inFromLeftAnimation());
 					imageFrame.setOutAnimation(outToRightAnimation());
 					
-					if (!isDataBaseEmpty()) {
-						//int index = mCursor.getInt(0);
-						/*if (index == mCursor.getCount()) {
+					if (!isDataBaseEmpty()) 
+					{
+						mCursor.moveToPrevious();
+						if(mCursor.isBeforeFirst()) {
+							playSoundEffects(R.raw.lock);
 							mCursor.moveToFirst();
-						}
-						else {
-							mCursor.moveToNext();
-						}*/
-						mCursor.moveToNext();
-						if(mCursor.isAfterLast()) {
-							//play some sound here
-							mCursor.moveToLast();
-						} else {
+						} else
+						{
+							mp.reset();
 							s = mCursor.getString(1);
 							audioPath = mCursor.getString(2);
-							
 							try 
 							{
 								params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
@@ -350,11 +334,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 								o.inPurgeable = true;
 								o.inInputShareable = true;
 								Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
+								playSoundEffects(R.raw.pageflip);
 								imageView.setImageBitmap(imbm);
 								//imageView.setLayoutParams(params);
 								//imageFrame.addView(imageView);
-								Log.d("TAG", "just before mp.reset");
-								mp.reset();
 								playTag(audioPath);
 							} 	
 							catch (FileNotFoundException e)
@@ -517,9 +500,9 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	}
 	
 	
-	private void playSoundEffects()
+	private void playSoundEffects(int imageId)
 	{	
-    	MediaPlayer m = MediaPlayer.create(this, R.raw.imagechange);
+    	MediaPlayer m = MediaPlayer.create(this, imageId);
     	m.start();
     }
 	
