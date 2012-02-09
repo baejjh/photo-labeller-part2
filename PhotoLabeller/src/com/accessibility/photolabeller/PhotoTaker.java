@@ -16,6 +16,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -50,6 +51,8 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
     Camera mCamera;
 	SurfaceView mPreview;
 	
+	private TextToSpeech talker;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -81,7 +84,6 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		mPreview.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_PRIVATE);
-		
 		mCamera = Camera.open();
 	}
 	

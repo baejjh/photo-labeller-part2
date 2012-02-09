@@ -33,6 +33,7 @@ public class HomeScreen extends Activity implements OnInitListener {
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
 	private static final int DOUBLE_CLICK_DELAY = 1000; // 1 second = 1000
+	private static final String VERBOSE_INST = "HomeScreen.	Touch screen for button names, and double click to activate button.";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -56,10 +57,11 @@ public class HomeScreen extends Activity implements OnInitListener {
 		startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
 		setFileNumbering();
-		initializeButtons();
+		
+		
 	}
 	
-	protected class ClickEntry {
+		protected class ClickEntry {
 		protected Button button;
 		protected Timestamp time;
 		
@@ -142,18 +144,11 @@ public class HomeScreen extends Activity implements OnInitListener {
 		}
 	}
 
-	/*
-	 * Sets Long Click Listeners to the three buttons
-	 */
-	private void initializeButtons() {
-		
-	}
-
 	public void onInit(int arg0) {
 		speaker.setLanguage(Locale.US);
-		// say("Welcome to Talking Memories.");
+		say(VERBOSE_INST);
 	}
-
+	
 	/*
 	 * TTS speaks the string parameter
 	 */
@@ -182,6 +177,17 @@ public class HomeScreen extends Activity implements OnInitListener {
 				startActivity(installIntent);
 			}
 		}
+	}
+	public void onStop(){
+		super.onStop();
+		if(speaker.isSpeaking()){
+			speaker.stop();
+		}
+		
+	}
+	public void onRestart(){
+		super.onRestart();
+		say(VERBOSE_INST);
 	}
 
 }
