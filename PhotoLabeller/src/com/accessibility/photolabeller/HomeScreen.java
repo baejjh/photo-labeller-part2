@@ -186,6 +186,7 @@ public class HomeScreen extends Activity {
 	public void onRestart(){
 		super.onRestart();
 		playInstructions();
+		homeView.requestFocus();
 	}
 
 }
