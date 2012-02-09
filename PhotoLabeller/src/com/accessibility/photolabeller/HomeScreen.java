@@ -41,6 +41,9 @@ public class HomeScreen extends Activity implements OnInitListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
+		//Initialize text to speech
+		GlobalVariables.setTextToSpeech(getApplicationContext());
+		
 		homeView = (HomeView) findViewById(R.id.home_view);
 		
 		homeView.setFocusable(true);

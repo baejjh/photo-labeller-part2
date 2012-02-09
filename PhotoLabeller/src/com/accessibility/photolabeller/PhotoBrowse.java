@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -57,7 +56,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	Cursor mCursor;
 	
 	// Text to speech
-	TtsProviderFactory ttsProviderImpl;
+	//TtsProviderFactory ttsProviderImpl;
 	
 	
 	@Override
@@ -66,12 +65,13 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photobrowse);
 		
+		//GlobalVariables.setTextToSpeech(getApplicationContext());
 		//Initialize text to speech
-		Context context = getApplicationContext();
+		/*Context context = getApplicationContext();
 		ttsProviderImpl = TtsProviderFactory.getInstance();
 		if (ttsProviderImpl != null) {
 		    ttsProviderImpl.init(context);
-		}
+		}*/
 		
 		//Initialize database
 		mHelper = new DbHelper(this);
@@ -139,7 +139,8 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		//imageCount = ImageList.size();
 		if (isDataBaseEmpty())
 		{
-		    ttsProviderImpl.say("No images found");
+		    //ttsProviderImpl.say("No images found");
+			GlobalVariables.getTextToSpeech().say("No images found");
 		
 			imageView = new ImageView(this);
 			params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
@@ -214,7 +215,8 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 				return true;
 			}
 			else {
-				ttsProviderImpl.say("No images found");
+				//ttsProviderImpl.say("No images found");
+				GlobalVariables.getTextToSpeech().say("No images found");
 				return true;
 			}
 			
@@ -456,7 +458,8 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         }
         else
         {
-        	ttsProviderImpl.say("No tag found");
+        	//ttsProviderImpl.say("No tag found");
+        	GlobalVariables.getTextToSpeech().say("No tag found");
         }
     	
 	}
