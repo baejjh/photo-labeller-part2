@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -49,6 +50,7 @@ public class DeleteImage extends Activity implements OnClickListener {
 			mDb.delete(DbHelper.TABLE_NAME, "_id = " + rowId, null);
 			mCursor.requery();
 			mCursor.close();
+			playSoundEffects(R.raw.paperrip);
 			//GlobalVariables.setRowId(mCursor.getInt(0));
 			
 			// delete physical files
@@ -58,7 +60,11 @@ public class DeleteImage extends Activity implements OnClickListener {
 			startActivity(new Intent(this, PhotoBrowse.class));
 			finish();
 		}
-		
 	}
-
+	
+	private void playSoundEffects(int imageId)
+	{	
+    	MediaPlayer m = MediaPlayer.create(this, imageId);
+    	m.start();
+    }
 }
