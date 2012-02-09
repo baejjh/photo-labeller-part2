@@ -40,6 +40,8 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	private static final String picFileName = "tm_file";
 	private GestureDetector gestureDetector;
 	public static final String PREF_NAME = "myPreferences";
+	public static final String VERBOSE_INST_CAMERA = "Camera screen. Single click to take photo." +
+			"Double click to return to home screen. ";
 	
 	//DATABASE globals
 	DbHelper mHelper;
@@ -51,8 +53,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
     Camera mCamera;
 	SurfaceView mPreview;
 	
-	private TextToSpeech talker;
-	
+		
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_PRIVATE);
 		mCamera = Camera.open();
+		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_CAMERA);
 	}
 	
 	@Override
@@ -94,7 +96,14 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		//Close all database connections
 		//mDb.close();
 		//mCursor.close();
+	} 
+	
+	public void onRestart(){
+		super.onRestart();
+		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_CAMERA);
 	}
+	
+	
 	
 	@Override
 	public void onDestroy() {

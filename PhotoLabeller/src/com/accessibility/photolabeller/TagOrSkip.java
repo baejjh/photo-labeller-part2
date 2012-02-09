@@ -18,6 +18,7 @@ public class TagOrSkip extends Activity implements OnClickListener {
 	private static final String FILE_NUMBER_KEY = "fileNum";
 	private int currentFileNumber;
 	private SharedPreferences mPreferences;
+	private static final String VERBOSE_INST_TAGORSKIP = "Tag image or skip tagging.";
 
 	/** Called when the activity is first created. */
     @Override
@@ -28,6 +29,7 @@ public class TagOrSkip extends Activity implements OnClickListener {
         mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_PRIVATE);
         currentFileNumber = getCurrentFileNumber();           
         initializeButtons();
+        GlobalVariables.getTextToSpeech().say(VERBOSE_INST_TAGORSKIP);
      }
 
 	private void initializeButtons() {
