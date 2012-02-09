@@ -6,7 +6,12 @@
     <string name="click_button">Capture</string>
     <string name="browse_button">Browse</string>
     <string name="options_button">Options</string>
-    <string name="tagItButton">Tag</string>
+    <string name="tagItButton">Long Click:\n
+        START RECORDING\n\n
+        Tap:\n
+        FINISH RECORDING\n\n
+        Double Tap:\n
+        SKIP TAGGING</string>
     <string name="skipTagButton">Skip</string>
     <string name="startRecording">Start Recording</string>
     <string name="stopRecording">Stop Recording</string>

@@ -24,11 +24,11 @@ public class HomeScreen extends Activity {
 	private HomeView homeView;
 	private Stack<ClickEntry> clickStack;
 	private static final String TAG = "HOME SCREEN";
-	private static final int MY_DATA_CHECK_CODE = 0;
+	//private static final int MY_DATA_CHECK_CODE = 0;
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
 	private static final int DOUBLE_CLICK_DELAY = 1000; // 1 second = 1000
-	private static final String VERBOSE_INST = "HomeScreen.	Touch screen for button names. Double click to active ate button.";
+	private static final String VERBOSE_INST = "Home Screen. Touch screen to navigate. Double tap to take actions.";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -51,19 +51,22 @@ public class HomeScreen extends Activity {
 		
 		// check if TTS installed on device
 		//Intent checkIntent = new Intent();
-		//checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-		//startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+		// checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+		// startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
 		setFileNumbering();
-		GlobalVariables.getTextToSpeech().say(VERBOSE_INST);
-		
-		
+		playInstructions();
 	}
 	
-		protected class ClickEntry {
+	public void playInstructions() {
+		GlobalVariables.getTextToSpeech().say(VERBOSE_INST);
+	}
+
+	protected class ClickEntry {
+		
 		protected Button button;
 		protected Timestamp time;
-		
+
 		ClickEntry(Button button, Timestamp time) {
 			this.button = button;
 			this.time = time;
@@ -71,6 +74,7 @@ public class HomeScreen extends Activity {
 	}
 	
     private class MyRowListener implements RowListener {
+    	
         public void onRowOver() {
 			Button focusedButton = homeView.getFocusedButton();
 			ClickEntry entry = new ClickEntry(focusedButton, new Timestamp(System.currentTimeMillis()));
@@ -93,7 +97,6 @@ public class HomeScreen extends Activity {
 					launchPhotoTaker();
 				} else {
 					Log.v(TAG, "CAPTURE OVER!");
-					//say("Take Photos");
 					GlobalVariables.getTextToSpeech().say("Take Photos");
 				}
 			} else if (focusedButton == Button.BROWSE) {
@@ -102,7 +105,6 @@ public class HomeScreen extends Activity {
 					launchPhotoBrowse();
 				} else {
 					Log.v(TAG, "BROWSE OVER!");
-					//say("Browse Photos");
 					GlobalVariables.getTextToSpeech().say("Browse Photos");
 				}
 			} else if (focusedButton == Button.OPTIONS) {
@@ -110,7 +112,6 @@ public class HomeScreen extends Activity {
 					Log.v(TAG, "Double Clicked - Options");
 				} else {
 					Log.v(TAG, "OPTIONS OVER!");
-					//say("Go to Options");
 					GlobalVariables.getTextToSpeech().say("Options");
 				}
 			}
@@ -184,7 +185,7 @@ public class HomeScreen extends Activity {
 	}
 	public void onRestart(){
 		super.onRestart();
-		GlobalVariables.getTextToSpeech().say(VERBOSE_INST);
+		playInstructions();
 	}
 
 }
