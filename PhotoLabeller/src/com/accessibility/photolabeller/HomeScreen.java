@@ -4,16 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import java.sql.Timestamp;
-import java.util.Locale;
 import java.util.Stack;
-
 import com.accessibility.photolabeller.HomeView.Button;
 import com.accessibility.photolabeller.HomeView.RowListener;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.speech.tts.TextToSpeech;
-import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 
 /*
@@ -22,9 +17,9 @@ import android.util.Log;
  * Browse - Takes user to Browse Activity to browse images and listen to tags
  * Options - Present options menu for voice instructions, camera options, etc.
  */
-public class HomeScreen extends Activity implements OnInitListener {
+public class HomeScreen extends Activity {
 
-	private TextToSpeech speaker;
+	//private TextToSpeech speaker;
 	private SharedPreferences mPreferences;
 	private HomeView homeView;
 	private Stack<ClickEntry> clickStack;
@@ -55,11 +50,12 @@ public class HomeScreen extends Activity implements OnInitListener {
 		clickStack.push(entry);
 		
 		// check if TTS installed on device
-		Intent checkIntent = new Intent();
-		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-		startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+		//Intent checkIntent = new Intent();
+		//checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+		//startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
 		setFileNumbering();
+		GlobalVariables.getTextToSpeech().say(VERBOSE_INST);
 		
 		
 	}
@@ -97,7 +93,8 @@ public class HomeScreen extends Activity implements OnInitListener {
 					launchPhotoTaker();
 				} else {
 					Log.v(TAG, "CAPTURE OVER!");
-					say("Take Photos");
+					//say("Take Photos");
+					GlobalVariables.getTextToSpeech().say("Take Photos");
 				}
 			} else if (focusedButton == Button.BROWSE) {
 				if (doubleClicked) {
@@ -105,14 +102,16 @@ public class HomeScreen extends Activity implements OnInitListener {
 					launchPhotoBrowse();
 				} else {
 					Log.v(TAG, "BROWSE OVER!");
-					say("Browse Photos");
+					//say("Browse Photos");
+					GlobalVariables.getTextToSpeech().say("Browse Photos");
 				}
 			} else if (focusedButton == Button.OPTIONS) {
 				if (doubleClicked) {
 					Log.v(TAG, "Double Clicked - Options");
 				} else {
 					Log.v(TAG, "OPTIONS OVER!");
-					say("Go to Options");
+					//say("Go to Options");
+					GlobalVariables.getTextToSpeech().say("Options");
 				}
 			}
 
@@ -146,18 +145,14 @@ public class HomeScreen extends Activity implements OnInitListener {
 			editor.commit();
 		}
 	}
-
+	/*
 	public void onInit(int arg0) {
 		speaker.setLanguage(Locale.US);
 		say(VERBOSE_INST);
 	}
 	
 	/*
-	 * TTS speaks the string parameter
-	 */
-	private void say(String text2say) {
-		speaker.speak(text2say, TextToSpeech.QUEUE_FLUSH, null);
-	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -167,6 +162,7 @@ public class HomeScreen extends Activity implements OnInitListener {
 	 * 
 	 * Initialize TTS if already installed on device, otherwise install it
 	 */
+	/*
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == MY_DATA_CHECK_CODE) {
 			if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
@@ -181,16 +177,14 @@ public class HomeScreen extends Activity implements OnInitListener {
 			}
 		}
 	}
+	*/
 	public void onStop(){
 		super.onStop();
-		if(speaker.isSpeaking()){
-			speaker.stop();
-		}
-		
+				
 	}
 	public void onRestart(){
 		super.onRestart();
-		say(VERBOSE_INST);
+		GlobalVariables.getTextToSpeech().say(VERBOSE_INST);
 	}
 
 }
