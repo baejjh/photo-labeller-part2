@@ -2,34 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center|top"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/deleteItButton"
-        android:layout_width="fill_parent"
-        android:layout_height="110dip"
-        android:layout_gravity="center"
-        android:layout_margin="20dip"
-        android:textSize="24dip"
-        android:text="@string/delete_image" />
-
-    <Button
-        android:id="@+id/shareItButton"
-        android:layout_width="fill_parent"
-        android:layout_height="110dip"
-        android:layout_gravity="center"
-        android:layout_margin="20dip"
-        android:textSize="24dip"
-        android:text="@string/share_image" />
-    
-    <Button
-        android:id="@+id/cancelButton"
-        android:layout_width="fill_parent"
-        android:layout_height="110dip"
-        android:layout_gravity="center"
-        android:layout_margin="20dip"
-        android:textSize="24dip"
-        android:text="@string/cancel_button" />
-    
+    <com.accessibility.photolabeller.MenuView
+        android:id="@+id/menu_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dip"
+        android:layout_weight="1" />
 
 </LinearLayout>

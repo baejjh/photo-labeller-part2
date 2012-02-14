@@ -6,24 +6,23 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
  
-public class HomeView extends View {
+public class MenuView extends View {
  
-    public enum Button {
-        NOTHING(0),
-        CAPTURE(1),
-        BROWSE(2),
-        OPTIONS(3);
+    public enum Btn {
+        NONE(0),
+        ONE(1),
+        TWO(2),
+        THREE(3);
 
         private int mValue;
 
-        private Button(int value) {
+        private Btn(int value) {
             mValue = value;
         }
 
@@ -31,26 +30,29 @@ public class HomeView extends View {
             return mValue;
         }
 
-        public static Button fromInt(int i) {
-            for (Button s : values()) {
+        public static Btn fromInt(int i) {
+            for (Btn s : values()) {
                 if (s.getValue() == i) {
                     return s;
                 }
             }
-            return NOTHING;
+            return NONE;
         }
     }
     
-    private Button mFocusedButton = Button.NOTHING;
-    private Button mInitialPush = Button.NOTHING;
+    private Btn mFocusedButton = Btn.NONE;
+    private Btn mInitialPush = Btn.NONE;
     
     private int _height;
     private int _width;
     private Bitmap _bitmap;
     private Canvas _canvas;
     private Paint _paint;
-    private Point[] _firstHorizontalLine;
-    private Point[] _secondHorizontalLine;
+    
+    private int _buttonCount;
+    private String _button1;
+    private String _button2;
+    private String _button3;
     
     private RowListener mRowListener;
     
@@ -59,13 +61,18 @@ public class HomeView extends View {
         abstract void focusChanged();
     }
     
-    public HomeView(Context context, AttributeSet attrs) {
+    public MenuView(Context context, AttributeSet attrs) {
         super(context, attrs);
         requestFocus();
         
         _paint = new Paint();
         _paint.setColor(Color.WHITE);
         _paint.setStyle(Paint.Style.STROKE);
+        
+        _buttonCount = 3;
+        _button1 = "Button1";
+        _button2 = "Button2";
+        _button3 = "Button3";
     }
      
     @Override
@@ -78,27 +85,50 @@ public class HomeView extends View {
         _bitmap = Bitmap.createBitmap(_width, _height, Bitmap.Config.ARGB_8888);
         _canvas = new Canvas(_bitmap);
      
-        calculateLinePlacements();
-        drawBoard();
-    }
-
-    private void calculateLinePlacements() {
-        int splitHeight = _height / 3;
-     
-        _firstHorizontalLine = new Point[2];
-        Point p1 = new Point(0, splitHeight);
-        Point p2 = new Point(_width, splitHeight);
-        _firstHorizontalLine[0] = p1;
-        _firstHorizontalLine[1] = p2;
-     
-        _secondHorizontalLine = new Point[2];
-        p1 = new Point(0, 2 * splitHeight);
-        p2 = new Point(_width, 2 * splitHeight);
-        _secondHorizontalLine[0] = p1;
-        _secondHorizontalLine[1] = p2;
+        if (_buttonCount == 2)
+        	drawTwoButtons();
+        else
+        	drawThreeButtons();
     }
     
-    private void drawBoard() {
+    private void drawTwoButtons() {
+        Paint p = new Paint();
+        p.setDither(true);
+        p.setAntiAlias(true);
+        
+        // draw borders
+        p.setColor(Color.rgb(192, 192, 192));
+        p.setStrokeWidth(7);
+        _canvas.drawRect(0, 7, _width, _height / 2 - 7, p);
+        _canvas.drawRect(0, _height / 2 + 7, _width, _height - 7, p);
+        p.setStrokeWidth(0);
+        
+        // draw gradient rectangles
+        LinearGradient gradient = new LinearGradient(7, 14, _width - 7, _height / 2 - 14, Color.RED, Color.rgb(155, 0, 0), Shader.TileMode.MIRROR);
+        p.setShader(gradient);
+        _canvas.drawRect(7, 14, _width - 7, _height / 2 - 14, p);
+        gradient = new LinearGradient(7, _height / 2 + 14, _width - 7, _height - 14, Color.BLUE, Color.rgb(0, 0, 110), Shader.TileMode.MIRROR);
+        p.setShader(gradient);
+        _canvas.drawRect(7, _height / 2 + 14, _width - 7, _height - 14, p);
+    	
+        // draw texts
+		_paint.setStyle(Paint.Style.FILL);
+		_paint.setAntiAlias(true);
+		_paint.setTextSize(getResources().getDimensionPixelSize(R.dimen.font_size));
+		
+		Rect rectangle = new Rect();
+		_paint.getTextBounds(_button1, 0, _button1.length(), rectangle);
+		float textHeight = rectangle.centerY();
+		float startPositionX = (_width) / 2;
+
+		_paint.setTextAlign(Paint.Align.CENTER);
+		_canvas.drawText(_button1, startPositionX, (_height / 4) - textHeight / 2, _paint);
+		_canvas.drawText(_button2, startPositionX, _height * 3 / 4 - textHeight / 2, _paint);
+		
+        invalidate();
+    }
+    
+    private void drawThreeButtons() {
         Paint p = new Paint();
         p.setDither(true);
         p.setAntiAlias(true);
@@ -128,14 +158,14 @@ public class HomeView extends View {
 		_paint.setTextSize(getResources().getDimensionPixelSize(R.dimen.font_size));
 		
 		Rect rectangle = new Rect();
-		_paint.getTextBounds("Capture", 0, 7, rectangle);
+		_paint.getTextBounds(_button1, 0, _button1.length(), rectangle);
 		float textHeight = rectangle.centerY();
 		float startPositionX = (_width) / 2;
 
 		_paint.setTextAlign(Paint.Align.CENTER);
-		_canvas.drawText("Capture", startPositionX, (_height / 3) / 2 - textHeight, _paint);
-		_canvas.drawText("Browse", startPositionX, (_height / 2) - textHeight, _paint);
-		_canvas.drawText("Options", startPositionX, _height - (_height / 3) / 2 - textHeight, _paint);
+		_canvas.drawText(_button1, startPositionX, (_height / 3) / 2 - textHeight, _paint);
+		_canvas.drawText(_button2, startPositionX, (_height / 2) - textHeight, _paint);
+		_canvas.drawText(_button3, startPositionX, _height - (_height / 3) / 2 - textHeight, _paint);
 		
         invalidate();
     }
@@ -144,8 +174,21 @@ public class HomeView extends View {
         mRowListener = rowListener;
     }
     
-    public Button getFocusedButton() {
+    public Btn getFocusedButton() {
         return mFocusedButton;
+    }
+    
+    public void setButtonNames(String s1, String s2) {
+    	_buttonCount = 2;
+    	_button1 = s1;
+    	_button2 = s2;
+    }
+    
+    public void setButtonNames(String s1, String s2, String s3) {
+    	_buttonCount = 3;
+    	_button1 = s1;
+    	_button2 = s2;
+    	_button3 = s3;
     }
 
 	@Override
@@ -161,17 +204,25 @@ public class HomeView extends View {
 			int y = (int) event.getY();
 			int height = this.getHeight();
 
-			if ((y < height / 3) && (mFocusedButton != Button.CAPTURE)) {
-					mFocusedButton = Button.CAPTURE;
+			if (_buttonCount == 2) {
+				if ((y < height / 2) && (mFocusedButton != Btn.ONE)) {
+					mFocusedButton = Btn.ONE;
 					mRowListener.onRowOver();
-			} else if ((y > height / 3 && y < height * 2 / 3) && (mFocusedButton != Button.BROWSE)) {
-					mFocusedButton = Button.BROWSE;
+				} else if ((y > height / 2) && (mFocusedButton != Btn.TWO)) {
+					mFocusedButton = Btn.TWO;
 					mRowListener.onRowOver();
-			} else if ((y > height * 2 / 3) && (mFocusedButton != Button.OPTIONS)) {
-					mFocusedButton = Button.OPTIONS;
-					mRowListener.onRowOver();
+				}
 			} else {
-				// if none of the above, DO NOTHING
+				if ((y < height / 3) && (mFocusedButton != Btn.ONE)) {
+					mFocusedButton = Btn.ONE;
+					mRowListener.onRowOver();
+				} else if ((y > height / 3 && y < height * 2 / 3) && (mFocusedButton != Btn.TWO)) {
+					mFocusedButton = Btn.TWO;
+					mRowListener.onRowOver();
+				} else if ((y > height * 2 / 3) && (mFocusedButton != Btn.THREE)) {
+					mFocusedButton = Btn.THREE;
+					mRowListener.onRowOver();
+				}
 			}
 			
 			if (action == MotionEvent.ACTION_DOWN)
@@ -181,8 +232,8 @@ public class HomeView extends View {
 		} else if (action == MotionEvent.ACTION_UP) {
 			if (mInitialPush != mFocusedButton)
 				mRowListener.focusChanged();
-			mFocusedButton = Button.NOTHING;
-			mInitialPush = Button.NOTHING;
+			mFocusedButton = Btn.NONE;
+			mInitialPush = Btn.NONE;
 			return true;
 		}
 
