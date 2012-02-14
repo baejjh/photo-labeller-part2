@@ -3,10 +3,8 @@ package com.accessibility.photolabeller;
 import android.app.Activity;
 import android.os.Bundle;
 
-import java.sql.Timestamp;
-import java.util.Stack;
-import com.accessibility.photolabeller.HomeView.Button;
-import com.accessibility.photolabeller.HomeView.RowListener;
+import com.accessibility.photolabeller.MenuView.Btn;
+import com.accessibility.photolabeller.MenuView.RowListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -21,13 +19,12 @@ public class HomeScreen extends Activity {
 
 	//private TextToSpeech speaker;
 	private SharedPreferences mPreferences;
-	private HomeView homeView;
-	private Stack<ClickEntry> clickStack;
+	private MenuView menuView;
+	private DoubleClicker doubleClicker;
 	private static final String TAG = "HOME SCREEN";
 	//private static final int MY_DATA_CHECK_CODE = 0;
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
-	private static final int DOUBLE_CLICK_DELAY = 1000; // 1 second = 1000
 	private static final String VERBOSE_INST = "Home Screen. Touch screen to navigate, and double tap to take actions.";
 
 	/** Called when the activity is first created. */
@@ -39,15 +36,13 @@ public class HomeScreen extends Activity {
 		//Initialize text to speech
 		GlobalVariables.setTextToSpeech(getApplicationContext());
 		
-		homeView = (HomeView) findViewById(R.id.home_view);
+		menuView = (MenuView) findViewById(R.id.home_view);
+		menuView.setFocusable(true);
+		menuView.setFocusableInTouchMode(true);
+		menuView.setRowListener(new MyRowListener());
+		menuView.setButtonNames("Capture", "Browse", "Options");
 		
-		homeView.setFocusable(true);
-		homeView.setFocusableInTouchMode(true);
-		homeView.setRowListener(new MyRowListener());
-		
-		clickStack = new Stack<ClickEntry>();
-		ClickEntry entry = new ClickEntry(Button.NOTHING, new Timestamp(System.currentTimeMillis()));
-		clickStack.push(entry);
+		doubleClicker = new DoubleClicker();
 		
 		// check if TTS installed on device
 		//Intent checkIntent = new Intent();
@@ -61,54 +56,31 @@ public class HomeScreen extends Activity {
 	public void playInstructions() {
 		GlobalVariables.getTextToSpeech().say(VERBOSE_INST);
 	}
-
-	protected class ClickEntry {
-		
-		protected Button button;
-		protected Timestamp time;
-
-		ClickEntry(Button button, Timestamp time) {
-			this.button = button;
-			this.time = time;
-		}
-	}
 	
     private class MyRowListener implements RowListener {
     	
         public void onRowOver() {
-			Button focusedButton = homeView.getFocusedButton();
-			ClickEntry entry = new ClickEntry(focusedButton, new Timestamp(System.currentTimeMillis()));
-			boolean doubleClicked = false;
-			if (clickStack.size() == 3) {
-				clickStack.remove(0);
-			}
+        	Btn focusedButton = menuView.getFocusedButton();
+			doubleClicker.click(focusedButton);
 
-			clickStack.push(entry);
-			if (clickStack.size() == 3) {
-				ClickEntry entry1 = clickStack.get(1);
-				ClickEntry entry2 = clickStack.get(2);
-				if (entry1.button == entry2.button)
-					doubleClicked = Math.abs((entry1.time.getTime() - entry2.time.getTime())) < DOUBLE_CLICK_DELAY;
-			}
-			
-			if (focusedButton == Button.CAPTURE) {
-				if (doubleClicked) {
+			if (focusedButton == Btn.ONE) {
+				if (doubleClicker.isDoubleClicked()) {
 					Log.v(TAG, "Double Clicked - Capture");
 					launchPhotoTaker();
 				} else {
 					Log.v(TAG, "CAPTURE OVER!");
 					GlobalVariables.getTextToSpeech().say("Take Photos");
 				}
-			} else if (focusedButton == Button.BROWSE) {
-				if (doubleClicked) {
+			} else if (focusedButton == Btn.TWO) {
+				if (doubleClicker.isDoubleClicked()) {
 					Log.v(TAG, "Double Clicked - Browse");
 					launchPhotoBrowse();
 				} else {
 					Log.v(TAG, "BROWSE OVER!");
 					GlobalVariables.getTextToSpeech().say("Browse Photos");
 				}
-			} else if (focusedButton == Button.OPTIONS) {
-				if (doubleClicked) {
+			} else if (focusedButton == Btn.THREE) {
+				if (doubleClicker.isDoubleClicked()) {
 					Log.v(TAG, "Double Clicked - Options");
 				} else {
 					Log.v(TAG, "OPTIONS OVER!");
@@ -119,9 +91,7 @@ public class HomeScreen extends Activity {
 		}
         
         public void focusChanged() {
-        	clickStack.removeAllElements();
-        	ClickEntry entry = new ClickEntry(Button.NOTHING, new Timestamp(System.currentTimeMillis()));
-    		clickStack.push(entry);
+        	doubleClicker.reset();
         }
 	}
     
@@ -186,7 +156,7 @@ public class HomeScreen extends Activity {
 	public void onRestart(){
 		super.onRestart();
 		playInstructions();
-		homeView.requestFocus();
+		menuView.requestFocus();
 	}
 
 }

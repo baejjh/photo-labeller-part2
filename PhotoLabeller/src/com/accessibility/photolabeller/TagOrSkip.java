@@ -2,8 +2,6 @@ package com.accessibility.photolabeller;
 
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Stack;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -31,11 +29,10 @@ public class TagOrSkip extends Activity implements OnClickListener, OnLongClickL
 	private SharedPreferences mPreferences;
 	private AudioRecorder recorder;
 	private boolean isRecording;
-	private Stack<Timestamp> clickStack;
+	private DoubleClicker doubleClicker;
 	private static final String audioFileName = "tm_file";
 	public static final String PREF_NAME = "myPreferences";
 	private static final String TAG = "TAG_RECORDER";
-	private static final int DOUBLE_CLICK_DELAY = 1000; // 1 second = 1000
 	private static final String VERBOSE_INST_TAGORSKIP = "Press and hold to start recording, and tap to finish recording, or double tap to skip tagging.";
 	
 	//DataBase globals
@@ -49,9 +46,7 @@ public class TagOrSkip extends Activity implements OnClickListener, OnLongClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tagorskip);
         
-		clickStack = new Stack<Timestamp>();
-		Timestamp entry = new Timestamp(System.currentTimeMillis());
-		clickStack.push(entry);
+        doubleClicker = new DoubleClicker();
         
 		//Initialize database
 		mHelper = new DbHelper(this);
@@ -83,18 +78,9 @@ public class TagOrSkip extends Activity implements OnClickListener, OnLongClickL
 
 	@Override
 	public void onClick(View v) {
-		boolean doubleClicked = false;
-		if (clickStack.size() == 3) {
-			clickStack.remove(0);
-		}
-		clickStack.push(new Timestamp(System.currentTimeMillis()));
-		if (clickStack.size() == 3) {
-			Timestamp entry1 = clickStack.get(1);
-			Timestamp entry2 = clickStack.get(2);
-			doubleClicked = Math.abs((entry1.getTime() - entry2.getTime())) < DOUBLE_CLICK_DELAY;
-		}
+		doubleClicker.click();
 		
-		if (doubleClicked && !isRecording) {
+		if (doubleClicker.isDoubleClicked() && !isRecording) {
 			finish();
 		}
 		

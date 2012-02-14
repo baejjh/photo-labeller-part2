@@ -6,7 +6,7 @@
     android:gravity="center|top"
     android:orientation="vertical" >
 
-    <com.accessibility.photolabeller.HomeView
+    <com.accessibility.photolabeller.MenuView
         android:id="@+id/home_view"
         android:layout_width="wrap_content"
         android:layout_height="0dip"

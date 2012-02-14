@@ -1,21 +1,25 @@
 package com.accessibility.photolabeller;
 
+import com.accessibility.photolabeller.MenuView.Btn;
+import com.accessibility.photolabeller.MenuView.RowListener;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.util.Log;
 
-
-
-public class DeleteImage extends Activity implements OnClickListener {
+public class DeleteImage extends Activity {
 	
 	private static final String VERBOSE_INST_DELETE = "Confirm Delete picture, or cancel action." +
 	"  Touch screen for button prompts.";
+	
+	private static final String TAG = "DELETE SHARE";
+	
+	private MenuView menuView;
+	private DoubleClicker doubleClicker;
 	
 	//DATABASE globals
 	DbHelper mHelper;
@@ -28,6 +32,14 @@ public class DeleteImage extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.deleteimage);
         
+		menuView = (MenuView) findViewById(R.id.menu_view2);
+		menuView.setFocusable(true);
+		menuView.setFocusableInTouchMode(true);
+		menuView.setRowListener(new MyRowListener());
+		menuView.setButtonNames("Confirm", "Cancel");
+		
+		doubleClicker = new DoubleClicker();
+        
         //Initialize database
 		mHelper = new DbHelper(this);
 		//Open data base Connections
@@ -35,37 +47,54 @@ public class DeleteImage extends Activity implements OnClickListener {
 		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
         
-		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_DELETE);
-        initializeButtons();
-        
+		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_DELETE);     
      }
 
-	private void initializeButtons() {
-		Button confirmButton = (Button)findViewById(R.id.confirmButton);
-		Button cancelButton = (Button)findViewById(R.id.cancelButton);
-		confirmButton.setOnClickListener(this);
-		cancelButton.setOnClickListener(this);
-		
-	}
+    private class MyRowListener implements RowListener {
+    	
+        public void onRowOver() {
+        	Btn focusedButton = menuView.getFocusedButton();
+			doubleClicker.click(focusedButton);
 
-	@Override
-	public void onClick(View v) {
-		if(v.getId() == R.id.confirmButton) {
-			int rowId = GlobalVariables.getRowId();
-			mDb.delete(DbHelper.TABLE_NAME, "_id = " + rowId, null);
-			mCursor.requery();
-			mCursor.close();
-			playSoundEffects(R.raw.paperrip);
-			//GlobalVariables.setRowId(mCursor.getInt(0));
-			
-			// delete physical files
-			startActivity(new Intent(this, PhotoBrowse.class));
-			finish();
-		} else {
-			startActivity(new Intent(this, PhotoBrowse.class));
-			finish();
+			if (focusedButton == Btn.ONE) {
+				if (doubleClicker.isDoubleClicked()) {
+					Log.v(TAG, "Double Clicked - Confirm");
+					confirmDelete();
+				} else {
+					Log.v(TAG, "CONFIRM OVER!");
+					GlobalVariables.getTextToSpeech().say("Confirm Delete");
+				}
+			} else if (focusedButton == Btn.TWO) {
+				if (doubleClicker.isDoubleClicked()) {
+					Log.v(TAG, "Double Clicked - Cancel");
+					launchPhotoBrowse();
+				} else {
+					Log.v(TAG, "CANCEL OVER!");
+					GlobalVariables.getTextToSpeech().say("Cancel Delete");
+				}
+			}
+
 		}
+        
+        public void focusChanged() {
+        	doubleClicker.reset();
+        }
 	}
+    
+    public void confirmDelete() {
+		int rowId = GlobalVariables.getRowId();
+		mDb.delete(DbHelper.TABLE_NAME, "_id = " + rowId, null);
+		mCursor.requery();
+		mCursor.close();
+		playSoundEffects(R.raw.paperrip);
+		//GlobalVariables.setRowId(mCursor.getInt(0));
+		launchPhotoBrowse();
+    }
+    
+    public void launchPhotoBrowse() {
+    	startActivity(new Intent(this, PhotoBrowse.class));
+		finish();
+    }
 	
 	private void playSoundEffects(int imageId)
 	{	

@@ -1,15 +1,22 @@
 package com.accessibility.photolabeller;
 
+import com.accessibility.photolabeller.MenuView.Btn;
+import com.accessibility.photolabeller.MenuView.RowListener;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.util.Log;
 
-public class DeleteOrShare extends Activity implements OnClickListener{
+public class DeleteOrShare extends Activity {
+	
 	private static final String VERBOSE_INST_DELETEORSHARE = "Delete picture, share picture, or cancel action." +
 			"  Touch screen for button prompts.";
+	
+	private static final String TAG = "DELETE SHARE";
+	
+	private MenuView menuView;
+	private DoubleClicker doubleClicker;
 
 	/** Called when the activity is first created. */
     @Override
@@ -17,33 +24,64 @@ public class DeleteOrShare extends Activity implements OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.deleteorshare);
         
-        initializeButtons();
+		menuView = (MenuView) findViewById(R.id.menu_view);
+		menuView.setFocusable(true);
+		menuView.setFocusableInTouchMode(true);
+		menuView.setRowListener(new MyRowListener());
+		menuView.setButtonNames("Delete", "Share", "Cancel");
+		
+		doubleClicker = new DoubleClicker();
+        
         GlobalVariables.getTextToSpeech().say(VERBOSE_INST_DELETEORSHARE);
      }
 
-	private void initializeButtons() {
-		Button deleteItButton = (Button)findViewById(R.id.deleteItButton);
-		Button shareItButton = (Button)findViewById(R.id.shareItButton);
-		Button cancelButton = (Button)findViewById(R.id.cancelButton);
-		deleteItButton.setOnClickListener(this);
-		shareItButton.setOnClickListener(this);
-		cancelButton.setOnClickListener(this);
-		
-	}
+    private class MyRowListener implements RowListener {
+    	
+        public void onRowOver() {
+        	Btn focusedButton = menuView.getFocusedButton();
+			doubleClicker.click(focusedButton);
 
-	@Override
-	public void onClick(View v) {
-		if(v.getId() == R.id.deleteItButton) {
-			startActivity(new Intent(this, DeleteImage.class)); 
-			finish();
-		} else if(v.getId() == R.id.shareItButton){
-			// share activity
-		} else {
-			startActivity(new Intent(this, PhotoBrowse.class));
-			finish();
-			
+			if (focusedButton == Btn.ONE) {
+				if (doubleClicker.isDoubleClicked()) {
+					Log.v(TAG, "Double Clicked - Delete");
+					launchDeleteImage();
+				} else {
+					Log.v(TAG, "DELETE OVER!");
+					GlobalVariables.getTextToSpeech().say("Delete Photo");
+				}
+			} else if (focusedButton == Btn.TWO) {
+				if (doubleClicker.isDoubleClicked()) {
+					Log.v(TAG, "Double Clicked - Share");
+					// share activity
+				} else {
+					Log.v(TAG, "SHARE OVER!");
+					GlobalVariables.getTextToSpeech().say("Share Photo");
+				}
+			} else if (focusedButton == Btn.THREE) {
+				if (doubleClicker.isDoubleClicked()) {
+					Log.v(TAG, "Double Clicked - Cancel");
+					launchPhotoBrowse();
+				} else {
+					Log.v(TAG, "CANCEL OVER!");
+					GlobalVariables.getTextToSpeech().say("Cancel");
+				}
+			}
+
 		}
-		
+        
+        public void focusChanged() {
+        	doubleClicker.reset();
+        }
 	}
+    
+    public void launchDeleteImage() {
+    	startActivity(new Intent(this, DeleteImage.class)); 
+		finish();
+    }
+    
+    public void launchPhotoBrowse() {
+    	startActivity(new Intent(this, PhotoBrowse.class));
+		finish();
+    }
 
 }
