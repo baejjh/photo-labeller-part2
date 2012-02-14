@@ -161,27 +161,17 @@ public class HomeView extends View {
 			int y = (int) event.getY();
 			int height = this.getHeight();
 
-			boolean repeated = false;
-
-			if (y < height / 3) {
-				if (mFocusedButton == Button.CAPTURE)
-					repeated = true;
-				else
+			if ((y < height / 3) && (mFocusedButton != Button.CAPTURE)) {
 					mFocusedButton = Button.CAPTURE;
-			} else if (y > height / 3 && y < height * 2 / 3) {
-				if (mFocusedButton == Button.BROWSE)
-					repeated = true;
-				else
+					mRowListener.onRowOver();
+			} else if ((y > height / 3 && y < height * 2 / 3) && (mFocusedButton != Button.BROWSE)) {
 					mFocusedButton = Button.BROWSE;
-			} else if (y > height * 2 / 3) {
-				if (mFocusedButton == Button.OPTIONS)
-					repeated = true;
-				else
+					mRowListener.onRowOver();
+			} else if ((y > height * 2 / 3) && (mFocusedButton != Button.OPTIONS)) {
 					mFocusedButton = Button.OPTIONS;
-			}
-
-			if (mRowListener != null && !repeated) {
-				mRowListener.onRowOver();
+					mRowListener.onRowOver();
+			} else {
+				// if none of the above, DO NOTHING
 			}
 			
 			if (action == MotionEvent.ACTION_DOWN)
