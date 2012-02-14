@@ -52,7 +52,7 @@ public class DeleteOrShare extends Activity {
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
 					Log.v(TAG, "Double Clicked - Share");
-					// share activity
+					launchShareImage();
 				} else {
 					Log.v(TAG, "SHARE OVER!");
 					GlobalVariables.getTextToSpeech().say("Share Photo");
@@ -69,7 +69,9 @@ public class DeleteOrShare extends Activity {
 
 		}
         
-        public void focusChanged() {
+       
+
+		public void focusChanged() {
         	doubleClicker.reset();
         }
 	}
@@ -83,5 +85,11 @@ public class DeleteOrShare extends Activity {
     	startActivity(new Intent(this, PhotoBrowse.class));
 		finish();
     }
+    
+    public void launchShareImage() {
+    	startActivity(new Intent(this, ContactList.class));
+		finish();
+		
+	}
 
 }
