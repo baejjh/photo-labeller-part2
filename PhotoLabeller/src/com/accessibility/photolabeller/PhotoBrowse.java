@@ -234,12 +234,14 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         
         @Override
         public void onLongPress(MotionEvent e) {
-        	playSoundEffects(R.raw.imagechange);
-        	GlobalVariables.setImagePath(s);
-        	GlobalVariables.setAudioPath(audioPath);
-        	GlobalVariables.setRowId(mCursor.getInt(0));
-        	startActivity(new Intent(PhotoBrowse.this, DeleteOrShare.class));    
-        	finish();
+        	if (s != null) {
+        		playSoundEffects(R.raw.imagechange);
+            	GlobalVariables.setImagePath(s);
+            	GlobalVariables.setAudioPath(audioPath);
+            	GlobalVariables.setRowId(mCursor.getInt(0));
+            	startActivity(new Intent(PhotoBrowse.this, DeleteOrShare.class));    
+            	finish();
+        	}
        }
         
         
