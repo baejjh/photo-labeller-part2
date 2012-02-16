@@ -11,6 +11,9 @@ public abstract void init(Context context);
 
 public abstract void shutdown();
 
+public abstract void stop();
+
+
 
 private static TtsProviderFactory sInstance;
 

@@ -45,7 +45,7 @@ public class HomeScreen extends Activity {
 		doubleClicker = new DoubleClicker();
 		
 		// check if TTS installed on device
-		//Intent checkIntent = new Intent();
+		// Intent checkIntent = new Intent();
 		// checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
 		// startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
@@ -151,7 +151,13 @@ public class HomeScreen extends Activity {
 	*/
 	public void onStop(){
 		super.onStop();
-				
+		//GlobalVariables.getTextToSpeech().stop();
+	}
+	
+	public void  onPause(){
+		super.onPause();
+		GlobalVariables.getTextToSpeech().stop();
+		
 	}
 	public void onRestart(){
 		super.onRestart();

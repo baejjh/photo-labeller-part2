@@ -2,7 +2,6 @@ package com.accessibility.photolabeller;
 
 
 import java.io.IOException;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
@@ -10,6 +9,8 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +22,7 @@ import android.widget.Button;
  * Activity that allows user to either proceed with voice tagging
  * or skip tagging and go back to taking another picture.
  */
-public class TagOrSkip extends Activity implements OnClickListener, OnLongClickListener {
+public class TagOrSkip extends Activity implements OnClickListener, OnLongClickListener, OnCompletionListener {
 	
 	private Button button;
 	private static final String FILE_NUMBER_KEY = "fileNum";
@@ -34,7 +35,8 @@ public class TagOrSkip extends Activity implements OnClickListener, OnLongClickL
 	public static final String PREF_NAME = "myPreferences";
 	private static final String TAG = "TAG_RECORDER";
 	private static final String VERBOSE_INST_TAGORSKIP = "Press and hold to start recording, and tap to finish recording, or double tap to skip tagging.";
-	
+	MediaPlayer mp = new MediaPlayer();
+		
 	//DataBase globals
 	DbHelper mHelper;
 	SQLiteDatabase mDb;
@@ -138,6 +140,7 @@ public class TagOrSkip extends Activity implements OnClickListener, OnLongClickL
 	@Override
 	public void onPause() {
 		super.onPause();
+		GlobalVariables.getTextToSpeech().stop();
 		//finish();
 	}
 	
@@ -150,12 +153,19 @@ public class TagOrSkip extends Activity implements OnClickListener, OnLongClickL
 	@Override
 	public boolean onLongClick(View arg0) {
 		if (!isRecording) {
+			GlobalVariables.getTextToSpeech().stop();
 			// set the file name using the file counter and create path to save file
 			String fileName = audioFileName + currentFileNumber;
 			String internalStoragePath = getFilesDir().toString();
 
 			recorder = new AudioRecorder(fileName, internalStoragePath);
-
+									
+			MediaPlayer m = MediaPlayer.create(this, R.raw.recprompt);
+			m.setOnCompletionListener(this);
+	    	m.start();
+		
+			
+			/*
 			try {
 				recorder.start();
 				isRecording = true;
@@ -166,6 +176,7 @@ public class TagOrSkip extends Activity implements OnClickListener, OnLongClickL
 				Log.d(TAG, e.getMessage().toString());
 				e.printStackTrace();
 			}
+			*/
 			return true;
 		}
 		return false;
@@ -181,4 +192,27 @@ public class TagOrSkip extends Activity implements OnClickListener, OnLongClickL
 
 	    initializeUI();
 	}
+
+	@Override
+	public void onCompletion(MediaPlayer m) {
+		
+		try {
+			recorder.start();
+			isRecording = true;
+			Log.d(TAG, "RECORDING");
+			button.setBackgroundColor(Color.RED);
+
+		} catch (Exception e) {
+			Log.d(TAG, e.getMessage().toString());
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/*
+	private void playSoundEffects(int imageId)
+	{	
+    	MediaPlayer m = MediaPlayer.create(this, imageId);
+    	m.start();
+    }*/
 }

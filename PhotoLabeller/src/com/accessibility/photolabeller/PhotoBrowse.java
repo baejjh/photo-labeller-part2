@@ -55,10 +55,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	SQLiteDatabase mDb;
 	Cursor mCursor;
 	
-	// Text to speech
-	//TtsProviderFactory ttsProviderImpl;
-	
-	
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -491,6 +488,13 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		    return false;
 	    }
 		return false;
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		mp.stop();
+		
 	}
 }
 
