@@ -33,4 +33,11 @@ public void init(Context context) {
         tts = new TextToSpeech(context, this);
     }
 	
-}}
+}
+
+@Override
+public void stop() {
+	tts.stop();
+	
+}
+}

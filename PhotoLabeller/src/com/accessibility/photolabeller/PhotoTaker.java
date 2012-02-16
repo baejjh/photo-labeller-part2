@@ -91,6 +91,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	public void onPause() {
 		super.onPause();
 		mCamera.stopPreview();
+		GlobalVariables.getTextToSpeech().stop();
 		//Close all database connections
 		//mDb.close();
 		//mCursor.close();
@@ -254,6 +255,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		 * Clicks picture on single tap
 		 */
         public boolean onSingleTapConfirmed(MotionEvent e) {
+        	GlobalVariables.getTextToSpeech().stop();
             takePhoto();
             return true;
         }
