@@ -17,15 +17,14 @@ import android.util.Log;
  */
 public class HomeScreen extends Activity {
 
-	//private TextToSpeech speaker;
 	private SharedPreferences mPreferences;
 	private MenuView menuView;
 	private DoubleClicker doubleClicker;
 	private static final String TAG = "HOME SCREEN";
-	//private static final int MY_DATA_CHECK_CODE = 0;
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
 	private static final String VERBOSE_INST = "Home Screen. Touch screen to navigate, and double tap to take actions.";
+	private static final String VOICE_INSTR_PREF = "voiceInstructions";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -50,9 +49,12 @@ public class HomeScreen extends Activity {
 		// startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
 		setFileNumbering();
+		setInstructionPreferences();
 		playInstructions();
 	}
 	
+
+
 	public void playInstructions() {
 		GlobalVariables.getTextToSpeech().say(VERBOSE_INST);
 	}
@@ -115,6 +117,18 @@ public class HomeScreen extends Activity {
 			editor.putInt(FILE_NUMBER, 0);
 			editor.commit();
 		}
+	}
+	
+	private void setInstructionPreferences() {
+		
+		// initialize shared preferences
+		mPreferences = getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
+		if (!mPreferences.contains(VOICE_INSTR_PREF)) {
+			SharedPreferences.Editor editor = mPreferences.edit();
+			editor.putInt(VOICE_INSTR_PREF, 0);
+			editor.commit();
+		}
+		
 	}
 	/*
 	public void onInit(int arg0) {

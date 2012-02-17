@@ -20,6 +20,9 @@
     <string name="confirm_delete">Confirm Delete</string>
     <string name="cancel_delete">Cancel Delete</string>
     <string name="cancel_button">Cancel</string>
+    <string name="verbose_instructions">Verbose Instructions</string>
+    <string name="no_voice_instructions">No Voice Instructions</string>
+    <string name="partial_instructions">Only Speak Screen Name</string>
     
 
 </resources>
