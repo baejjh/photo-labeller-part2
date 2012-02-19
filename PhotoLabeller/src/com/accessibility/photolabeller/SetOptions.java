@@ -37,7 +37,11 @@ public class SetOptions extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		
 		if(v.getId() == R.id.fullInstructionButton){
-			setVoiceInstuctions(0);
+			setVoiceInstructions(0);
+		} else if( v.getId() == R.id.partialInstructionButton){
+			setVoiceInstructions(1);
+		} else {
+			setVoiceInstructions(2);
 		}
 		
 	}
@@ -46,11 +50,12 @@ public class SetOptions extends Activity implements OnClickListener {
 	// where instructionLevel 0 = full voice instructions on each screen
 	//		 instructionLevel 1 = only screen names spoken out
 	//       instructionLevel 2 = no voice instructions
-	private void setVoiceInstuctions(int instructionLevel) {
+	private void setVoiceInstructions(int instructionLevel) {
 		SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putInt(VOICE_INSTR_PREF, instructionLevel);
 		editor.commit();
 		
+		finish();
 	}
 
 }
