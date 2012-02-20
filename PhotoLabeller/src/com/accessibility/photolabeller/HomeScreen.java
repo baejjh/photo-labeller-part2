@@ -2,9 +2,12 @@ package com.accessibility.photolabeller;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Vibrator;
 
 import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -51,6 +54,7 @@ public class HomeScreen extends Activity {
 
 		setFileNumbering();
 		setInstructionPreferences();
+		Utility.setVibrator((Vibrator) getSystemService(Context.VIBRATOR_SERVICE));
 		playInstructions();
 	}
 
