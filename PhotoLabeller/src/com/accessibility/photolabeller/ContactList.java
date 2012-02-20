@@ -49,7 +49,7 @@ public class ContactList extends ListActivity implements AdapterView.OnItemClick
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		// temp - try sending a test MMS
-		File fileSrc = new File(GlobalVariables.getImagePath());
+		File fileSrc = new File(Utility.getImagePath());
 		File destFile = new File(Environment.getExternalStorageDirectory(), "sendFile.jpg");
 		Log.d(TAG, Environment.getExternalStorageDirectory().toString()+ "/sendFile.jpg");
 		

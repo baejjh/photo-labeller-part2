@@ -5,6 +5,7 @@ import com.accessibility.photolabeller.MenuView.RowListener;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
@@ -13,9 +14,11 @@ import android.util.Log;
 
 public class DeleteImage extends Activity {
 	
-	private static final String VERBOSE_INST_DELETE = "Confirm Delete picture, or cancel action." +
-	"  Touch screen for button prompts.";
+	private static final String VERBOSE_INST = "Confirm to delete this picture, or cancel this action.";
+	private static final String VERBOSE_INST_SHORT = "Confirm or cancel.";
 	
+	private SharedPreferences mPreferences;
+	public static final String PREF_NAME = "myPreferences";
 	private static final String TAG = "DELETE SHARE";
 	
 	private MenuView menuView;
@@ -47,7 +50,8 @@ public class DeleteImage extends Activity {
 		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
         
-		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_DELETE);     
+		mPreferences = getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
+		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
      }
 
     private class MyRowListener implements RowListener {
@@ -62,7 +66,7 @@ public class DeleteImage extends Activity {
 					confirmDelete();
 				} else {
 					Log.v(TAG, "CONFIRM OVER!");
-					GlobalVariables.getTextToSpeech().say("Confirm Delete");
+					Utility.getTextToSpeech().say("Confirm Delete");
 				}
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
@@ -70,7 +74,7 @@ public class DeleteImage extends Activity {
 					launchPhotoBrowse();
 				} else {
 					Log.v(TAG, "CANCEL OVER!");
-					GlobalVariables.getTextToSpeech().say("Cancel Delete");
+					Utility.getTextToSpeech().say("Cancel Delete");
 				}
 			}
 
@@ -82,7 +86,7 @@ public class DeleteImage extends Activity {
 	}
     
     public void confirmDelete() {
-		int rowId = GlobalVariables.getRowId();
+		int rowId = Utility.getRowId();
 		mDb.delete(DbHelper.TABLE_NAME, "_id = " + rowId, null);
 		mCursor.requery();
 		mCursor.close();

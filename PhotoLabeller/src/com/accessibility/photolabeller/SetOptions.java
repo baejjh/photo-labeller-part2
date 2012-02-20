@@ -15,6 +15,8 @@ public class SetOptions extends Activity {
 	private OptionsView optionView;
 	private DoubleClicker doubleClicker;
 	
+	private static final String VERBOSE_INST = "Choose how much voice instruction you want to here on each page.";
+	private static final String VERBOSE_INST_SHORT = "Choose voice options.";
 	private static final String VOICE_INSTR_PREF = "voiceInstructions";
 	
 	/** Called when the activity is first created. */
@@ -30,11 +32,11 @@ public class SetOptions extends Activity {
 		optionView.setFocusableInTouchMode(true);
 		optionView.setRowListener(new MyRowListener());
 		optionView.setButtonNames("Full Instructions", "Short Instructions", "None");
-		optionView.setSelectedIndex(mPreferences.getInt("OPTIONS", 0));
+		optionView.setSelectedIndex(mPreferences.getInt(VOICE_INSTR_PREF, 0));
 		
 		doubleClicker = new DoubleClicker();
 		
-		GlobalVariables.getTextToSpeech().say(VOICE_INSTR_PREF);
+		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
 	}
 
     private class MyRowListener implements RowListener {
@@ -47,19 +49,19 @@ public class SetOptions extends Activity {
 				if (doubleClicker.isDoubleClicked()) {
 					setVoiceInstructions(0);
 				} else {
-					GlobalVariables.getTextToSpeech().say("Full Instructions");
+					Utility.getTextToSpeech().say("Full Instructions");
 				}
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
 					setVoiceInstructions(1);
 				} else {
-					GlobalVariables.getTextToSpeech().say("Short Instructions");
+					Utility.getTextToSpeech().say("Short Instructions");
 				}
 			} else if (focusedButton == Btn.THREE) {
 				if (doubleClicker.isDoubleClicked()) {
 					setVoiceInstructions(2);
 				} else {
-					GlobalVariables.getTextToSpeech().say("None");
+					Utility.getTextToSpeech().say("None");
 				}
 			}
 
@@ -76,7 +78,7 @@ public class SetOptions extends Activity {
 	//       instructionLevel 2 = no voice instructions
 	private void setVoiceInstructions(int instructionLevel) {
 		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putInt("OPTIONS", instructionLevel);
+		editor.putInt(VOICE_INSTR_PREF, instructionLevel);
 		editor.commit();
 		
 		finish();

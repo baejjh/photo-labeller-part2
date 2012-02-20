@@ -2,12 +2,15 @@ package com.accessibility.photolabeller;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 
-public class GlobalVariables extends Application{
+public class Utility extends Application {
 	
 	private static String imagePath;
 	private static String audioPath;
 	private static int rowId = -1;
+	
+	private static final String VOICE_INSTR_PREF = "voiceInstructions";
 	
 	// Text to speech
 	private static TtsProviderFactory ttsProviderImpl;
@@ -47,5 +50,11 @@ public class GlobalVariables extends Application{
 		return ttsProviderImpl;
 	}
 
-
+	public static void playInstructions(String fullVoice, String shortVoice, SharedPreferences pref) {
+		int option = pref.getInt(VOICE_INSTR_PREF, 0);
+		if (option == 0)
+			ttsProviderImpl.say(fullVoice);
+		else if (option == 1)
+			ttsProviderImpl.say(shortVoice);
+	}
 }

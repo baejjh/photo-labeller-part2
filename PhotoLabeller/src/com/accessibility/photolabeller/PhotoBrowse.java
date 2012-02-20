@@ -137,7 +137,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		if (isDataBaseEmpty())
 		{
 		    //ttsProviderImpl.say("No images found");
-			GlobalVariables.getTextToSpeech().say("No images found");
+			Utility.getTextToSpeech().say("No images found");
 		
 			imageView = new ImageView(this);
 			params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
@@ -213,7 +213,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			}
 			else {
 				//ttsProviderImpl.say("No images found");
-				GlobalVariables.getTextToSpeech().say("No images found");
+				Utility.getTextToSpeech().say("No images found");
 				return true;
 			}
 			
@@ -233,9 +233,9 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         public void onLongPress(MotionEvent e) {
         	if (s != null) {
         		playSoundEffects(R.raw.imagechange);
-            	GlobalVariables.setImagePath(s);
-            	GlobalVariables.setAudioPath(audioPath);
-            	GlobalVariables.setRowId(mCursor.getInt(0));
+            	Utility.setImagePath(s);
+            	Utility.setAudioPath(audioPath);
+            	Utility.setRowId(mCursor.getInt(0));
             	startActivity(new Intent(PhotoBrowse.this, DeleteOrShare.class));    
             	finish();
         	}
@@ -458,7 +458,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         else
         {
         	//ttsProviderImpl.say("No tag found");
-        	GlobalVariables.getTextToSpeech().say("No tag found");
+        	Utility.getTextToSpeech().say("No tag found");
         }
     	
 	}
