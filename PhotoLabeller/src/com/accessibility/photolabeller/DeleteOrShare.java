@@ -69,8 +69,6 @@ public class DeleteOrShare extends Activity {
 
 		}
         
-       
-
 		public void focusChanged() {
         	doubleClicker.reset();
         }
