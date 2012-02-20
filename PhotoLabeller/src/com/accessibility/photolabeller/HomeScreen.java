@@ -84,6 +84,7 @@ public class HomeScreen extends Activity {
 			} else if (focusedButton == Btn.THREE) {
 				if (doubleClicker.isDoubleClicked()) {
 					Log.v(TAG, "Double Clicked - Options");
+					launchOptions();
 				} else {
 					Log.v(TAG, "OPTIONS OVER!");
 					GlobalVariables.getTextToSpeech().say("Options");
@@ -103,6 +104,10 @@ public class HomeScreen extends Activity {
     
     public void launchPhotoBrowse() {
     	startActivity(new Intent(this, PhotoBrowse.class));
+    }
+    
+    public void launchOptions() {
+    	startActivity(new Intent(this, SetOptions.class));
     }
 
 	/*
