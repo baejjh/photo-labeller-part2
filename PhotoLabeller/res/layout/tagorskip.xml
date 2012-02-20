@@ -4,23 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/tagItButton"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center"
-        android:textSize="24dip"
-        android:text="@string/tagItButton"
-        android:textColor="@color/white"
-        android:background="@color/blue" />
-<!--
-    <Button
-        android:id="@+id/skipTagButton"
-        android:layout_width="fill_parent"
-        android:layout_height="200dip"
-        android:layout_gravity="center"
-        android:layout_margin="20dip"
-        android:textSize="24dip"
-        android:text="@string/skipTagButton" />
--->
+    <com.accessibility.photolabeller.MenuView
+        android:id="@+id/menu_view3"
+        android:layout_width="wrap_content"
+        android:layout_height="0dip"
+        android:layout_weight="1" />
+    
 </LinearLayout>
