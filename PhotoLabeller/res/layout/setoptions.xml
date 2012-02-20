@@ -4,34 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-    <Button
-        android:id="@+id/fullInstructionButton"
-        android:layout_width="fill_parent"
-        android:layout_height="120dip"
-        android:textSize="20dip"
-        android:gravity="center" 
-        android:layout_margin="10dip"
-        android:text="@string/verbose_instructions" />
+    <com.accessibility.photolabeller.OptionsView
+        android:id="@+id/options_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dip"
+        android:layout_weight="1" />
     
-    <Button
-        android:id="@+id/partialInstructionButton"
-        android:layout_width="fill_parent"
-        android:layout_height="120dip"
-        android:textSize="20dip"
-        android:gravity="center" 
-        android:layout_margin="10dip"
-        android:text="@string/partial_instructions" />
-    
-    <Button
-        android:id="@+id/noInstructionButton"
-        android:layout_width="fill_parent"
-        android:layout_height="120dip"
-        android:textSize="20dip"
-        android:gravity="center"
-        android:layout_margin="10dip" 
-        android:text="@string/no_voice_instructions" />
-        
-        
-    
-
 </LinearLayout>

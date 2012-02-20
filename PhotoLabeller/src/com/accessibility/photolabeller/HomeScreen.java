@@ -182,6 +182,7 @@ public class HomeScreen extends Activity {
 		super.onRestart();
 		playInstructions();
 		menuView.requestFocus();
+		menuView.resetButtonFocus();
 	}
 
 }

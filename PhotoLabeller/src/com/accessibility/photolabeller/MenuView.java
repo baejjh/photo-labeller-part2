@@ -40,21 +40,21 @@ public class MenuView extends View {
         }
     }
     
-    private Btn mFocusedButton = Btn.NONE;
-    private Btn mInitialPush = Btn.NONE;
+    protected Btn mFocusedButton = Btn.NONE;
+    protected Btn mInitialPush = Btn.NONE;
     
-    private int _height;
-    private int _width;
-    private Bitmap _bitmap;
-    private Canvas _canvas;
-    private Paint _paint;
+    protected int _height;
+    protected int _width;
+    protected Bitmap _bitmap;
+    protected Canvas _canvas;
+    protected Paint _paint;
     
-    private int _buttonCount;
-    private String _button1;
-    private String _button2;
-    private String _button3;
+    protected int _buttonCount;
+    protected String _button1;
+    protected String _button2;
+    protected String _button3;
     
-    private RowListener mRowListener;
+    protected RowListener mRowListener;
     
     public interface RowListener {
         abstract void onRowOver();
@@ -238,5 +238,9 @@ public class MenuView extends View {
 		}
 
 		return false;
+	}
+	
+	public void resetButtonFocus() {
+		mFocusedButton = Btn.NONE;
 	}
 }
