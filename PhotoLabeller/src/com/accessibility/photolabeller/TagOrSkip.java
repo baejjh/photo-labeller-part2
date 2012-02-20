@@ -30,8 +30,10 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	private static final String audioFileName = "tm_file";
 	public static final String PREF_NAME = "myPreferences";
 	private static final String TAG = "TAG_RECORDER";
-	private static final String VERBOSE_INST_TAGORSKIP = "Tag or skip.";
 	MediaPlayer mp = new MediaPlayer();
+	
+	private static final String VERBOSE_INST = "Tag photo by recording a message, or skip tagging.";
+	private static final String VERBOSE_INST_SHORT = "Tag photo or skip.";
 
 	private MenuView menuView;
 	private DoubleClicker doubleClicker;
@@ -65,12 +67,12 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		Log.d(TAG, "Created TagRecorder");
 
 		//mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_PRIVATE);
-		initializeUI();
+		initializeSettings();
 		isRecording = false;
-		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_TAGORSKIP);
+		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
 	}
 
-	private void initializeUI() {
+	private void initializeSettings() {
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
 		currentFileNumber = getCurrentFileNumber();		
 	}
@@ -90,7 +92,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 						startRecording();
 					} else {
 						Log.v(TAG, "TAG OVER!");
-						GlobalVariables.getTextToSpeech().say("Tag Photo");
+						Utility.getTextToSpeech().say("Tag Photo");
 					}
 				} else if (focusedButton == Btn.TWO) {
 					if (doubleClicker.isDoubleClicked()) {
@@ -98,7 +100,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 						finish();
 					} else {
 						Log.v(TAG, "SKIP OVER!");
-						GlobalVariables.getTextToSpeech().say("Skip Tagging");
+						Utility.getTextToSpeech().say("Skip Tagging");
 					}
 				}
 			}
@@ -112,7 +114,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 
 	public void startRecording() {
 		if (!isRecording) {
-			GlobalVariables.getTextToSpeech().stop();
+			Utility.getTextToSpeech().stop();
 			// set the file name using the file counter and create path to save file
 			String fileName = audioFileName + currentFileNumber;
 			String internalStoragePath = getFilesDir().toString();
@@ -175,7 +177,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	@Override
 	public void onPause() {
 		super.onPause();
-		GlobalVariables.getTextToSpeech().stop();
+		Utility.getTextToSpeech().stop();
 		//finish();
 	}
 
@@ -193,7 +195,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		super.onConfigurationChanged(newConfig);
 		setContentView(R.layout.tagorskip);
 
-		initializeUI();
+		initializeSettings();
 	}
 
 	@Override

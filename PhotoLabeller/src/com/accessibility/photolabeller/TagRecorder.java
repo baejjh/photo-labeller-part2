@@ -49,7 +49,7 @@ public class TagRecorder extends Activity implements OnClickListener{
 		Log.d(TAG, "Created TagRecorder")	;
 		initializeUI();
 		isRecording = false;
-		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_RECORD);
+		Utility.getTextToSpeech().say(VERBOSE_INST_RECORD);
 		/*mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
 		button = (Button)findViewById(R.id.StartandStop);
 		button.setOnClickListener(this);

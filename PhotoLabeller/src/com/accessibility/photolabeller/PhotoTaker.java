@@ -39,7 +39,8 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	private static final String picFileName = "tm_file";
 	private GestureDetector gestureDetector;
 	public static final String PREF_NAME = "myPreferences";
-	public static final String VERBOSE_INST_CAMERA = "Camera View. Tap screen to take photo, or double tap to return.";
+	public static final String VERBOSE_INST = "Camera View. Tap screen to take photo, or double tap to return to home screen.";
+	public static final String VERBOSE_INST_SHORT = "Camera View.";
 
 	//DATABASE globals
 	DbHelper mHelper;
@@ -84,14 +85,14 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_PRIVATE);
 		mCamera = Camera.open();
-		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_CAMERA);
+		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
 		mCamera.stopPreview();
-		GlobalVariables.getTextToSpeech().stop();
+		Utility.getTextToSpeech().stop();
 		//Close all database connections
 		//mDb.close();
 		//mCursor.close();
@@ -99,7 +100,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	
 	public void onRestart(){
 		super.onRestart();
-		GlobalVariables.getTextToSpeech().say(VERBOSE_INST_CAMERA);
+		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
 	}
 	
 	
@@ -255,7 +256,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		 * Clicks picture on single tap
 		 */
         public boolean onSingleTapConfirmed(MotionEvent e) {
-        	GlobalVariables.getTextToSpeech().stop();
+        	Utility.getTextToSpeech().stop();
             takePhoto();
             return true;
         }

@@ -5,16 +5,19 @@ import com.accessibility.photolabeller.MenuView.RowListener;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 public class DeleteOrShare extends Activity {
-	
-	private static final String VERBOSE_INST_DELETEORSHARE = "Delete picture, share picture, or cancel action." +
-			"  Touch screen for button prompts.";
-	
+
+	private static final String VERBOSE_INST = "Delete this picture, share this picture, or cancel this action.";
+	private static final String VERBOSE_INST_SHORT = "Delete, share, or cancel.";
+
+	private SharedPreferences mPreferences;
+	public static final String PREF_NAME = "myPreferences";
 	private static final String TAG = "DELETE SHARE";
-	
+
 	private MenuView menuView;
 	private DoubleClicker doubleClicker;
 
@@ -32,7 +35,8 @@ public class DeleteOrShare extends Activity {
 		
 		doubleClicker = new DoubleClicker();
         
-        GlobalVariables.getTextToSpeech().say(VERBOSE_INST_DELETEORSHARE);
+		mPreferences = getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
+		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
      }
 
     private class MyRowListener implements RowListener {
@@ -47,7 +51,7 @@ public class DeleteOrShare extends Activity {
 					launchDeleteImage();
 				} else {
 					Log.v(TAG, "DELETE OVER!");
-					GlobalVariables.getTextToSpeech().say("Delete Photo");
+					Utility.getTextToSpeech().say("Delete Photo");
 				}
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
@@ -55,7 +59,7 @@ public class DeleteOrShare extends Activity {
 					launchShareImage();
 				} else {
 					Log.v(TAG, "SHARE OVER!");
-					GlobalVariables.getTextToSpeech().say("Share Photo");
+					Utility.getTextToSpeech().say("Share Photo");
 				}
 			} else if (focusedButton == Btn.THREE) {
 				if (doubleClicker.isDoubleClicked()) {
@@ -63,7 +67,7 @@ public class DeleteOrShare extends Activity {
 					launchPhotoBrowse();
 				} else {
 					Log.v(TAG, "CANCEL OVER!");
-					GlobalVariables.getTextToSpeech().say("Cancel");
+					Utility.getTextToSpeech().say("Cancel");
 				}
 			}
 

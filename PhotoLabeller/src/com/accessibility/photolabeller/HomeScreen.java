@@ -24,6 +24,7 @@ public class HomeScreen extends Activity {
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
 	private static final String VERBOSE_INST = "Home Screen. Touch screen to navigate, and double tap to take actions.";
+	private static final String VERBOSE_INST_SHORT = "Home Screen.";
 	private static final String VOICE_INSTR_PREF = "voiceInstructions";
 
 	/** Called when the activity is first created. */
@@ -33,7 +34,7 @@ public class HomeScreen extends Activity {
 		setContentView(R.layout.main);
 		
 		//Initialize text to speech
-		GlobalVariables.setTextToSpeech(getApplicationContext());
+		Utility.setTextToSpeech(getApplicationContext());
 		
 		menuView = (MenuView) findViewById(R.id.home_view);
 		menuView.setFocusable(true);
@@ -52,11 +53,9 @@ public class HomeScreen extends Activity {
 		setInstructionPreferences();
 		playInstructions();
 	}
-	
-
 
 	public void playInstructions() {
-		GlobalVariables.getTextToSpeech().say(VERBOSE_INST);
+		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
 	}
 	
     private class MyRowListener implements RowListener {
@@ -71,7 +70,7 @@ public class HomeScreen extends Activity {
 					launchPhotoTaker();
 				} else {
 					Log.v(TAG, "CAPTURE OVER!");
-					GlobalVariables.getTextToSpeech().say("Take Photos");
+					Utility.getTextToSpeech().say("Take Photos");
 				}
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
@@ -79,7 +78,7 @@ public class HomeScreen extends Activity {
 					launchPhotoBrowse();
 				} else {
 					Log.v(TAG, "BROWSE OVER!");
-					GlobalVariables.getTextToSpeech().say("Browse Photos");
+					Utility.getTextToSpeech().say("Browse Photos");
 				}
 			} else if (focusedButton == Btn.THREE) {
 				if (doubleClicker.isDoubleClicked()) {
@@ -87,7 +86,7 @@ public class HomeScreen extends Activity {
 					launchOptions();
 				} else {
 					Log.v(TAG, "OPTIONS OVER!");
-					GlobalVariables.getTextToSpeech().say("Options");
+					Utility.getTextToSpeech().say("Options");
 				}
 			}
 
@@ -175,7 +174,7 @@ public class HomeScreen extends Activity {
 	
 	public void  onPause(){
 		super.onPause();
-		GlobalVariables.getTextToSpeech().stop();
+		Utility.getTextToSpeech().stop();
 		
 	}
 	public void onRestart(){
