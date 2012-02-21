@@ -68,9 +68,7 @@ public class ContactList extends ListActivity implements AdapterView.OnItemClick
 		Log.d(TAG, "Before Starting MSG Activity");
 		mmsIntent.putExtra(Intent.EXTRA_STREAM, image_URI);
 		mmsIntent.setType("image/png");
-		startActivity(mmsIntent);
-		
-		
+		startActivity(mmsIntent);	
 	}
 
 	public static void copyFile(File src, File dst) throws IOException

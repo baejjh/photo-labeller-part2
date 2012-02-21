@@ -89,8 +89,9 @@ public class DeleteOrShare extends Activity {
     }
     
     public void launchShareImage() {
-    	startActivity(new Intent(this, ContactList.class));
-		finish();
+    	//startActivity(new Intent(this, ContactList.class));
+		startActivity(new Intent(this, MailSender.class));
+    	finish();
 		
 	}
 
