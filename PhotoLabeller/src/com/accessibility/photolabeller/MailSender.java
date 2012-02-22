@@ -1,11 +1,7 @@
 package com.accessibility.photolabeller;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,35 +11,46 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class MailSender extends Activity{
+	
+	
 	@Override 
 	public void onCreate(Bundle icicle) { 
 	  super.onCreate(icicle); 
 	  setContentView(R.layout.mailsender); 
 	 
-	  Button addImage = (Button) findViewById(R.id.send_email); 
+	  Button addImage = (Button) findViewById(R.id.send_email);
+	 	 
 	  addImage.setOnClickListener(new View.OnClickListener() { 
 	    public void onClick(View view) { 
-	      Mail m = new Mail("salama.obada@gmail.com", "testandroid"); 
+	      Mail m = new Mail("talkingmemories@gmail.com", "talkingmemories2012"); 
 	 
-	      String[] toArr = {"salama.obada@gmail.com", "nikhilkarkarey@gmail.com"}; 
+	      String[] toArr = {"nikhilkarkarey@gmail.com", "salama.obada@gmail.com", "han@cs.washington.edu"}; 
 	      m.setTo(toArr); 
-	      m.setFrom("salama.obada@gmail.com"); 
-	      m.setSubject("This is an email sent using my Mail JavaMail wrapper from an Android device."); 
-	      m.setBody("Email body."); 
+	      m.setFrom("talkingmemories@gmail.com"); 
+	      m.setSubject("You have recieved a new tagged image."); 
+	      m.setBody("Attached is a TalkingMemories image file and its associated audio tag." + "\n" +
+	    		   "Play the audio tag using QuickTime."); 
 	 
 	      try { 
-	    	  File fileSrc = new File(Utility.getImagePath());
-	  		  File destFile = new File(Environment.getExternalStorageDirectory(), "sendFile.jpg");
-	  		  Log.d("sendEmail", Environment.getExternalStorageDirectory().toString()+ "/sendFile.jpg");
+	    	  File srcImgFile = new File(Utility.getImagePath());
+	    	  File srcAudFile = new File(Utility.getAudioPath());
+	  		  File destImgFile = new File(Environment.getExternalStorageDirectory(), "tmImage.jpg");
+	  		  File destAudFile = new File(Environment.getExternalStorageDirectory(), "tmAudio.3gp");
+	  		  Log.d("sendEmail", Environment.getExternalStorageDirectory().toString()+ "/tmImage.jpg");
 	  		
 	  		try {
-	  			copyFile(fileSrc, destFile);
+	  			Utility.copyFile(srcImgFile, destImgFile);
+	  			Utility.copyFile(srcAudFile, destAudFile);
 	  			Log.d("trySendEmail", "ok");
 	  		} catch (IOException e) {
 	  			Log.d("catchSendEmail", e.getMessage().toString());
 	  		}
-	  		String filePath = Environment.getExternalStorageDirectory().toString()+ "/sendFile.jpg";
-	        m.addAttachment(filePath); 
+	  		String fileImgPath = Environment.getExternalStorageDirectory().toString()+ "/tmImage.jpg";
+	  		String fileAudPath = Environment.getExternalStorageDirectory().toString()+ "/tmAudio.3gp";
+	        m.addAttachment(fileImgPath, "tmImage.jpg");
+	        m.addAttachment(fileAudPath, "tmAudio.3gp");
+	        
+	        
 	 
 	        if(m.send()) { 
 	          Toast.makeText(MailSender.this, "Email was sent successfully.", Toast.LENGTH_LONG).show(); 
@@ -58,22 +65,5 @@ public class MailSender extends Activity{
 	  }); 
 	}
 	
-	public static void copyFile(File src, File dst) throws IOException
-	{
-	    FileChannel inChannel = new FileInputStream(src).getChannel();
-	    FileChannel outChannel = new FileOutputStream(dst).getChannel();
-	    try
-	    {
-	        inChannel.transferTo(0, inChannel.size(), outChannel);
-	    }
-	    finally
-	    {
-	        if (inChannel != null)
-	            inChannel.close();
-	        if (outChannel != null)
-	            outChannel.close();
-	    }
-	}
-
 
 }

@@ -4,18 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.channels.FileChannel;
 
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -60,6 +58,20 @@ public class ContactList extends ListActivity implements AdapterView.OnItemClick
 		}
 		String filePath = Environment.getExternalStorageDirectory().toString()+ "/sendFile.jpg";
 		
+		if(mContacts.moveToPosition(position)){
+			int selectedId = mContacts.getInt(0); //ID_COLUMN
+			Cursor email = getContentResolver().query(
+					CommonDataKinds.Email.CONTENT_URI,
+					new String[] { CommonDataKinds.Email.DATA },
+					ContactsContract.Data.CONTACT_ID + " = " + selectedId, null, null);
+			
+			if(email.moveToFirst()){
+				Log.d(TAG, email.getString(0));
+			}else {
+				
+			}
+			
+		}	
 		
 		Uri image_URI = Uri.parse(filePath);
 		Intent mmsIntent = new Intent(Intent.ACTION_SEND, image_URI);
