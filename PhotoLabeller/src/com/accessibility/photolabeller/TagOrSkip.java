@@ -1,10 +1,11 @@
 package com.accessibility.photolabeller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.io.InputStream;
 import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
@@ -97,6 +98,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 				} else if (focusedButton == Btn.TWO) {
 					if (doubleClicker.isDoubleClicked()) {
 						Log.v(TAG, "Double Clicked - Skip");
+						skipRecording();
 						finish();
 					} else {
 						Log.v(TAG, "SKIP OVER!");
@@ -112,7 +114,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		}
 	}
 
-	public void startRecording() {
+	private void startRecording() {
 		if (!isRecording) {
 			Utility.getTextToSpeech().stop();
 			// set the file name using the file counter and create path to save file
@@ -127,7 +129,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		}
 	}
 
-	public void stopRecording() {
+	private void stopRecording() {
 		try {
 			// stop recording, update the file number counter in Shared Preferences and exit activity to return to camera
 			recorder.stop();
@@ -146,6 +148,55 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 			e.printStackTrace();
 		}
 	}
+	
+	private void skipRecording(){
+		Utility.getTextToSpeech().stop();
+		// set the file name using the file counter and create path to save file
+		String fileName = audioFileName + currentFileNumber;
+		String internalStoragePath = getFilesDir().toString();
+		
+		mCursor.moveToLast();
+		ContentValues cv = new ContentValues(1);
+		cv.put(DbHelper.COL_AUD, mCursor.getString(1).replace(".jpg", ".3gp"));
+		mDb.update(DbHelper.TABLE_NAME, cv, "iFile = ?", new String[] { mCursor.getString(1) });
+		mCursor.requery();
+		mCursor.moveToLast();
+		Log.d(TAG, mCursor.getString(0) + ", " + mCursor.getString(1) + ", " + mCursor.getString(2));
+		
+	
+		try {
+			copyResourceToExternal(R.raw.notagrecorded, internalStoragePath+"/"+fileName+".3gp");
+			Log.d(TAG, "PATH: " +internalStoragePath+"/"+fileName+".3gp");
+		} catch (IOException e) {
+			Log.d(TAG, e.getMessage().toString());
+			e.printStackTrace();
+		}
+		
+		updateCurrentFileNumber(currentFileNumber);
+		
+		
+	}
+	
+	private void copyResourceToExternal(int resourceID, String dest) throws IOException{
+		InputStream ins = getResources().openRawResource(resourceID);
+		ByteArrayOutputStream outputStream=new ByteArrayOutputStream();
+		int size = 0;
+		// Read the entire resource into a local byte buffer.
+		byte[] buffer = new byte[1024];
+		while((size=ins.read(buffer,0,1024))>=0){
+		  outputStream.write(buffer,0,size);
+		}
+		ins.close();
+		buffer=outputStream.toByteArray();
+		
+		// A copy of your file now exist in buffer, so you can use a FileOutputStream to save the buffer to a new file.
+
+		FileOutputStream fos = new FileOutputStream(dest);
+		fos.write(buffer);
+		fos.close();		
+	}
+	
+	
 
 	/*
 	 * get the current index for file numbering
@@ -164,16 +215,6 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		editor.commit();
 	}
 
-	/*
-	private void recordTag() {
-		Intent recordIntent = new Intent(this, TagRecorder.class);
-		startActivity(recordIntent);
-		// finish after calling TagRecorder activity, so that TagRecorder on finishing
-		// return directly to camera
-		finish(); 
-	}
-	 */
-
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -187,7 +228,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		//finish();
 	}
 
-	//this is called when the screen rotates.
+	// this is called when the screen rotates.
 	// (onCreate is no longer called when screen rotates due to manifest, see: android:configChanges)
 	@Override
 	public void onConfigurationChanged(Configuration newConfig)
@@ -210,10 +251,5 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		}
 	}
 
-	/*
-	private void playSoundEffects(int imageId)
-	{	
-    	MediaPlayer m = MediaPlayer.create(this, imageId);
-    	m.start();
-    }*/
+	
 }

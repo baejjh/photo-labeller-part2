@@ -58,17 +58,9 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photobrowse);
-		
-		//GlobalVariables.setTextToSpeech(getApplicationContext());
-		//Initialize text to speech
-		/*Context context = getApplicationContext();
-		ttsProviderImpl = TtsProviderFactory.getInstance();
-		if (ttsProviderImpl != null) {
-		    ttsProviderImpl.init(context);
-		}*/
 		
 		//Initialize database
 		mHelper = new DbHelper(this);
@@ -175,7 +167,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			} 	
 			catch (FileNotFoundException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
 			catch (IOException e)
@@ -197,7 +188,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			if (!isDataBaseEmpty()) {
 				mp.reset();
 				playTag(audioPath);
-				// TODO Auto-generated method stub
+				
 				slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
 				slideShowBtn.setVisibility(slideShowBtn.VISIBLE);
 				handler.removeCallbacks(runnable);
@@ -420,47 +411,31 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	
 	private void playTag(String s)
 	{	
-    	//String internalAudioPath = s.replace(".jpg", ".3gp");
-        // get file name only
-        //int startIndex = internalAudioPath.indexOf("tm_file");
-        //String filename = internalAudioPath.substring(startIndex);
-        //Log.d(TAG, "audio file name : " + filename);
-    	//Log.d(TAG, Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename);
-    	//String externalAudioPath =  Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/" +filename;	
-        
-        if (!s.equalsIgnoreCase("NoTag"))
+    	try
         {
-        	try
-        	{
-        		FileInputStream f = new FileInputStream(s);
-    			mp.setDataSource(f.getFD());
-    		} 
-        	catch (IllegalArgumentException e)
-        	{
-    			Log.e(TAG, e.getMessage().toString());
-    			e.printStackTrace();
-    		} catch (IOException e) {
-    			Log.e(TAG, e.getMessage().toString());
-    			e.printStackTrace();
-    		}
-    		try
-    		{	
-    			Log.d("TAG", "just before prepareAsync");
-    			Log.d("TAG", s);
-    			mp.prepareAsync();
-    		}
-    		catch (IllegalStateException e)
-    		{
-    			Log.e(TAG, e.getMessage().toString());
-    			//e.printStackTrace();
-    		}
-        }
-        else
+        	FileInputStream f = new FileInputStream(s);
+    		mp.setDataSource(f.getFD());
+    	} 
+        catch (IllegalArgumentException e)
         {
-        	//ttsProviderImpl.say("No tag found");
-        	Utility.getTextToSpeech().say("No tag found");
-        }
-    	
+    		Log.e(TAG, e.getMessage().toString());
+    		e.printStackTrace();
+    	} catch (IOException e) {
+    		Log.e(TAG, e.getMessage().toString());
+    		e.printStackTrace();
+    	}
+    	try
+    	{	
+    		Log.d("TAG", "just before prepareAsync");
+    		Log.d("TAG", s);
+    		mp.prepareAsync();
+    	}
+    	catch (IllegalStateException e)
+    	{
+    		Log.e(TAG, e.getMessage().toString());
+    		//e.printStackTrace();
+    	}
+            	
 	}
 
 	@Override

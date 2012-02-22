@@ -80,7 +80,7 @@ public class Mail extends javax.mail.Authenticator {
       Session session = Session.getInstance(props, this); 
  
       MimeMessage msg = new MimeMessage(session); 
- 
+       
       msg.setFrom(new InternetAddress(_from)); 
        
       InternetAddress[] addressTo = new InternetAddress[_to.length]; 
@@ -109,9 +109,9 @@ public class Mail extends javax.mail.Authenticator {
     } 
   } 
  
-  public void addAttachment(String filename) throws Exception { 
+  public void addAttachment(String path, String filename) throws Exception { 
     BodyPart messageBodyPart = new MimeBodyPart(); 
-    DataSource source = new FileDataSource(filename); 
+    DataSource source = new FileDataSource(path); 
     messageBodyPart.setDataHandler(new DataHandler(source)); 
     messageBodyPart.setFileName(filename); 
  
