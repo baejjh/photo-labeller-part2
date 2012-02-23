@@ -7,11 +7,13 @@ import java.io.IOException;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
@@ -49,6 +51,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     int imageCount;
     String s;
     String audioPath;
+    AudioManager audiomanager;
     
     //DATABASE globals
 	DbHelper mHelper;
@@ -68,6 +71,9 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		mDb = mHelper.getWritableDatabase();
 		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
+		
+		//audiomanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+		//setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		
 		imageFrame = (ViewFlipper) findViewById(R.id.imageFrames);
 
@@ -412,9 +418,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	private void playTag(String s)
 	{	
     	try
-        {
-        	FileInputStream f = new FileInputStream(s);
-    		mp.setDataSource(f.getFD());
+        {	
+    		
+    		FileInputStream f = new FileInputStream(s);
+        	mp.setDataSource(f.getFD());
     	} 
         catch (IllegalArgumentException e)
         {
@@ -441,6 +448,9 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	@Override
 	public void onPrepared(MediaPlayer arg0) {
 		Log.d("TAG", "just before mp.start");
+		int volume = audiomanager.getStreamVolume(AudioManager.STREAM_MUSIC);
+		Log.d(TAG, String.valueOf(volume));
+		mp.setVolume(volume, volume);
 		mp.start();
 		// TODO Auto-generated method stub
 		
@@ -470,6 +480,11 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		super.onPause();
 		mp.stop();
 		
+	}
+	
+	@Override
+	public void onBackPressed() {
+	   return;
 	}
 }
 

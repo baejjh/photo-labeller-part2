@@ -40,7 +40,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	private GestureDetector gestureDetector;
 	public static final String PREF_NAME = "myPreferences";
 	public static final String VERBOSE_INST = "Camera View. Tap screen to take photo, or double tap to return to home screen.";
-	public static final String VERBOSE_INST_SHORT = "Camera View.";
+	public static final String INST_SHORT = "Camera View.";
 
 	//DATABASE globals
 	DbHelper mHelper;
@@ -85,7 +85,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_PRIVATE);
 		mCamera = Camera.open();
-		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
+		Utility.playInstructions(VERBOSE_INST, INST_SHORT, mPreferences);
 	}
 	
 	@Override
@@ -100,7 +100,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	
 	public void onRestart(){
 		super.onRestart();
-		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
+		Utility.playInstructions(VERBOSE_INST, INST_SHORT, mPreferences);
 	}
 	
 	
@@ -210,9 +210,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 				imageFileOS.flush();
 				imageFileOS.close();
 				*/
-				
-				
-									
+												
 			} catch (FileNotFoundException e) {
 				Log.d(TAG, e.getMessage());
 				//e.printStackTrace();
@@ -280,6 +278,11 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
         }
 
     }
+	
+	@Override
+	public void onBackPressed() {
+	   return;
+	}
 
 	
 }

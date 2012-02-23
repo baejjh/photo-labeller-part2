@@ -26,8 +26,8 @@ public class HomeScreen extends Activity {
 	private static final String TAG = "HOME SCREEN";
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
-	private static final String VERBOSE_INST = "Home Screen. Touch screen to navigate, and double tap to take actions.";
-	private static final String VERBOSE_INST_SHORT = "Home Screen.";
+	private static final String INST_VERBOSE = "Home Screen. Touch screen to navigate, and double tap to take actions.";
+	private static final String INST_SHORT = "Home Screen.";
 	private static final String VOICE_INSTR_PREF = "voiceInstructions";
 
 	/** Called when the activity is first created. */
@@ -59,7 +59,7 @@ public class HomeScreen extends Activity {
 	}
 
 	public void playInstructions() {
-		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
+		Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
 	}
 	
     private class MyRowListener implements RowListener {
@@ -186,6 +186,11 @@ public class HomeScreen extends Activity {
 		playInstructions();
 		menuView.requestFocus();
 		menuView.resetButtonFocus();
+	}
+	
+	@Override
+	public void onBackPressed() {
+	   return;
 	}
 
 }
