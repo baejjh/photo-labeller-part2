@@ -149,8 +149,8 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		//imageCount = ImageList.size();
 		if (isDataBaseEmpty())
 		{
-		    //ttsProviderImpl.say("No images found");
-			Utility.getTextToSpeech().say("No images found");
+		    Utility.getTextToSpeech().say("Photo browse screen. No images found." +
+		    		"Double click to return to home screen. ");
 		
 			imageView = new ImageView(this);
 			params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
@@ -207,6 +207,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			}
 		}
 	}
+	
 	class MyGestureDetector extends SimpleOnGestureListener
 	{
 		@SuppressWarnings("static-access")
