@@ -202,6 +202,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 				firstDisplay = false;
 				Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
 			} else {
+				Utility.getTextToSpeech().stop();
 				playTag(audioPath);
 			}
 		}
@@ -211,6 +212,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		@SuppressWarnings("static-access")
 		public boolean onSingleTapConfirmed(MotionEvent e)
 		{
+			Utility.getTextToSpeech().stop();
 			if (!isDataBaseEmpty()) {
 				mp.reset();
 				playTag(audioPath);
@@ -492,8 +494,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	public void onPause(){
 		super.onPause();
 		mp.stop();
-		
+		Utility.getTextToSpeech().stop();
+	
 	}
+	
 	
 	@Override
 	public void onBackPressed() {

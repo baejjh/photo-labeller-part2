@@ -99,5 +99,11 @@ public class DeleteOrShare extends Activity {
     public void onBackPressed() {
        return;
     }
+    
+    @Override
+    public void onPause() {
+    	super.onPause();
+    	Utility.getTextToSpeech().stop();
+    }
 
 }
