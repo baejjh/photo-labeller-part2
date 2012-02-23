@@ -28,13 +28,16 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	private SharedPreferences mPreferences;
 	private AudioRecorder recorder;
 	private boolean isRecording;
+	private boolean isTaggingskipped;
 	private static final String audioFileName = "tm_file";
 	public static final String PREF_NAME = "myPreferences";
 	private static final String TAG = "TAG_RECORDER";
 	MediaPlayer mp = new MediaPlayer();
 	
-	private static final String VERBOSE_INST = "Tag photo by recording a message, or skip tagging.";
-	private static final String VERBOSE_INST_SHORT = "Tag photo or skip.";
+	private static final String INST_VERBOSE = "Tag photo or skip tagging. Touch screen for prompts. " +
+			"   Double Click tag button to start recording. " +
+			"   Touch screen again to stop recording.";
+	private static final String INST_SHORT = "Tag photo or skip tagging.";
 
 	private MenuView menuView;
 	private DoubleClicker doubleClicker;
@@ -70,7 +73,8 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		//mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_PRIVATE);
 		initializeSettings();
 		isRecording = false;
-		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
+		isTaggingskipped = false;
+		Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
 	}
 
 	private void initializeSettings() {
@@ -99,7 +103,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 					if (doubleClicker.isDoubleClicked()) {
 						Log.v(TAG, "Double Clicked - Skip");
 						skipRecording();
-						finish();
+						//finish();
 					} else {
 						Log.v(TAG, "SKIP OVER!");
 						Utility.getTextToSpeech().say("Skip Tagging");
@@ -141,8 +145,13 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 			mCursor.moveToLast();
 			Log.d(TAG, mCursor.getString(0) + ", " + mCursor.getString(1) + ", " + mCursor.getString(2));
 			updateCurrentFileNumber(currentFileNumber);
-			isRecording = false;
-			finish();
+			
+			MediaPlayer m = MediaPlayer.create(this, R.raw.tagsaved);
+			m.setOnCompletionListener(this);
+	    	m.start();
+	    	
+			//isRecording = false;
+			//finish();
 		} catch (IOException e) {
 			Log.d(TAG, e.getMessage().toString());
 			e.printStackTrace();
@@ -150,6 +159,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	}
 	
 	private void skipRecording(){
+		isTaggingskipped = true;
 		Utility.getTextToSpeech().stop();
 		// set the file name using the file counter and create path to save file
 		String fileName = audioFileName + currentFileNumber;
@@ -174,6 +184,9 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		
 		updateCurrentFileNumber(currentFileNumber);
 		
+		MediaPlayer m = MediaPlayer.create(this, R.raw.tagskipped);
+		m.setOnCompletionListener(this);
+    	m.start();
 		
 	}
 	
@@ -241,14 +254,33 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 
 	@Override
 	public void onCompletion(MediaPlayer m) {
-		try {
-			recorder.start();
-			isRecording = true;
-			Log.d(TAG, "RECORDING");
-		} catch (Exception e) {
-			Log.d(TAG, e.getMessage().toString());
-			e.printStackTrace();
+		
+		if(isRecording){
+			// exit activity to return to camera view after user informed
+			// that tag has been saved
+			isRecording = false;
+			finish();
+		}else if(isTaggingskipped){
+			// exit activity to return to camera view after user informed
+			// that tagging has been skipped
+			isTaggingskipped = false;
+			finish();
+		} else {
+			//start recording after prompt beep played
+			try {
+				recorder.start();
+				isRecording = true;
+				Log.d(TAG, "RECORDING");
+			} catch (Exception e) {
+				Log.d(TAG, e.getMessage().toString());
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+	   return;
 	}
 
 	

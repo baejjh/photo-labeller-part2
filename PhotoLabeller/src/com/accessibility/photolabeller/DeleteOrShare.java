@@ -11,8 +11,9 @@ import android.util.Log;
 
 public class DeleteOrShare extends Activity {
 
-	private static final String VERBOSE_INST = "Delete this picture, share this picture, or cancel this action.";
-	private static final String VERBOSE_INST_SHORT = "Delete, share, or cancel.";
+	private static final String INST_VERBOSE = "Delete or share this picture, or cancel action." +
+			" Touch screen for prompts. Double click button for action.";
+	private static final String INST_SHORT = "Delete, share, or cancel.";
 
 	private SharedPreferences mPreferences;
 	public static final String PREF_NAME = "myPreferences";
@@ -36,7 +37,7 @@ public class DeleteOrShare extends Activity {
 		doubleClicker = new DoubleClicker();
         
 		mPreferences = getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
-		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
+		Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
      }
 
     private class MyRowListener implements RowListener {
@@ -93,5 +94,10 @@ public class DeleteOrShare extends Activity {
     	finish();
 		
 	}
+    
+    @Override
+    public void onBackPressed() {
+       return;
+    }
 
 }
