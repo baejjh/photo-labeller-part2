@@ -190,6 +190,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		
 	}
 	
+	// This method copies a resource file to the given destination dest
 	private void copyResourceToExternal(int resourceID, String dest) throws IOException{
 		InputStream ins = getResources().openRawResource(resourceID);
 		ByteArrayOutputStream outputStream=new ByteArrayOutputStream();

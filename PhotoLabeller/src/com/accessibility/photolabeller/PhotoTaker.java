@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -237,7 +238,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	}
 
 	public void onShutter() {
-		// TODO Auto-generated method stub
+		playSoundEffects(R.raw.camera1);
 		
 	}
 	
@@ -273,6 +274,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
          * 
          */
         public boolean onDoubleTap(MotionEvent e) {
+        	playSoundEffects(R.raw.imagechange);
         	finish();
 			return true;
         }
@@ -283,6 +285,12 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	public void onBackPressed() {
 	   return;
 	}
+	
+	private void playSoundEffects(int imageId)
+	{	
+    	MediaPlayer m = MediaPlayer.create(this, imageId);
+    	m.start();
+    }
 
 	
 }

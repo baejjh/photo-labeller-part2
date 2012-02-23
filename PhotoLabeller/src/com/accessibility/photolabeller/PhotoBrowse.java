@@ -9,6 +9,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -38,6 +39,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	private static final String TAG = "BROWSING";
 	private GestureDetector gestureDetector;
+	private SharedPreferences mPreferences;
 	View.OnTouchListener gestureListener;
 	ViewFlipper imageFrame;
 	RelativeLayout slideShowBtn;
@@ -52,11 +54,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     String s;
     String audioPath;
     AudioManager audiomanager;
+    private boolean firstDisplay; // monitor first display image
+    
     
     //DATABASE globals
 	DbHelper mHelper;
 	SQLiteDatabase mDb;
 	Cursor mCursor;
+	
+	//INSTRUCTIONS
+	private static final String INST_VERBOSE = "Photo Browsing screen. Horizontal swipe to browse" +
+			"photos and tags. Single tap screen to reeplay tag. Long touch screen to delete or " +
+			"share picture.";
+	private static final String INST_SHORT = "Photo Browsing screen.";
 	
 		
 	@Override
@@ -65,12 +75,17 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photobrowse);
 		
+		firstDisplay = true;
+		
 		//Initialize database
 		mHelper = new DbHelper(this);
 		//Open data base Connections
 		mDb = mHelper.getWritableDatabase();
 		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
+		
+		//get the user settings
+		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
 		
 		audiomanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -177,13 +192,18 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			} 
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			//imageView.setImageDrawable(Drawable.createFromPath(imagePath));
 			//System.gc();
 			
-			playTag(audioPath);
+			// if activity just created, play instructions instead of first image tag
+			if(firstDisplay){
+				firstDisplay = false;
+				Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
+			} else {
+				playTag(audioPath);
+			}
 		}
 	}
 	class MyGestureDetector extends SimpleOnGestureListener
@@ -223,7 +243,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         public boolean onDoubleTap(MotionEvent e) {
         	playSoundEffects(R.raw.imagechange);
         	finish();
-			return false;
+			return true;
         }
         
         @Override
@@ -243,7 +263,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		@SuppressWarnings("static-access")
 		public boolean onSingleTapUp(MotionEvent e)
 		{
-			// TODO Auto-generated method stub
 			slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
 			slideShowBtn.setVisibility(slideShowBtn.VISIBLE);
 			handler.removeCallbacks(runnable);
@@ -299,12 +318,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 							} 	
 							catch (FileNotFoundException e)
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							} 
 							catch (IOException e)
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -346,12 +363,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 							} 	
 							catch (FileNotFoundException e)
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							} 
 							catch (IOException e)
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -452,8 +467,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		Log.d(TAG, String.valueOf(volume));
 		mp.setVolume(volume, volume);
 		mp.start();
-		// TODO Auto-generated method stub
-		
 	}
 
 	private void playSoundEffects(int imageId)
