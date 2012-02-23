@@ -181,6 +181,7 @@ public class HomeScreen extends Activity {
 		Utility.getTextToSpeech().stop();
 		
 	}
+	
 	public void onRestart(){
 		super.onRestart();
 		playInstructions();
