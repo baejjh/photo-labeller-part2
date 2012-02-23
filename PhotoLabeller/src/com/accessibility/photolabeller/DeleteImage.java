@@ -9,13 +9,15 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.util.Log;
 
-public class DeleteImage extends Activity {
+public class DeleteImage extends Activity implements OnCompletionListener{
 	
-	private static final String VERBOSE_INST = "Confirm to delete this picture, or cancel this action.";
-	private static final String VERBOSE_INST_SHORT = "Confirm or cancel.";
+	private static final String INST_VERBOSE = "Confirm to delete this picture, or cancel this action." +
+			"Touch screen for prompts. Double click button for action.";
+	private static final String INST_SHORT = "Confirm or cancel.";
 	
 	private SharedPreferences mPreferences;
 	public static final String PREF_NAME = "myPreferences";
@@ -51,7 +53,7 @@ public class DeleteImage extends Activity {
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
         
 		mPreferences = getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
-		Utility.playInstructions(VERBOSE_INST, VERBOSE_INST_SHORT, mPreferences);
+		Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
      }
 
     private class MyRowListener implements RowListener {
@@ -71,7 +73,8 @@ public class DeleteImage extends Activity {
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
 					Log.v(TAG, "Double Clicked - Cancel");
-					launchPhotoBrowse();
+					playSoundEffects(R.raw.deletecancel);
+					//launchPhotoBrowse();
 				} else {
 					Log.v(TAG, "CANCEL OVER!");
 					Utility.getTextToSpeech().say("Cancel Delete");
@@ -92,7 +95,7 @@ public class DeleteImage extends Activity {
 		mCursor.close();
 		playSoundEffects(R.raw.paperrip);
 		//GlobalVariables.setRowId(mCursor.getInt(0));
-		launchPhotoBrowse();
+		//launchPhotoBrowse();
     }
     
     public void launchPhotoBrowse() {
@@ -100,9 +103,17 @@ public class DeleteImage extends Activity {
 		finish();
     }
 	
-	private void playSoundEffects(int imageId)
+    private void playSoundEffects(int imageId)
 	{	
+    	Utility.getTextToSpeech().stop();
     	MediaPlayer m = MediaPlayer.create(this, imageId);
+    	m.setOnCompletionListener(this);
     	m.start();
     }
+
+	@Override
+	public void onCompletion(MediaPlayer m) {
+		launchPhotoBrowse();
+		
+	}
 }

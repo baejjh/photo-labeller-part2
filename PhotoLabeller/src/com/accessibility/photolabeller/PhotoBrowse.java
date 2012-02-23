@@ -72,8 +72,8 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
 		
-		//audiomanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-		//setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		audiomanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		
 		imageFrame = (ViewFlipper) findViewById(R.id.imageFrames);
 
