@@ -298,7 +298,12 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 						mCursor.moveToNext();
 						if(mCursor.isAfterLast())
 						{
-							playSoundEffects(R.raw.lock);
+							if(isOnlyOnePicture()) {
+								playSoundEffects(R.raw.onlyonepic);
+							}
+							else {
+								playSoundEffects(R.raw.endpic);
+							}
 							mCursor.moveToLast();
 						} else
 						{
@@ -343,7 +348,12 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 					{
 						mCursor.moveToPrevious();
 						if(mCursor.isBeforeFirst()) {
-							playSoundEffects(R.raw.lock);
+							if(isOnlyOnePicture()) {
+								playSoundEffects(R.raw.onlyonepic);
+							}
+							else {
+								playSoundEffects(R.raw.endpic);
+							}
 							mCursor.moveToFirst();
 						} else
 						{
@@ -483,6 +493,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		if (cur != null) {
 		    cur.moveToFirst();                       // Always one row returned.
 		    if (cur.getInt (0) == 0)
+		    {               // Zero count means empty table.
+		        return true;
+	        }
+		    return false;
+	    }
+		return false;
+	}
+	
+	private boolean isOnlyOnePicture() {
+		Cursor cur = mDb.rawQuery("SELECT COUNT(*) FROM " + DbHelper.TABLE_NAME, null);
+		if (cur != null) {
+		    cur.moveToFirst();                       // Always one row returned.
+		    if (cur.getInt (0) == 1)
 		    {               // Zero count means empty table.
 		        return true;
 	        }
