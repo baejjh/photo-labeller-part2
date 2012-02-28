@@ -99,6 +99,10 @@ public class SetOptions extends Activity implements OnCompletionListener{
 		public void focusChanged() {
         	doubleClicker.reset();
         }
+
+		public void onTwoFingersUp() {
+			finish();
+		}
 	}
 
 	// set the voice instruction to the given instructionLevel

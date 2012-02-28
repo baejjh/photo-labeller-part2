@@ -99,6 +99,10 @@ public class HomeScreen extends Activity {
         public void focusChanged() {
         	doubleClicker.reset();
         }
+
+		public void onTwoFingersUp() {
+			// do nothing for home screen
+		}
 	}
     
     public void launchPhotoTaker() {

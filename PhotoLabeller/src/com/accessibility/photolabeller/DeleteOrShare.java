@@ -65,7 +65,8 @@ public class DeleteOrShare extends Activity {
 			} else if (focusedButton == Btn.THREE) {
 				if (doubleClicker.isDoubleClicked()) {
 					Log.v(TAG, "Double Clicked - Cancel");
-					launchPhotoBrowse();
+					//launchPhotoBrowse();
+					finish();
 				} else {
 					Log.v(TAG, "CANCEL OVER!");
 					Utility.getTextToSpeech().say("Cancel");
@@ -77,6 +78,10 @@ public class DeleteOrShare extends Activity {
 		public void focusChanged() {
         	doubleClicker.reset();
         }
+
+		public void onTwoFingersUp() {
+			finish();
+		}
 	}
     
     public void launchDeleteImage() {
@@ -84,10 +89,11 @@ public class DeleteOrShare extends Activity {
 		finish();
     }
     
+    /*
     public void launchPhotoBrowse() {
     	startActivity(new Intent(this, PhotoBrowse.class));
 		finish();
-    }
+    }*/
     
     public void launchShareImage() {
     	startActivity(new Intent(this, MailSender.class));
