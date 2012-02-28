@@ -116,6 +116,13 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		public void focusChanged() {
 			doubleClicker.reset();
 		}
+
+		public void onTwoFingersUp() {
+			if (isRecording)
+				stopRecording();
+			else
+				skipRecording();
+		}
 	}
 
 	private void startRecording() {

@@ -63,10 +63,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	Cursor mCursor;
 	
 	//INSTRUCTIONS
-	private static final String INST_VERBOSE = "Photo Browsing screen. Horizontal swipe to browse" +
-			"photos and tags. Single tap screen to reeplay tag. Long touch screen to delete or " +
+	private static final String INST_VERBOSE = "Browse screen. Swipe screen to browse" +
+			"photos. Tap screen to re-eplay tag. Hold down screen to delete or " +
 			"share picture.";
-	private static final String INST_SHORT = "Photo Browsing screen.";
+	private static final String INST_SHORT = "Browse screen.";
 	
 		
 	@Override

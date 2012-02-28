@@ -59,6 +59,7 @@ public class MenuView extends View {
     public interface RowListener {
         abstract void onRowOver();
         abstract void focusChanged();
+        abstract void onTwoFingersUp();
     }
     
     public MenuView(Context context, AttributeSet attrs) {
@@ -85,20 +86,57 @@ public class MenuView extends View {
         _bitmap = Bitmap.createBitmap(_width, _height, Bitmap.Config.ARGB_8888);
         _canvas = new Canvas(_bitmap);
      
-        if (_buttonCount == 2)
+        if (_buttonCount == 1)
+        	drawOneButton();
+        else if (_buttonCount == 2)
         	drawTwoButtons();
         else
         	drawThreeButtons();
     }
     
-    private void drawTwoButtons() {
-        Paint p = new Paint();
+    private Paint createBorderPaint() {
+    	Paint p = new Paint();
         p.setDither(true);
         p.setAntiAlias(true);
-        
-        // draw borders
         p.setColor(Color.rgb(192, 192, 192));
         p.setStrokeWidth(7);
+        return p;
+    }
+    
+    private float getTextHeight() {
+		_paint.setStyle(Paint.Style.FILL);
+		_paint.setAntiAlias(true);
+		_paint.setTextSize(getResources().getDimensionPixelSize(R.dimen.font_size));
+		
+		Rect rectangle = new Rect();
+		_paint.getTextBounds(_button1, 0, _button1.length(), rectangle);
+		return rectangle.centerY();
+    }
+    
+    private void drawOneButton() {
+        // draw borders
+        Paint p = createBorderPaint();
+        _canvas.drawRect(0, 7, _width, _height - 7, p);
+        p.setStrokeWidth(0);
+        
+        // draw gradient rectangles
+        LinearGradient gradient = new LinearGradient(7, 14, _width - 7, _height - 14, Color.RED, Color.rgb(155, 0, 0), Shader.TileMode.MIRROR);
+        p.setShader(gradient);
+        _canvas.drawRect(7, 14, _width - 7, _height - 14, p);
+    	
+        // draw texts
+		float textHeight = getTextHeight();
+		float startPositionX = (_width) / 2;
+
+		_paint.setTextAlign(Paint.Align.CENTER);
+		_canvas.drawText(_button1, startPositionX, (_height / 2) - textHeight / 2, _paint);
+		
+        invalidate();
+    }
+    
+    private void drawTwoButtons() {
+    	// draw borders
+        Paint p = createBorderPaint();
         _canvas.drawRect(0, 7, _width, _height / 2 - 7, p);
         _canvas.drawRect(0, _height / 2 + 7, _width, _height - 7, p);
         p.setStrokeWidth(0);
@@ -112,13 +150,7 @@ public class MenuView extends View {
         _canvas.drawRect(7, _height / 2 + 14, _width - 7, _height - 14, p);
     	
         // draw texts
-		_paint.setStyle(Paint.Style.FILL);
-		_paint.setAntiAlias(true);
-		_paint.setTextSize(getResources().getDimensionPixelSize(R.dimen.font_size));
-		
-		Rect rectangle = new Rect();
-		_paint.getTextBounds(_button1, 0, _button1.length(), rectangle);
-		float textHeight = rectangle.centerY();
+		float textHeight = getTextHeight();
 		float startPositionX = (_width) / 2;
 
 		_paint.setTextAlign(Paint.Align.CENTER);
@@ -129,13 +161,8 @@ public class MenuView extends View {
     }
     
     private void drawThreeButtons() {
-        Paint p = new Paint();
-        p.setDither(true);
-        p.setAntiAlias(true);
-        
-        // draw borders
-        p.setColor(Color.rgb(192, 192, 192));
-        p.setStrokeWidth(7);
+    	// draw borders
+        Paint p = createBorderPaint();
         _canvas.drawRect(0, 7, _width, _height / 3 - 7, p);
         _canvas.drawRect(0, _height / 3 + 7, _width, _height * 2 / 3 - 7, p);
         _canvas.drawRect(0, _height * 2 / 3 + 7, _width, _height - 7, p);
@@ -153,13 +180,7 @@ public class MenuView extends View {
         _canvas.drawRect(7, _height * 2 / 3 + 14, _width - 7, _height - 14, p);
     	
         // draw texts
-		_paint.setStyle(Paint.Style.FILL);
-		_paint.setAntiAlias(true);
-		_paint.setTextSize(getResources().getDimensionPixelSize(R.dimen.font_size));
-		
-		Rect rectangle = new Rect();
-		_paint.getTextBounds(_button1, 0, _button1.length(), rectangle);
-		float textHeight = rectangle.centerY();
+		float textHeight = getTextHeight();
 		float startPositionX = (_width) / 2;
 
 		_paint.setTextAlign(Paint.Align.CENTER);
@@ -176,6 +197,11 @@ public class MenuView extends View {
     
     public Btn getFocusedButton() {
         return mFocusedButton;
+    }
+    
+    public void setButtonNames(String s1) {
+    	_buttonCount = 1;
+    	_button1 = s1;
     }
     
     public void setButtonNames(String s1, String s2) {
@@ -204,24 +230,21 @@ public class MenuView extends View {
 			int y = (int) event.getY();
 			int height = this.getHeight();
 
-			if (_buttonCount == 2) {
+			if (_buttonCount == 1) {
+				focusButton(Btn.ONE);
+			} else if (_buttonCount == 2) {
 				if ((y < height / 2) && (mFocusedButton != Btn.ONE)) {
-					mFocusedButton = Btn.ONE;
-					mRowListener.onRowOver();
+					focusButton(Btn.ONE);
 				} else if ((y > height / 2) && (mFocusedButton != Btn.TWO)) {
-					mFocusedButton = Btn.TWO;
-					mRowListener.onRowOver();
+					focusButton(Btn.TWO);
 				}
 			} else {
 				if ((y < height / 3) && (mFocusedButton != Btn.ONE)) {
-					mFocusedButton = Btn.ONE;
-					mRowListener.onRowOver();
+					focusButton(Btn.ONE);
 				} else if ((y > height / 3 && y < height * 2 / 3) && (mFocusedButton != Btn.TWO)) {
-					mFocusedButton = Btn.TWO;
-					mRowListener.onRowOver();
+					focusButton(Btn.TWO);
 				} else if ((y > height * 2 / 3) && (mFocusedButton != Btn.THREE)) {
-					mFocusedButton = Btn.THREE;
-					mRowListener.onRowOver();
+					focusButton(Btn.THREE);
 				}
 			}
 			
@@ -230,14 +253,25 @@ public class MenuView extends View {
 			
 			return true;
 		} else if (action == MotionEvent.ACTION_UP) {
+			if (event.getPointerCount() == 2) {
+				mRowListener.onTwoFingersUp();
+				return true;
+			}
+			
 			if (mInitialPush != mFocusedButton)
 				mRowListener.focusChanged();
+			
 			mFocusedButton = Btn.NONE;
-			mInitialPush = Btn.NONE;
+			mInitialPush = Btn.NONE;			
 			return true;
 		}
 
 		return false;
+	}
+	
+	private void focusButton(Btn b) {
+		mFocusedButton = b;
+		mRowListener.onRowOver();
 	}
 	
 	public void resetButtonFocus() {
