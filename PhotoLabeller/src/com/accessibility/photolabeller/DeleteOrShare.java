@@ -80,13 +80,14 @@ public class DeleteOrShare extends Activity {
         }
 
 		public void onTwoFingersUp() {
+			Log.v(TAG, "Two Fingers Up");
 			finish();
 		}
 	}
     
     public void launchDeleteImage() {
     	startActivity(new Intent(this, DeleteImage.class)); 
-		finish();
+		//finish();
     }
     
     /*
