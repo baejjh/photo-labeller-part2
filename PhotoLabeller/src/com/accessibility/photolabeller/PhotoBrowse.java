@@ -256,8 +256,8 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
             	Utility.setImagePath(s);
             	Utility.setAudioPath(audioPath);
             	Utility.setRowId(mCursor.getInt(0));
-            	startActivity(new Intent(PhotoBrowse.this, DeleteOrShare.class));    
-            	finish();
+            	startActivity(new Intent(PhotoBrowse.this, DeleteOrShare.class));
+            	//finish();
         	}
        }
         
@@ -265,7 +265,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	
 		@SuppressWarnings("static-access")
 		public boolean onSingleTapUp(MotionEvent e)
-		{
+		{			
 			slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
 			slideShowBtn.setVisibility(slideShowBtn.VISIBLE);
 			handler.removeCallbacks(runnable);

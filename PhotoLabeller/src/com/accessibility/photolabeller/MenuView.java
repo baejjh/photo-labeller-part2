@@ -252,12 +252,10 @@ public class MenuView extends View {
 				mInitialPush = mFocusedButton;
 			
 			return true;
+		} else if (action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2) {
+			mRowListener.onTwoFingersUp();
+			return true;
 		} else if (action == MotionEvent.ACTION_UP) {
-			if (event.getPointerCount() == 2) {
-				mRowListener.onTwoFingersUp();
-				return true;
-			}
-			
 			if (mInitialPush != mFocusedButton)
 				mRowListener.focusChanged();
 			
