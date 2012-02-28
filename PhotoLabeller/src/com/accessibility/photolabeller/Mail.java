@@ -18,7 +18,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart; 
  
  
-public class Mail extends javax.mail.Authenticator { 
+public class Mail extends javax.mail.Authenticator{ 
   private String _user; 
   private String _pass; 
  
@@ -164,5 +164,5 @@ public class Mail extends javax.mail.Authenticator {
   public void setSubject(String string) {
 	  this._subject = string;
   }
-  // more of the getters and setters ….. 
+  
 } 
