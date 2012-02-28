@@ -34,9 +34,8 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	private static final String TAG = "TAG_RECORDER";
 	MediaPlayer mp = new MediaPlayer();
 	
-	private static final String INST_VERBOSE = "Tag photo or skip tagging. Touch screen for prompts. " +
-			"   Double Click tag button to start recording. " +
-			"   Touch screen again to stop recording.";
+	private static final String INST_VERBOSE = "Tag photo or skip tagging." +
+			"Double tap screen to start recording, and tap to stop recording.";
 	private static final String INST_SHORT = "Tag photo or skip tagging.";
 
 	private MenuView menuView;
@@ -57,7 +56,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		menuView.setFocusable(true);
 		menuView.setFocusableInTouchMode(true);
 		menuView.setRowListener(new MyRowListener());
-		menuView.setButtonNames("Tag", "Skip");
+		menuView.setButtonNames("Tag Photo");
 
 		doubleClicker = new DoubleClicker();
 
@@ -91,26 +90,14 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 			if (isRecording)
 				stopRecording();
 			else {
-				if (focusedButton == Btn.ONE) {
-					if (doubleClicker.isDoubleClicked()) {
-						Log.v(TAG, "Double Clicked - Tag");
-						startRecording();
-					} else {
-						Log.v(TAG, "TAG OVER!");
-						Utility.getTextToSpeech().say("Tag Photo");
-					}
-				} else if (focusedButton == Btn.TWO) {
-					if (doubleClicker.isDoubleClicked()) {
-						Log.v(TAG, "Double Clicked - Skip");
-						skipRecording();
-						//finish();
-					} else {
-						Log.v(TAG, "SKIP OVER!");
-						Utility.getTextToSpeech().say("Skip Tagging");
-					}
+				if (doubleClicker.isDoubleClicked()) {
+					Log.v(TAG, "Double Clicked - Tag");
+					startRecording();
+				} else {
+					Log.v(TAG, "TAG OVER!");
+					Utility.getTextToSpeech().say("Tag Photo");
 				}
 			}
-
 		}
 
 		public void focusChanged() {
@@ -118,10 +105,12 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		}
 
 		public void onTwoFingersUp() {
-			if (isRecording)
+			if (isRecording) {
 				stopRecording();
-			else
+			} else {
 				skipRecording();
+				Utility.getTextToSpeech().say("Skip Tagging");
+			}
 		}
 	}
 

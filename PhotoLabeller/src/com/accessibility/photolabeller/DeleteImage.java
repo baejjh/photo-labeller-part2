@@ -14,9 +14,8 @@ import android.util.Log;
 
 public class DeleteImage extends Activity implements OnCompletionListener{
 	
-	private static final String INST_VERBOSE = "Confirm to delete this picture, or cancel this action." +
-			"Touch screen for prompts. Double click button for action.";
-	private static final String INST_SHORT = "Confirm or cancel.";
+	private static final String INST_VERBOSE = "Confirm to delete this picture.";
+	private static final String INST_SHORT = "Confirm delete.";
 	
 	private SharedPreferences mPreferences;
 	public static final String PREF_NAME = "myPreferences";
@@ -40,7 +39,7 @@ public class DeleteImage extends Activity implements OnCompletionListener{
 		menuView.setFocusable(true);
 		menuView.setFocusableInTouchMode(true);
 		menuView.setRowListener(new MyRowListener());
-		menuView.setButtonNames("Confirm", "Cancel");
+		menuView.setButtonNames("Confirm");
 		
 		doubleClicker = new DoubleClicker();
         
@@ -69,17 +68,7 @@ public class DeleteImage extends Activity implements OnCompletionListener{
 					Log.v(TAG, "CONFIRM OVER!");
 					Utility.getTextToSpeech().say("Confirm Delete");
 				}
-			} else if (focusedButton == Btn.TWO) {
-				if (doubleClicker.isDoubleClicked()) {
-					Log.v(TAG, "Double Clicked - Cancel");
-					playSoundEffects(R.raw.deletecancel);
-					//launchPhotoBrowse();
-				} else {
-					Log.v(TAG, "CANCEL OVER!");
-					Utility.getTextToSpeech().say("Cancel Delete");
-				}
 			}
-
 		}
         
         public void focusChanged() {

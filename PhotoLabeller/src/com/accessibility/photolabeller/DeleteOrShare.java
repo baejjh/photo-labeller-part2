@@ -11,9 +11,8 @@ import android.util.Log;
 
 public class DeleteOrShare extends Activity {
 
-	private static final String INST_VERBOSE = "Delete or share this picture, or cancel action." +
-			" Touch screen for prompts. Double click button for action.";
-	private static final String INST_SHORT = "Delete, share, or cancel.";
+	private static final String INST_VERBOSE = "Delete or share this picture.";
+	private static final String INST_SHORT = "Delete or share.";
 
 	private SharedPreferences mPreferences;
 	public static final String PREF_NAME = "myPreferences";
@@ -32,7 +31,7 @@ public class DeleteOrShare extends Activity {
 		menuView.setFocusable(true);
 		menuView.setFocusableInTouchMode(true);
 		menuView.setRowListener(new MyRowListener());
-		menuView.setButtonNames("Delete", "Share", "Cancel");
+		menuView.setButtonNames("Delete", "Share");
 		
 		doubleClicker = new DoubleClicker();
         
@@ -62,17 +61,7 @@ public class DeleteOrShare extends Activity {
 					Log.v(TAG, "SHARE OVER!");
 					Utility.getTextToSpeech().say("Share Photo");
 				}
-			} else if (focusedButton == Btn.THREE) {
-				if (doubleClicker.isDoubleClicked()) {
-					Log.v(TAG, "Double Clicked - Cancel");
-					//launchPhotoBrowse();
-					finish();
-				} else {
-					Log.v(TAG, "CANCEL OVER!");
-					Utility.getTextToSpeech().say("Cancel");
-				}
 			}
-
 		}
         
 		public void focusChanged() {
