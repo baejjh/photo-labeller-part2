@@ -231,7 +231,8 @@ public class MenuView extends View {
 			int height = this.getHeight();
 
 			if (_buttonCount == 1) {
-				focusButton(Btn.ONE);
+				if (mFocusedButton != Btn.ONE)
+					focusButton(Btn.ONE);
 			} else if (_buttonCount == 2) {
 				if ((y < height / 2) && (mFocusedButton != Btn.ONE)) {
 					focusButton(Btn.ONE);
