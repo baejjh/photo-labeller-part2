@@ -71,6 +71,11 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
         gestureDetector = new GestureDetector(new MyGestureDetector());
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
+            	int action = event.getAction();
+				if (action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2) {
+					finish();
+					return true;
+				}
                 if (gestureDetector.onTouchEvent(event))
                     return true;
                 else
