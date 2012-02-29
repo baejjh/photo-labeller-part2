@@ -2,6 +2,10 @@ package com.accessibility.photolabeller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,12 +18,13 @@ import android.widget.Toast;
 public class MailSender extends Activity{
 	
 	private static final String TAG = "MAILSENDER";
+	Timer timer;
 		
 	@Override 
 	public void onCreate(Bundle icicle) { 
 	  super.onCreate(icicle); 
-	  setContentView(R.layout.mailsender); 
-	 
+	  setContentView(R.layout.mailsender);
+	
 	  final Button send = (Button) findViewById(R.id.send_email);
 	 	 
 	  send.setOnClickListener(new View.OnClickListener() { 
@@ -56,6 +61,16 @@ public class MailSender extends Activity{
 		// run on background thread
 		@Override
 		protected Boolean doInBackground(Void... params) {
+			
+			  long delay = 5000;
+			  long period = 5000;
+			  timer = new Timer();
+			  timer.scheduleAtFixedRate(
+					  new TimerTask() {
+						  public void run() {
+							  Utility.getTextToSpeech().say("sending email. Please wait");
+						  }
+					  }, delay,period);
 			  
 			  // hard coded recipient email addresses to be changed later
 		      String[] toArr = {"nikhilkarkarey@gmail.com", "salama.obada@gmail.com", "han@cs.washington.edu"}; 
@@ -116,6 +131,7 @@ public class MailSender extends Activity{
 		// runs on UI thread
 		@Override
 		protected void onPostExecute(Boolean success){
+			timer.cancel();
 			if(success){
 				Utility.getTextToSpeech().say("Image and tag shared successfully");
 				send.setText("Email sent.");
