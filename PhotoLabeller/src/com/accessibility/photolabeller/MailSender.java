@@ -4,34 +4,89 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.widget.Button;
 
 public class MailSender extends Activity{
 	
 	private static final String TAG = "MAILSENDER";
 	Timer timer;
+	private GestureDetector gestureDetector;
+	View.OnTouchListener gestureListener;
+	Button send;
 		
 	@Override 
 	public void onCreate(Bundle icicle) { 
 	  super.onCreate(icicle); 
 	  setContentView(R.layout.mailsender);
 	
-	  final Button send = (Button) findViewById(R.id.send_email);
-	 	 
-	  send.setOnClickListener(new View.OnClickListener() { 
+	  send = (Button) findViewById(R.id.send_email);
+	  
+	// Gesture detection
+      gestureDetector = new GestureDetector(new MyGestureDetector());
+      gestureListener = new View.OnTouchListener() {
+          public boolean onTouch(View v, MotionEvent event) {
+          	int action = event.getAction();
+				if (action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2) {
+					finish();
+					return true;
+				}
+				else if (gestureDetector.onTouchEvent(event))
+                  return true;
+              else
+                  return false;
+          }
+      };
+	  
+	 send.setOnTouchListener(gestureListener);
+	  /*send.setOnClickListener(new View.OnClickListener() { 
 	    public void onClick(View view) { 
 	    	// makes asynchronous call to send email here
 	    	new MailSendTask(send).execute();
 	     } 
-	  }); 
+	  }); */
 	}
+	
+	/*
+	 * Inner GestureDetector class
+	 */
+	class MyGestureDetector extends SimpleOnGestureListener {
+		
+		/*
+		 * single tap should play back instructions
+		 */
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+        	return false;
+        }
+        
+        public boolean onSingleTapUp(MotionEvent e) {
+           return false;
+        }
+
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+        	float velocityY) {
+            return false;
+        }
+        
+        /*
+         *  double click takes a picture
+         * 
+         */
+        public boolean onDoubleTap(MotionEvent e) {
+        	new MailSendTask(send).execute();
+            return true;
+        }
+
+    }
 	
 	/**
 	 * This class used to send email with attached image and audio tags
@@ -60,6 +115,10 @@ public class MailSender extends Activity{
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			
+			TelephonyManager mgr = (TelephonyManager) getSystemService("phone");
+			String phoneNumber = mgr.getLine1Number();
+			Log.d(TAG, phoneNumber);
+			
 			  long delay = 5000;
 			  long period = 5000;
 			  timer = new Timer();
@@ -74,7 +133,7 @@ public class MailSender extends Activity{
 		      String[] toArr = {"nikhilkarkarey@gmail.com", "salama.obada@gmail.com", "han@cs.washington.edu"}; 
 		      m.setTo(toArr); 
 		      m.setFrom("talkingmemories@gmail.com"); 
-		      m.setSubject("You have recieved a new tagged image."); 
+		      m.setSubject("A friend with the phone number: " + phoneNumber + " is sharing a new tagged image with you."); 
 		      m.setBody("Attached is a TalkingMemories image file and its associated audio tag." + "\n" +
 		    		   "Play the audio tag using QuickTime."); 
 		 
