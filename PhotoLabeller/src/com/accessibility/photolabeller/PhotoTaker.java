@@ -29,7 +29,7 @@ import android.view.View.OnClickListener;
 /*
  * Camera screen: Displays camera preview on the screen
  * Actions: Single tap on screen : Takes a photo
- * 			Double tap on screen : Goes back to the homescreen
+ * 			Double tap on screen : Goes back to the home screen
  */
 public class PhotoTaker extends Activity implements SurfaceHolder.Callback, ShutterCallback,
 														PictureCallback, OnClickListener{
@@ -76,7 +76,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 					finish();
 					return true;
 				}
-                if (gestureDetector.onTouchEvent(event))
+				else if (gestureDetector.onTouchEvent(event))
                     return true;
                 else
                     return false;
@@ -257,12 +257,14 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	class MyGestureDetector extends SimpleOnGestureListener {
 		
 		/*
-		 * Clicks picture on single tap
+		 * single tap should play back instructions
 		 */
         public boolean onSingleTapConfirmed(MotionEvent e) {
-        	Utility.getTextToSpeech().stop();
-            takePhoto();
-            return true;
+        	//Utility.getTextToSpeech().stop();
+            //takePhoto();
+            //return true;
+        	//play instructions
+        	return false;
         }
         
         public boolean onSingleTapUp(MotionEvent e) {
@@ -275,13 +277,16 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
         }
         
         /*
-         *  return to home screen on a double tap
+         *  double click takes a picture
          * 
          */
         public boolean onDoubleTap(MotionEvent e) {
-        	playSoundEffects(R.raw.imagechange);
-        	finish();
-			return true;
+        	//playSoundEffects(R.raw.imagechange);
+        	//finish();
+			//return true;
+        	Utility.getTextToSpeech().stop();
+            takePhoto();
+            return true;
         }
 
     }
