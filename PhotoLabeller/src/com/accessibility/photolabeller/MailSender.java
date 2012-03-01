@@ -141,7 +141,14 @@ public class MailSender extends Activity{
 			}
 		}
 		
+		
+		
 	}	
+	
+	 @Override
+	    public void onBackPressed() {
+	       return;
+	    }
 		
 		
 
