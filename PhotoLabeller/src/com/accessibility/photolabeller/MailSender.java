@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 public class MailSender extends Activity{
 	

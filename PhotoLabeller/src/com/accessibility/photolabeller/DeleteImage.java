@@ -4,6 +4,7 @@ import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -76,7 +77,8 @@ public class DeleteImage extends Activity implements OnCompletionListener{
         }
 
 		public void onTwoFingersUp() {
-			finish();
+			launchPhotoBrowse();
+			
 		}
 	}
     
@@ -87,14 +89,15 @@ public class DeleteImage extends Activity implements OnCompletionListener{
 		mCursor.close();
 		playSoundEffects(R.raw.paperrip);
 		//GlobalVariables.setRowId(mCursor.getInt(0));
+		
 		//launchPhotoBrowse();
     }
     
-    /*
+    
     public void launchPhotoBrowse() {
     	startActivity(new Intent(this, PhotoBrowse.class));
 		finish();
-    }*/
+    }
 	
     private void playSoundEffects(int imageId)
 	{	
@@ -106,7 +109,6 @@ public class DeleteImage extends Activity implements OnCompletionListener{
 
 	@Override
 	public void onCompletion(MediaPlayer m) {
-		//launchPhotoBrowse();
-		finish();
+		launchPhotoBrowse();
 	}
 }

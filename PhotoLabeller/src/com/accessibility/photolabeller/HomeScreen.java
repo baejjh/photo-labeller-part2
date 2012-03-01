@@ -177,7 +177,7 @@ public class HomeScreen extends Activity {
 	*/
 	public void onStop(){
 		super.onStop();
-		//GlobalVariables.getTextToSpeech().stop();
+		Utility.getTextToSpeech().stop();
 	}
 	
 	public void  onPause(){

@@ -64,7 +64,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	
 	//INSTRUCTIONS
 	private static final String INST_VERBOSE = "Browse screen. Swipe screen to browse" +
-			"photos. Tap screen to re-eplay tag. Hold down screen to delete or " +
+			"photos. Tap screen to ree play tag. Hold down screen to delete or " +
 			"share picture.";
 	private static final String INST_SHORT = "Browse screen.";
 	
@@ -526,6 +526,8 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		super.onPause();
 		mp.stop();
 		Utility.getTextToSpeech().stop();
+		//change
+		finish();
 	
 	}
 	
