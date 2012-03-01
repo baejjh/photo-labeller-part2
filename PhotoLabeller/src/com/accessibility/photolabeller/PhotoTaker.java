@@ -40,7 +40,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	private static final String picFileName = "tm_file";
 	private GestureDetector gestureDetector;
 	public static final String PREF_NAME = "myPreferences";
-	public static final String VERBOSE_INST = "Camera View. Tap screen to take photo, or double tap to return to home screen.";
+	public static final String VERBOSE_INST = "Camera View. Single click screen to take photo, or two finger click to return to home screen.";
 	public static final String INST_SHORT = "Camera View.";
 
 	//DATABASE globals

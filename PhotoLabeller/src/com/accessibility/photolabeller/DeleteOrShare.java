@@ -70,20 +70,21 @@ public class DeleteOrShare extends Activity {
 
 		public void onTwoFingersUp() {
 			Log.v(TAG, "Two Fingers Up");
+			launchPhotoBrowse();
 			finish();
 		}
 	}
     
     public void launchDeleteImage() {
     	startActivity(new Intent(this, DeleteImage.class)); 
-		//finish();
+		finish();
     }
     
-    /*
+    
     public void launchPhotoBrowse() {
     	startActivity(new Intent(this, PhotoBrowse.class));
 		finish();
-    }*/
+    }
     
     public void launchShareImage() {
     	startActivity(new Intent(this, MailSender.class));
