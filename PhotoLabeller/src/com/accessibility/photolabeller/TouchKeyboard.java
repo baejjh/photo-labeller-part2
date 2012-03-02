@@ -210,14 +210,8 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		Log.v(TAG, "+++ ON CREATE  +++");
 		super.onCreate(savedInstanceState);
 		
-		if(!PhoneWandActivity.isTTSSetup()) {
-			finish();
-			return;
-		}
-		
 		// Setup the entered text structures.
-		String startingText = 
-			getIntent().getStringExtra(PhoneWandActivity.STARTING_TEXT_EXTRA);
+		String startingText = "";
 		populateCurrentList(startingText);
 		mCurrentString = (startingText != null) ? startingText : "";
 		mCurrentString += " ";
@@ -402,15 +396,12 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		if(hasFocus) {
 			if(keyText.equals("CAPS")) {
 				String capsString = (mCapsOn) ? "off" : "on";
-				PhoneWandActivity.ttsSpeak("Turn caps lock " + capsString, 
-						TextToSpeech.QUEUE_FLUSH);
+				Utility.getTextToSpeech().say("Turn caps lock " + capsString);
 			} else {
 				if(!mCapsOn && keyText.length() <= 1) {
-					PhoneWandActivity.ttsSpeak(PRONUNCIATION_MAP.get(keyText.toLowerCase()), 
-							TextToSpeech.QUEUE_FLUSH);
+					Utility.getTextToSpeech().say(PRONUNCIATION_MAP.get(keyText.toLowerCase()));
 				} else {
-					PhoneWandActivity.ttsSpeak(PRONUNCIATION_MAP.get(keyText), 
-							TextToSpeech.QUEUE_FLUSH);
+					Utility.getTextToSpeech().say(PRONUNCIATION_MAP.get(keyText));
 				}
 			}
 		}
@@ -419,7 +410,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	/** Activate the given key according to its text value. */
 	private void keyPressed(String keyText) {
 		// Slight vibrational feedback.
-		PhoneWandActivity.buzz(PhoneWandActivity.KEY_ENTRY_VIBES);
+		//PhoneWandActivity.buzz(PhoneWandActivity.KEY_ENTRY_VIBES);
 		
 		if(keyText.equals("ABC")) {
 			setupKeyboard(QWERTY);
@@ -430,11 +421,9 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		} else if(keyText.equals("CAPS")) {
 			mCapsOn = !mCapsOn;
 			if(mCapsOn) {
-				PhoneWandActivity.ttsSpeak("Caps lock on", 
-						TextToSpeech.QUEUE_FLUSH);
+				Utility.getTextToSpeech().say("Caps lock on");
 			} else {
-				PhoneWandActivity.ttsSpeak("Caps lock off", 
-						TextToSpeech.QUEUE_FLUSH);
+				Utility.getTextToSpeech().say("Caps lock off");
 			}
 		} else if(keyText.equals("NEXT")) {
 			moveCursorForward(true);
@@ -495,13 +484,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	
 	/** Return the entered text to the caller Activity. */
 	private void returnResult() {
-		// Close the keyboard and return the entered text.
-		Intent intent = new Intent(this, RouteInput.class);
-		intent.putExtra(PhoneWandActivity.TEXT_ENTERED_EXTRA, mCurrentString);
-		setResult(RESULT_OK, intent);
-		
-		PhoneWandActivity.ttsSpeak("Returning " + mCurrentString, 
-				TextToSpeech.QUEUE_FLUSH);
+		Utility.getTextToSpeech().say("Returning " + mCurrentString);
 		
 		//////////////////TODO: sleep until the TTS has finished speaking?
 		
@@ -521,7 +504,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 					"character to delete here.";
 		}
 		
-		PhoneWandActivity.ttsSpeak(messageString, TextToSpeech.QUEUE_FLUSH);
+		Utility.getTextToSpeech().say(messageString);
 		speakCurrentChar();
 		
 		drawString();
@@ -540,7 +523,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 					"previous character to delete.";
 		}
 		
-		PhoneWandActivity.ttsSpeak(messageString, TextToSpeech.QUEUE_FLUSH);
+		Utility.getTextToSpeech().say(messageString);
 		speakCurrentChar();
 		
 		drawString();
@@ -551,8 +534,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		mEnteredText.add(mCursorIndex, character);
 		moveCursorForward(false);
 		
-		PhoneWandActivity.ttsSpeak("Entered " + PRONUNCIATION_MAP.get(""+character), 
-				TextToSpeech.QUEUE_FLUSH);
+		Utility.getTextToSpeech().say("Entered " + PRONUNCIATION_MAP.get(""+character));
 		speakCurrentChar();
 		
 		drawString();
@@ -571,7 +553,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		
 		// Speak what happened.
 		if(speakIt) {
-			PhoneWandActivity.ttsSpeak(messageString, TextToSpeech.QUEUE_FLUSH);
+			Utility.getTextToSpeech().say(messageString);
 			speakCurrentChar();
 		}
 		
@@ -591,7 +573,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		
 		// Speak what happened.
 		if(speakIt) {
-			PhoneWandActivity.ttsSpeak(messageString, TextToSpeech.QUEUE_FLUSH);
+			Utility.getTextToSpeech().say(messageString);
 			speakCurrentChar();
 		}
 		
@@ -644,23 +626,20 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	/** Speak the character to which the cursor is currently pointing. */
 	private void speakCurrentChar() {
 		if(mEnteredText.size() <= 0) {
-			PhoneWandActivity.ttsSpeak("There is no entered text.", TextToSpeech.QUEUE_ADD);
+			Utility.getTextToSpeech().say("There is no entered text.");
 		} else {
 			// The cursor is at the start of the text.
 			if(mCursorIndex <= 0) {
-				PhoneWandActivity.ttsSpeak("You are at the start of your text.", 
-						TextToSpeech.QUEUE_ADD);
+				Utility.getTextToSpeech().say("You are at the start of your text.");
 				
 			// The cursor is at the end of the text.
 			} if(mCursorIndex >= mEnteredText.size()) {
-				PhoneWandActivity.ttsSpeak("You are at the end of your text.", 
-						TextToSpeech.QUEUE_ADD);
+				Utility.getTextToSpeech().say("You are at the end of your text.");
 				
 			// The cursor is NOT at the end of the text.
 			} else {
-				PhoneWandActivity.ttsSpeak("Current letter is " + 
-						PRONUNCIATION_MAP.get(""+mCurrentString.charAt(mCursorIndex)), 
-						TextToSpeech.QUEUE_ADD);
+				Utility.getTextToSpeech().say("Current letter is " + 
+						PRONUNCIATION_MAP.get(""+mCurrentString.charAt(mCursorIndex)));
 			}
 		}
 	}
@@ -678,7 +657,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 			messageString = "There is no entered text.";
 		}
 		
-		PhoneWandActivity.ttsSpeak(messageString, TextToSpeech.QUEUE_FLUSH);
+		Utility.getTextToSpeech().say(messageString);
 	}
 	
 	/** Speak the entirety of the currently entered text, one character at a time. */
@@ -695,23 +674,23 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 			messageString = "There are no entered characters.";
 		}
 		
-		PhoneWandActivity.ttsSpeak(messageString, TextToSpeech.QUEUE_FLUSH);
+		Utility.getTextToSpeech().say(messageString);
 	}
 	
 	/** Speak full instructions for the keyboard. */
 	private void speakInstructions() {
-		PhoneWandActivity.ttsSpeak("To use the touchscreen kee board hold phone vertically. " +
+		Utility.getTextToSpeech().say("To use the touchscreen kee board hold phone vertically. " +
 				"Pressing down your finger and sliding it over the screen's " +
 				"keys will tell you which key you are currently over.  " +
 				"Releasing your finger will select and activate whichever " +
-				"key you are leaving.", TextToSpeech.QUEUE_FLUSH);
-		PhoneWandActivity.ttsSpeak("The keys above the kee board will allow you to delete " +
+				"key you are leaving.");
+		Utility.getTextToSpeech().say("The keys above the kee board will allow you to delete " +
 				"and move forward and backward through the text that you " +
 				"have already entered.  The keys below the keyboard will " +
 				"allow you to hear what you have already entered and to " +
 				"hear these instructions again. When you have finished " +
 				"typing, press the bottom right key in order to leave the " +
-				"keyboard.", TextToSpeech.QUEUE_ADD);
+				"keyboard.");
 	}
 	
 // ************************************************************************* //
