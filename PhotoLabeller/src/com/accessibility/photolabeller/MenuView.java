@@ -227,6 +227,11 @@ public class MenuView extends View {
 		int action = event.getAction();
 
 		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {	
+			if (event.getPointerCount() == 2) {
+				mRowListener.onTwoFingersUp();
+				return true;
+			}
+			
 			int y = (int) event.getY();
 			int height = this.getHeight();
 
@@ -252,9 +257,6 @@ public class MenuView extends View {
 			if (action == MotionEvent.ACTION_DOWN)
 				mInitialPush = mFocusedButton;
 			
-			return true;
-		} else if (action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2) {
-			mRowListener.onTwoFingersUp();
 			return true;
 		} else if (action == MotionEvent.ACTION_UP) {
 			if (mInitialPush != mFocusedButton)
