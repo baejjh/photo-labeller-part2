@@ -23,6 +23,8 @@
     <string name="verbose_instructions">Verbose Instructions</string>
     <string name="no_voice_instructions">No Voice Instructions</string>
     <string name="partial_instructions">Only Speak Screen Name</string>
-    
+    <string name="at_sign">"@"</string>
+	<string name="question_mark">"?"</string>
+	<string name="num_punct">"?123"</string>
 
 </resources>
