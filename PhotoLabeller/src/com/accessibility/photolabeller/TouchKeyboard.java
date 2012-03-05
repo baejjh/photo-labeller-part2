@@ -9,6 +9,8 @@
  * TouchKeyboard implements a soft keyboard for text-entry that is accessible 
  * to blind users.  As the user slides a finger over a key, that key's text is 
  * spoken.  When the user lifts her finger from a key, that key is entered.
+ * 
+ * modified by Chung Han (han@cs.washington.edu)
  */
 
 package com.accessibility.photolabeller;
@@ -19,11 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Activity; 
-import android.content.Intent;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
@@ -209,7 +209,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	public void onCreate(Bundle savedInstanceState) {
 		Log.v(TAG, "+++ ON CREATE  +++");
 		super.onCreate(savedInstanceState);
-		
+
 		// Setup the entered text structures.
 		String startingText = "";
 		populateCurrentList(startingText);
@@ -535,7 +535,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		moveCursorForward(false);
 		
 		Utility.getTextToSpeech().say("Entered " + PRONUNCIATION_MAP.get(""+character));
-		speakCurrentChar();
+		//speakCurrentChar();
 		
 		drawString();
 	}

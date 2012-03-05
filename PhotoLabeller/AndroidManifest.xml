@@ -85,6 +85,12 @@
             android:configChanges="keyboardHidden|orientation">
         </activity>
         
+		<activity 
+			android:name=".TouchKeyboard" 
+			android:screenOrientation="portrait" 
+			android:theme="@style/KeyboardTheme" >
+		</activity>
+        
          <activity
             android:name=".DeleteImage"
             android:label="@string/app_name"
