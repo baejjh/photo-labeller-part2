@@ -31,7 +31,7 @@ public class DeleteOrShare extends Activity {
 		menuView.setFocusable(true);
 		menuView.setFocusableInTouchMode(true);
 		menuView.setRowListener(new MyRowListener());
-		menuView.setButtonNames("Delete", "Share");
+		menuView.setButtonNames("Delete", "Share", "Keyboard"); // keyboard demo
 		
 		doubleClicker = new DoubleClicker();
         
@@ -60,6 +60,12 @@ public class DeleteOrShare extends Activity {
 				} else {
 					Log.v(TAG, "SHARE OVER!");
 					Utility.getTextToSpeech().say("Share Photo");
+				}
+			} else if (focusedButton == Btn.THREE) { // keyboard demo
+				if (doubleClicker.isDoubleClicked()) {
+					launchKeyboard();
+				} else {
+					Utility.getTextToSpeech().say("Show Keyboard");
 				}
 			}
 		}
@@ -91,6 +97,12 @@ public class DeleteOrShare extends Activity {
     	finish();
 		
 	}
+    
+    // keyboard demo
+    public void launchKeyboard() {
+    	startActivity(new Intent(this, TouchKeyboard.class));
+    	finish();
+    }
     
     @Override
     public void onBackPressed() {
