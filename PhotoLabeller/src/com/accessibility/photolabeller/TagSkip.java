@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
@@ -25,6 +24,7 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 	 View.OnTouchListener gestureListener;
 	 private GestureDetector gestureDetector;
 	 private SharedPreferences mPreferences;
+	 private TextView tv;
 	 
 	 private static final String FILE_NUMBER_KEY = "fileNum";
 	 private int currentFileNumber;
@@ -44,7 +44,10 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 	 public void onCreate(Bundle savedInstanceState) {
 		 super.onCreate(savedInstanceState);
 		 setContentView(R.layout.tagskip);
-		 TextView tv = (TextView)findViewById(R.id.tagskipView);
+		 tv = (TextView)findViewById(R.id.tagskipview);
+		 tv.setText("Start Recording");
+		 
+		 
 		 
 		//Initialize database
 		mHelper = new DbHelper(this);
@@ -64,7 +67,10 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 			 public boolean onTouch(View v, MotionEvent event) {
 				 int action = event.getAction();
 				 if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) && event.getPointerCount() == 2) {
-					 skipRecording();
+					 // if recording in progress, do nothing when two finger motion occurs
+					 if(!isRecording){
+						 skipRecording();
+					 }
 					 return true;
 				 }
 				 else if (gestureDetector.onTouchEvent(event))
@@ -87,10 +93,12 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 	class MyGestureDetector extends SimpleOnGestureListener {
 		
 		/*
-		 * single tap should play back instructions
+		 * single tap should play back instructions only if no recording is taking place
 		 */
         public boolean onSingleTapConfirmed(MotionEvent e) {
-        	Utility.playInstructionsMP(TagSkip.this, R.raw.taglonginstr, R.raw.tagshortinstr, mPreferences);
+        	if(!isRecording){
+        		Utility.playInstructionsMP(TagSkip.this, R.raw.taglonginstr, R.raw.tagshortinstr, mPreferences);
+        	}
         	return true;
         }
         
@@ -105,9 +113,12 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
         
         public boolean onDoubleTap(MotionEvent e) {
         	if(!isRecording) {
+        		tv.setText("Stop Recording");
+        		tv.setBackgroundColor(getResources().getColor(R.color.red));
         		startRecording();
         	}
         	else {
+        		tv.setText("Tag Saved");
         		stopRecording();
         	}
             return true;
@@ -170,29 +181,31 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 	private void skipRecording(){
 		//Utility.getTextToSpeech().stop();
 		// set the file name using the file counter and create path to save file
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
-		String fileName = audioFileName + currentFileNumber;
-		String internalStoragePath = getFilesDir().toString();
+			if(Utility.getMediaPlayer() != null) {
+				Utility.getMediaPlayer().stop();
+			}
+			String fileName = audioFileName + currentFileNumber;
+			String internalStoragePath = getFilesDir().toString();
+			
+			mCursor.moveToLast();
+			ContentValues cv = new ContentValues(1);
+			cv.put(DbHelper.COL_AUD, mCursor.getString(1).replace(".jpg", ".3gp"));
+			mDb.update(DbHelper.TABLE_NAME, cv, "iFile = ?", new String[] { mCursor.getString(1) });
+			mCursor.requery();
+			mCursor.moveToLast();
+			Log.d(TAG, mCursor.getString(0) + ", " + mCursor.getString(1) + ", " + mCursor.getString(2));
+			
+			try {
+				copyResourceToExternal(R.raw.notagrecorded, internalStoragePath+"/"+fileName+".3gp");
+				Log.d(TAG, "PATH: " +internalStoragePath+"/"+fileName+".3gp");
+			} catch (IOException e) {
+				Log.d(TAG, e.getMessage().toString());
+				e.printStackTrace();
+			}
+			
+			updateCurrentFileNumber(currentFileNumber);
+			
 		
-		mCursor.moveToLast();
-		ContentValues cv = new ContentValues(1);
-		cv.put(DbHelper.COL_AUD, mCursor.getString(1).replace(".jpg", ".3gp"));
-		mDb.update(DbHelper.TABLE_NAME, cv, "iFile = ?", new String[] { mCursor.getString(1) });
-		mCursor.requery();
-		mCursor.moveToLast();
-		Log.d(TAG, mCursor.getString(0) + ", " + mCursor.getString(1) + ", " + mCursor.getString(2));
-		
-		try {
-			copyResourceToExternal(R.raw.notagrecorded, internalStoragePath+"/"+fileName+".3gp");
-			Log.d(TAG, "PATH: " +internalStoragePath+"/"+fileName+".3gp");
-		} catch (IOException e) {
-			Log.d(TAG, e.getMessage().toString());
-			e.printStackTrace();
-		}
-		
-		updateCurrentFileNumber(currentFileNumber);
 		finish();
 	}
 	

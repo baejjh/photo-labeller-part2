@@ -4,9 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
 import android.app.Activity;
