@@ -180,7 +180,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	}
 	
 	private void tagOrSkip() {
-		Intent tagOrSkipIntent = new Intent(this, TagOrSkip.class);
+		Intent tagOrSkipIntent = new Intent(this, TagSkip.class);
 		startActivity(tagOrSkipIntent);
 		
 	}
