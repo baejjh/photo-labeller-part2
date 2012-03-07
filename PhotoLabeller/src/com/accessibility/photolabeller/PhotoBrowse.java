@@ -51,10 +51,12 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     List<String> AudioList;
     MediaPlayer mp = new MediaPlayer();
     int imageCount;
+    int requestCode;
     String s;
     String audioPath;
     AudioManager audiomanager;
     private boolean firstDisplay; // monitor first display image
+    
     
     
     //DATABASE globals
@@ -83,7 +85,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		mDb = mHelper.getWritableDatabase();
 		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
-		
 		//get the user settings
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
 		
@@ -263,13 +264,12 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
             	Utility.setImagePath(s);
             	Utility.setAudioPath(audioPath);
             	Utility.setRowId(mCursor.getInt(0));
-            	startActivity(new Intent(PhotoBrowse.this, DeleteOrShare.class));
+            	//startActivity(new Intent(PhotoBrowse.this, DeleteOrShare.class));
+            	startActivityForResult(new Intent(PhotoBrowse.this, DeleteOrShare.class),requestCode);
             	//finish();
         	}
        }
         
-        
-	
 		@SuppressWarnings("static-access")
 		public boolean onSingleTapUp(MotionEvent e)
 		{			
@@ -527,7 +527,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		mp.stop();
 		Utility.getTextToSpeech().stop();
 		//change
-		finish();
+		//finish();
 	
 	}
 	
@@ -536,5 +536,68 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	public void onBackPressed() {
 	   return;
 	}
+	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+ 	   Log.d("CheckStartActivity","onActivityResult and resultCode = "+resultCode);
+ 	   super.onActivityResult(requestCode, resultCode, data);
+ 	   if(resultCode == 1) {
+ 		  //start the confirmation delete activity
+ 		  startActivityForResult(new Intent(this, DeleteImage.class), requestCode);
+ 	   }
+ 	   else if (resultCode == 2) {
+ 		   // start the keyboard activity
+  		  startActivityForResult(new Intent(this, TouchKeyboard.class), requestCode);
+ 	   }
+ 	   else if (resultCode == 4) {
+ 		   // delete picture
+ 		   confirmDelete();
+ 	   }
+ 	   else if (resultCode == 5) {
+ 		   //Utility.getTextToSpeech().say("Sending image");
+ 		   startActivityForResult(new Intent(this, MailSender.class), requestCode);
+ 	   }
+ 	   else {
+ 		   //result code = 3. do nothing
+ 	   }
+    }
+	
+	public void confirmDelete() {
+		// get the current row position
+		int rowPosition = mCursor.getPosition();
+		// delete image
+		int rowId = Utility.getRowId();
+		mDb.delete(DbHelper.TABLE_NAME, "_id = " + rowId, null);
+		playSoundEffects(R.raw.paperrip);
+		// load updated database
+		mCursor.requery();
+		// move cursor to the next in line picture
+		mCursor.moveToFirst();
+		mCursor.move(rowPosition);
+		if(mCursor.isAfterLast()) {
+			mCursor.moveToLast();
+		}
+		
+		// show next in line picture
+		mp.reset();
+		s = mCursor.getString(1);
+		audioPath = mCursor.getString(2);
+		try 
+		{
+			params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
+			FileInputStream imageStream = new FileInputStream(s);
+			BitmapFactory.Options o = new BitmapFactory.Options();
+			o.inPurgeable = true;
+			o.inInputShareable = true;
+			Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
+			playSoundEffects(R.raw.imagechange);
+			imageView.setImageBitmap(imbm);
+			playTag(audioPath);
+		} 	
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+    }
 }
 

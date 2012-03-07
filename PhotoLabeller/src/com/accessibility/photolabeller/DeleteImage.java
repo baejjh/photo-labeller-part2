@@ -64,7 +64,10 @@ public class DeleteImage extends Activity implements OnCompletionListener{
 			if (focusedButton == Btn.ONE) {
 				if (doubleClicker.isDoubleClicked()) {
 					Log.v(TAG, "Double Clicked - Confirm");
-					confirmDelete();
+					//confirmDelete();
+					Intent in = new Intent();
+					setResult(4, in);
+					finish();
 				} else {
 					Log.v(TAG, "CONFIRM OVER!");
 					Utility.getTextToSpeech().say("Confirm Delete");
@@ -77,8 +80,10 @@ public class DeleteImage extends Activity implements OnCompletionListener{
         }
 
 		public void onTwoFingersUp() {
-			launchPhotoBrowse();
-			
+			//launchPhotoBrowse();
+			Intent in = new Intent();
+			setResult(3, in);
+			finish();
 		}
 	}
     

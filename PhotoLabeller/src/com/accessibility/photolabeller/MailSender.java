@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import android.app.Activity;
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,24 +19,26 @@ import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.widget.Button;
 
-public class MailSender extends Activity{
+public class MailSender extends Activity implements OnCompletionListener {
 	
 	private static final String TAG = "MAILSENDER";
 	Timer timer;
-	private GestureDetector gestureDetector;
-	View.OnTouchListener gestureListener;
+	//private GestureDetector gestureDetector;
+	//View.OnTouchListener gestureListener;
 	Button send;
 		
 	@Override 
 	public void onCreate(Bundle icicle) { 
 	  super.onCreate(icicle); 
 	  setContentView(R.layout.mailsender);
-	
 	  send = (Button) findViewById(R.id.send_email);
+	  new MailSendTask(send).execute();
+	
+	  
 	  
 	// Gesture detection
-      gestureDetector = new GestureDetector(new MyGestureDetector());
-      gestureListener = new View.OnTouchListener() {
+      //gestureDetector = new GestureDetector(new MyGestureDetector());
+      /*gestureListener = new View.OnTouchListener() {
           public boolean onTouch(View v, MotionEvent event) {
           	int action = event.getAction();
 				if (action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2) {
@@ -45,9 +50,9 @@ public class MailSender extends Activity{
               else
                   return false;
           }
-      };
+      };*/
 	  
-	 send.setOnTouchListener(gestureListener);
+	 //send.setOnTouchListener(gestureListener);
 	  /*send.setOnClickListener(new View.OnClickListener() { 
 	    public void onClick(View view) { 
 	    	// makes asynchronous call to send email here
@@ -59,34 +64,34 @@ public class MailSender extends Activity{
 	/*
 	 * Inner GestureDetector class
 	 */
-	class MyGestureDetector extends SimpleOnGestureListener {
+	//class MyGestureDetector extends SimpleOnGestureListener {
 		
 		/*
 		 * single tap should play back instructions
 		 */
-        public boolean onSingleTapConfirmed(MotionEvent e) {
+        /*public boolean onSingleTapConfirmed(MotionEvent e) {
         	return false;
-        }
+        }*/
         
-        public boolean onSingleTapUp(MotionEvent e) {
+        /*public boolean onSingleTapUp(MotionEvent e) {
            return false;
         }
 
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
         	float velocityY) {
             return false;
-        }
+        }*/
         
         /*
          *  double click takes a picture
          * 
          */
-        public boolean onDoubleTap(MotionEvent e) {
+        /*public boolean onDoubleTap(MotionEvent e) {
         	new MailSendTask(send).execute();
             return true;
-        }
+        }*/
 
-    }
+    //}
 	
 	/**
 	 * This class used to send email with attached image and audio tags
@@ -130,7 +135,7 @@ public class MailSender extends Activity{
 					  }, delay,period);
 			  
 			  // hard coded recipient email addresses to be changed later
-		      String[] toArr = {"nikhilkarkarey@gmail.com", "salama.obada@gmail.com", "han@cs.washington.edu"}; 
+		      String[] toArr = {Utility.getReceiverEmail()}; 
 		      m.setTo(toArr); 
 		      m.setFrom("talkingmemories@gmail.com"); 
 		      m.setSubject("A friend with the phone number: " + phoneNumber + " is sharing a new tagged image with you."); 
@@ -190,13 +195,15 @@ public class MailSender extends Activity{
 		protected void onPostExecute(Boolean success){
 			timer.cancel();
 			if(success){
-				Utility.getTextToSpeech().say("Image and tag shared successfully");
-				send.setText("Email sent.");
-				send.setClickable(true);
+				//Utility.getTextToSpeech().say("Image and tag shared successfully");
+				playMessage(R.raw.photosharelong);
+				send.setText("Photo shared successfully.");
+				//send.setClickable(true);
 			} else {
-				Utility.getTextToSpeech().say("Could not send email. Please try again.");
-				send.setText("Email failed.");
-				send.setClickable(true);
+				//Utility.getTextToSpeech().say("Photo share failed");
+				playMessage(R.raw.photofaillong);
+				send.setText("Photo share failed.");
+				//send.setClickable(true);
 			}
 		}
 		
@@ -204,10 +211,25 @@ public class MailSender extends Activity{
 		
 	}	
 	
-	 @Override
-	    public void onBackPressed() {
-	       return;
-	    }
+	@Override
+    public void onBackPressed() {
+       return;
+    }
+	
+	private void playMessage(int id)
+	{	
+    	MediaPlayer m = MediaPlayer.create(this, id);
+    	m.setOnCompletionListener(this);
+    	m.start();
+    }
+
+	@Override
+	public void onCompletion(MediaPlayer mp) {
+		//startActivity(new Intent(this, PhotoBrowse.class));
+		Intent in = new Intent();
+		setResult(3, in);
+		finish();
+	}
 		
 		
 

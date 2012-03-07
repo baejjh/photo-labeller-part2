@@ -15,6 +15,7 @@ public class Utility extends Application {
 	
 	private static String imagePath;
 	private static String audioPath;
+	private static String recEmail;
 	private static int rowId = -1;
 	private static Vibrator vibrator;
 	
@@ -45,6 +46,14 @@ public class Utility extends Application {
 
 	public static void setRowId(int var) {
 		rowId = var;
+	}
+	
+	public static String getReceiverEmail() {
+		return recEmail;
+	}
+	
+	public static void setReceiverEmail(String s) {
+		recEmail = s;
 	}
 	
 	public static void setTextToSpeech(Context context) {

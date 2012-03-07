@@ -76,13 +76,17 @@ public class DeleteOrShare extends Activity {
 
 		public void onTwoFingersUp() {
 			Log.v(TAG, "Two Fingers Up");
-			launchPhotoBrowse();
+			Intent in = new Intent();
+			setResult(3,in);
+			//launchPhotoBrowse();
 			finish();
 		}
 	}
     
     public void launchDeleteImage() {
-    	startActivity(new Intent(this, DeleteImage.class)); 
+    	//startActivity(new Intent(this, DeleteImage.class));
+    	Intent in = new Intent();
+    	setResult(1,in);
 		finish();
     }
     
@@ -93,9 +97,11 @@ public class DeleteOrShare extends Activity {
     }
     
     public void launchShareImage() {
-    	startActivity(new Intent(this, MailSender.class));
+    	//startActivity(new Intent(this, TouchKeyboard.class));
+    	//startActivity(new Intent(this, MailSender.class));
+    	Intent in = new Intent();
+    	setResult(2, in);
     	finish();
-		
 	}
     
     // keyboard demo

@@ -20,8 +20,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -209,6 +212,8 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	public void onCreate(Bundle savedInstanceState) {
 		Log.v(TAG, "+++ ON CREATE  +++");
 		super.onCreate(savedInstanceState);
+		
+		Utility.setReceiverEmail("");
 
 		// Setup the entered text structures.
 		String startingText = "";
@@ -287,15 +292,25 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	@Override
 	public boolean onTouch(View v, MotionEvent me) {
 		Log.v(TAG, "onTouch");
-		
-		mDetector.onTouchEvent(me);
-		if(me.getAction() == MotionEvent.ACTION_DOWN || 
-				me.getAction() == MotionEvent.ACTION_UP || 
-				me.getAction() == MotionEvent.ACTION_MOVE) {
-			return consumeTouchEvent(me);
-		} else {
-			return false;
+		int action = me.getAction();
+		if (action == MotionEvent.ACTION_POINTER_UP && me.getPointerCount() == 2) {
+			Intent in = new Intent();
+			setResult(3,in);
+			finish();
+			return true;
 		}
+		else {
+			mDetector.onTouchEvent(me);
+			if(me.getAction() == MotionEvent.ACTION_DOWN || 
+					me.getAction() == MotionEvent.ACTION_UP || 
+					me.getAction() == MotionEvent.ACTION_MOVE) {
+				return consumeTouchEvent(me);
+			} else {
+				return false;
+			}
+		}
+		
+		
 	}
 	
 	/** Called for touches outside of a key or the text display. */
@@ -484,11 +499,20 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	
 	/** Return the entered text to the caller Activity. */
 	private void returnResult() {
-		Utility.getTextToSpeech().say("Returning " + mCurrentString);
-		
-		//////////////////TODO: sleep until the TTS has finished speaking?
-		
-		finish();
+		Log.d("share", mCurrentString);
+		if(isValidEmail(mCurrentString.trim())) {
+			Utility.setReceiverEmail(mCurrentString);
+			//Utility.getTextToSpeech().say("Sending image to " + mCurrentString);
+			//startActivity(new Intent(this, MailSender.class));
+			//finish();
+			Intent in = new Intent();
+			setResult(5, in);
+			finish();
+		}
+		else {
+			Utility.getTextToSpeech().say("Invalid email address. Try again.");
+			Utility.setReceiverEmail("");
+		}
 	}
 	
 	/** Removes from the entered text whichever character is at the cursor's current index. */
@@ -732,5 +756,20 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	@Override
 	public boolean onDoubleTapEvent(MotionEvent e) {
 		return false;
+	}
+	
+	public boolean isValidEmail(String s) {
+		//String  expression="^[\\w\\-]([\\.\\w])+[\\w]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+		String  expression="^\\S+@\\S+$";
+		String email = s;
+	    Pattern pattern = Pattern.compile(expression,Pattern.CASE_INSENSITIVE);
+	    Matcher m = pattern.matcher(email);
+		//Pattern p = Pattern.compile("");    
+		//Match the given string with the pattern
+		//Matcher m = p.matcher(s);
+		 
+		//check whether match is found 
+		//Log.d("share", String.valueOf(m.matches()));
+		return m.matches();
 	}
 }
