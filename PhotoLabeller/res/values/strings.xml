@@ -26,5 +26,6 @@
     <string name="at_sign">"@"</string>
 	<string name="question_mark">"?"</string>
 	<string name="num_punct">"?123"</string>
+	<string name="startrecording">Double Click to Start Recording</string>
 
 </resources>
