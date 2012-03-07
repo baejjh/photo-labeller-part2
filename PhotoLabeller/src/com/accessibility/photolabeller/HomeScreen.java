@@ -101,7 +101,7 @@ public class HomeScreen extends Activity {
         }
 
 		public void onTwoFingersUp() {
-			// do nothing for home screen
+			finish();
 		}
 	}
     
