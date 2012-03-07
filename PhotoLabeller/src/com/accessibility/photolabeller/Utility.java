@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -91,6 +92,24 @@ public class Utility extends Application {
 			ttsProviderImpl.say(fullVoice);
 		else if (option == 1)
 			ttsProviderImpl.say(shortVoice);
+		else {
+			vibrator.vibrate(150);
+		}
+	}
+	
+	public static void playInstructionsMP(Activity activity,int fullInst, int shortInst, SharedPreferences pref) {
+		if(mp != null) {
+			mp.stop();
+		}
+		int option = pref.getInt(VOICE_INSTR_PREF, 0);
+		if(option == 0) {
+			Utility.setMediaPlayer(MediaPlayer.create(activity, fullInst));
+			Utility.getMediaPlayer().start();
+		}
+		else if(option == 1) {
+			Utility.setMediaPlayer(MediaPlayer.create(activity, shortInst));
+			Utility.getMediaPlayer().start();
+		}
 		else {
 			vibrator.vibrate(150);
 		}

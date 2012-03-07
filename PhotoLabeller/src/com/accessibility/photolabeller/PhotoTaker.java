@@ -58,6 +58,9 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
 		setContentView(R.layout.clickpicture);
 		
 		//Initialize database
@@ -72,7 +75,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
             	int action = event.getAction();
-				if (action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2) {
+				if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) && event.getPointerCount() == 2) {
 					finish();
 					return true;
 				}
@@ -91,22 +94,18 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_PRIVATE);
 		mCamera = Camera.open();
-		Utility.playInstructions(VERBOSE_INST, INST_SHORT, mPreferences);
+		Utility.playInstructionsMP(this, R.raw.camlonginst, R.raw.camshortinst, mPreferences);
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
 		mCamera.stopPreview();
-		Utility.getTextToSpeech().stop();
-		//Close all database connections
-		//mDb.close();
-		//mCursor.close();
 	} 
 	
 	public void onRestart(){
 		super.onRestart();
-		Utility.playInstructions(VERBOSE_INST, INST_SHORT, mPreferences);
+		Utility.playInstructionsMP(this, R.raw.camlonginst, R.raw.camshortinst,mPreferences);
 	}
 	
 	
@@ -142,8 +141,6 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	/*
@@ -151,82 +148,35 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	 * Snaps a picture with callback only when JPEG image ready
 	 */
 	public void onClick(View v) {
-		Log.d(TAG,"IN ON_CLICK");
-		//mCamera.takePicture(this, null, null, this);
 	}
 
-	public void onPictureTaken(byte[] data, Camera camera) {
-		//Save the picture
-		//FileOutputStream outStream = null;
-		
-		/*
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			// We can read and write the media
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			// We can only read the media
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			// Something else is wrong. It may be one of many other states, but all we need
-			// to know is we can neither read nor write
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
-		}*/
-		
-		//if(mExternalStorageAvailable && mExternalStorageWriteable) {
+	public void onPictureTaken(byte[] data, Camera camera) {		
+		int fileNumber = getCurrentFileNumber();
+					
+		try {
+			FileOutputStream fos = openFileOutput(picFileName + fileNumber + ".jpg", Context.MODE_PRIVATE);
+			fos.write(data);
+			fos.close();
+			File s = getFilesDir();
+			Log.d(TAG, "FILENAME: " + picFileName + fileNumber +".jpg");
+			Log.d("TAG", s.getPath().toString());
 			
-			int fileNumber = getCurrentFileNumber();
-						
-			try {
-				FileOutputStream fos = openFileOutput(picFileName + fileNumber + ".jpg", Context.MODE_PRIVATE);
-				fos.write(data);
-				fos.close();
-				File s = getFilesDir();
-				Log.d(TAG, "FILENAME: " + picFileName + fileNumber +".jpg");
-				Log.d("TAG", s.getPath().toString());
-				
-				// add new image path to the data base.
-				ContentValues cv = new ContentValues(2);
-				cv.put(DbHelper.COL_IMG, s.getPath().toString() + "/"+picFileName + fileNumber + ".jpg");
-				cv.put(DbHelper.COL_AUD, "NoTag");
-				mDb.insert(DbHelper.TABLE_NAME, null, cv);
-				//Refresh the list
-				mCursor.requery();
-				mCursor.moveToLast();
-				/*
-				File folder = Environment.getExternalStorageDirectory();
-				File outputFile= new File(folder, "test.jpg");
-				FileOutputStream fos = new FileOutputStream(outputFile);
-				fos.write(data);
-				fos.close();
-				*/
-						
-				/*
-				 
-				Uri uriTarget = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, new ContentValues());
-				String s = uriTarget.getPath();
-				Log.d(TAG, s);
-				OutputStream imageFileOS;
-				imageFileOS = getContentResolver().openOutputStream(uriTarget);
-				imageFileOS.write(data);
-				imageFileOS.flush();
-				imageFileOS.close();
-				*/
+			// add new image path to the data base.
+			ContentValues cv = new ContentValues(2);
+			cv.put(DbHelper.COL_IMG, s.getPath().toString() + "/"+picFileName + fileNumber + ".jpg");
+			cv.put(DbHelper.COL_AUD, "NoTag");
+			mDb.insert(DbHelper.TABLE_NAME, null, cv);
+			//Refresh the list
+			mCursor.requery();
+			mCursor.moveToLast();
+			
 												
-			} catch (FileNotFoundException e) {
-				Log.d(TAG, e.getMessage());
-				//e.printStackTrace();
-			} catch (IOException e) {
-				Log.d(TAG, e.getMessage());
-				//e.printStackTrace();
-			} 
-			
-			tagOrSkip();
-		//}
+		} catch (FileNotFoundException e) {
+			Log.d(TAG, e.getMessage());
+		} catch (IOException e) {
+			Log.d(TAG, e.getMessage());
+		} 
+		tagOrSkip();
 	}
 	
 	private void tagOrSkip() {
@@ -244,7 +194,6 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 
 	public void onShutter() {
 		playSoundEffects(R.raw.camera1);
-		
 	}
 	
 	public void takePhoto(){
@@ -260,11 +209,8 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 		 * single tap should play back instructions
 		 */
         public boolean onSingleTapConfirmed(MotionEvent e) {
-        	//Utility.getTextToSpeech().stop();
-            //takePhoto();
-            //return true;
-        	//play instructions
-        	return false;
+        	Utility.playInstructionsMP(PhotoTaker.this, R.raw.camlonginst, R.raw.camshortinst, mPreferences);
+        	return true;
         }
         
         public boolean onSingleTapUp(MotionEvent e) {
@@ -281,10 +227,6 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
          * 
          */
         public boolean onDoubleTap(MotionEvent e) {
-        	//playSoundEffects(R.raw.imagechange);
-        	//finish();
-			//return true;
-        	Utility.getTextToSpeech().stop();
             takePhoto();
             return true;
         }
@@ -298,9 +240,11 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	
 	private void playSoundEffects(int imageId)
 	{	
-    	MediaPlayer m = MediaPlayer.create(this, imageId);
-    	m.start();
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		
+    	Utility.setMediaPlayer(MediaPlayer.create(this, imageId));
+    	Utility.getMediaPlayer().start();
     }
-
-	
 }
