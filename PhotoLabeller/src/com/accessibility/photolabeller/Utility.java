@@ -9,6 +9,7 @@ import java.nio.channels.FileChannel;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Vibrator;
 
 public class Utility extends Application {
@@ -18,6 +19,7 @@ public class Utility extends Application {
 	private static String recEmail;
 	private static int rowId = -1;
 	private static Vibrator vibrator;
+	private static MediaPlayer mp;
 	
 	private static final String VOICE_INSTR_PREF = "voiceInstructions";
 	
@@ -56,6 +58,14 @@ public class Utility extends Application {
 		recEmail = s;
 	}
 	
+	public static void setMediaPlayer(MediaPlayer m) {
+		mp = m;
+	}
+	
+	public static MediaPlayer getMediaPlayer() {
+		return mp;
+	}
+	
 	public static void setTextToSpeech(Context context) {
 		ttsProviderImpl = TtsProviderFactory.getInstance();
 		if (ttsProviderImpl != null) {
@@ -69,6 +79,10 @@ public class Utility extends Application {
 	
 	public static void setVibrator(Vibrator v) {
 		vibrator = v;
+	}
+	
+	public static Vibrator getVibrator() {
+		return vibrator;
 	}
 
 	public static void playInstructions(String fullVoice, String shortVoice, SharedPreferences pref) {
