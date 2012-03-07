@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
 import android.app.Activity;
@@ -32,11 +35,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	private static final String audioFileName = "tm_file";
 	public static final String PREF_NAME = "myPreferences";
 	private static final String TAG = "TAG_RECORDER";
-	MediaPlayer mp = new MediaPlayer();
-	
-	private static final String INST_VERBOSE = "Tag photo or skip tagging." +
-			"Double tap screen to start recording, and tap to stop recording.";
-	private static final String INST_SHORT = "Tag photo or skip tagging.";
+	MediaPlayer mp;
 
 	private MenuView menuView;
 	private DoubleClicker doubleClicker;
@@ -45,12 +44,16 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	DbHelper mHelper;
 	SQLiteDatabase mDb;
 	Cursor mCursor;
+	Thread waitThread;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.tagorskip);
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
 
 		menuView = (MenuView) findViewById(R.id.menu_view3);
 		menuView.setFocusable(true);
@@ -73,7 +76,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		initializeSettings();
 		isRecording = false;
 		isTaggingskipped = false;
-		Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
+		Utility.playInstructionsMP(this, R.raw.taglonginstr, R.raw.tagshortinstr,mPreferences);
 	}
 
 	private void initializeSettings() {
@@ -87,15 +90,16 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 			Btn focusedButton = menuView.getFocusedButton();
 			doubleClicker.click(focusedButton);
 			
-			if (isRecording)
+			if (doubleClicker.isDoubleClicked() && !isRecording) {
+				Log.v(TAG, "Double Clicked - Tag");
+				startRecording();
+			} else if (doubleClicker.isDoubleClicked() && isRecording) {
+				Log.v(TAG, "TAG OVER!");
 				stopRecording();
+			}
 			else {
-				if (doubleClicker.isDoubleClicked()) {
-					Log.v(TAG, "Double Clicked - Tag");
-					startRecording();
-				} else {
-					Log.v(TAG, "TAG OVER!");
-					Utility.getTextToSpeech().say("Tag Photo");
+				if(!isRecording) {
+					playTagPhoto();
 				}
 			}
 		}
@@ -105,27 +109,26 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		}
 
 		public void onTwoFingersUp() {
-			if (isRecording) {
-				stopRecording();
-			} else {
+			if (!isRecording) {
 				skipRecording();
-				Utility.getTextToSpeech().say("Skip Tagging");
+				//playSkipTagging();
 			}
 		}
 	}
 
 	private void startRecording() {
 		if (!isRecording) {
-			Utility.getTextToSpeech().stop();
+			//Utility.getTextToSpeech().stop();
 			// set the file name using the file counter and create path to save file
+			Utility.getMediaPlayer().stop();
 			String fileName = audioFileName + currentFileNumber;
 			String internalStoragePath = getFilesDir().toString();
 
 			recorder = new AudioRecorder(fileName, internalStoragePath);
 									
-			MediaPlayer m = MediaPlayer.create(this, R.raw.recprompt);
-			m.setOnCompletionListener(this);
-	    	m.start();
+			mp = MediaPlayer.create(this, R.raw.recprompt);
+			mp.setOnCompletionListener(this);
+	    	mp.start();
 		}
 	}
 
@@ -142,9 +145,12 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 			Log.d(TAG, mCursor.getString(0) + ", " + mCursor.getString(1) + ", " + mCursor.getString(2));
 			updateCurrentFileNumber(currentFileNumber);
 			
-			MediaPlayer m = MediaPlayer.create(this, R.raw.tagsaved);
-			m.setOnCompletionListener(this);
-	    	m.start();
+			if(Utility.getMediaPlayer() != null) {
+				Utility.getMediaPlayer().stop();
+			}
+			mp = MediaPlayer.create(this, R.raw.tagsaved);
+			mp.setOnCompletionListener(this);
+	    	mp.start();
 	    	
 			//isRecording = false;
 			//finish();
@@ -156,8 +162,9 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	
 	private void skipRecording(){
 		isTaggingskipped = true;
-		Utility.getTextToSpeech().stop();
+		//Utility.getTextToSpeech().stop();
 		// set the file name using the file counter and create path to save file
+		Utility.getMediaPlayer().stop();
 		String fileName = audioFileName + currentFileNumber;
 		String internalStoragePath = getFilesDir().toString();
 		
@@ -180,10 +187,31 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		
 		updateCurrentFileNumber(currentFileNumber);
 		
-		MediaPlayer m = MediaPlayer.create(this, R.raw.tagskipped);
-		m.setOnCompletionListener(this);
-    	m.start();
-		
+		//MediaPlayer m = MediaPlayer.create(this, R.raw.tagskipped);
+		//m.setOnCompletionListener(this);
+    	//m.start();
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		mp = MediaPlayer.create(this, R.raw.tagskipped);
+		mp.setOnCompletionListener(this);
+    	mp.start();
+		//Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.skiptagging));
+		//final int duration = Utility.getMediaPlayer().getDuration();
+		//Utility.getMediaPlayer().start();
+		//initializeWaitThread(duration);
+		//waitThread.start();
+		//sleep(duration);
+		/*long delay = duration;
+		  long period = duration;
+		  Timer timer = new Timer();
+		  timer.scheduleAtFixedRate(
+				  new TimerTask() {
+					  public void run() {
+						  isTaggingskipped = false;
+						  finish();
+					  }
+				  }, delay,period);*/
 	}
 	
 	// This method copies a resource file to the given destination dest
@@ -279,6 +307,46 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	public void onBackPressed() {
 	   return;
 	}
-
 	
+	public void playTagPhoto() {
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		Utility.setMediaPlayer(MediaPlayer.create(this,R.raw.tagphoto));
+		Utility.getMediaPlayer().start();
+	}
+	
+	public void playSkipTagging() {
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		Utility.setMediaPlayer(MediaPlayer.create(this,R.raw.skiptagging));
+		Utility.getMediaPlayer().start();
+	}
+	
+	public void initializeWaitThread(final int duration) {
+		waitThread = new Thread() {
+	    int wait = 0;
+	    @Override
+	    public void run()
+	    {
+	    	try
+	    	{
+	    		super.run();
+			    /**
+			    * use while to get the splash time. Use sleep() to increase
+			    * the wait variable for every 100L.
+			    */
+	    		while (wait < duration) {
+	    			sleep(1);
+	    			wait += 1;
+	    		}
+	    	} catch (Exception e) {
+	    	} finally
+	    	{
+	    		finish();
+	    	}
+    	}
+	    };
+	}
 }
