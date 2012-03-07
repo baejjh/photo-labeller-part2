@@ -6,14 +6,11 @@ import com.accessibility.photolabeller.MenuView.RowListener;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 
 public class DeleteOrShare extends Activity {
-
-	private static final String INST_VERBOSE = "Delete or share this picture.";
-	private static final String INST_SHORT = "Delete or share.";
-
 	private SharedPreferences mPreferences;
 	public static final String PREF_NAME = "myPreferences";
 	private static final String TAG = "DELETE SHARE";
@@ -36,7 +33,8 @@ public class DeleteOrShare extends Activity {
 		doubleClicker = new DoubleClicker();
         
 		mPreferences = getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
-		Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
+		Utility.getMediaPlayer().stop();
+		Utility.playInstructionsMP(this, R.raw.delsharefullinstr,R.raw.delshareshortinstr, mPreferences);
      }
 
     private class MyRowListener implements RowListener {
@@ -51,7 +49,7 @@ public class DeleteOrShare extends Activity {
 					launchDeleteImage();
 				} else {
 					Log.v(TAG, "DELETE OVER!");
-					Utility.getTextToSpeech().say("Delete Photo");
+					playDeletePhoto();
 				}
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
@@ -59,7 +57,7 @@ public class DeleteOrShare extends Activity {
 					launchShareImage();
 				} else {
 					Log.v(TAG, "SHARE OVER!");
-					Utility.getTextToSpeech().say("Share Photo");
+					playSharePhoto();
 				}
 			} else if (focusedButton == Btn.THREE) { // keyboard demo
 				if (doubleClicker.isDoubleClicked()) {
@@ -119,6 +117,22 @@ public class DeleteOrShare extends Activity {
     public void onPause() {
     	super.onPause();
     	Utility.getTextToSpeech().stop();
+    }
+    
+    public void playSharePhoto() {
+    	if(Utility.getMediaPlayer() != null) {
+    		Utility.getMediaPlayer().stop();
+    	}
+    	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.deletephoto));
+    	Utility.getMediaPlayer().start();
+    }
+    
+    public void playDeletePhoto() {
+    	if(Utility.getMediaPlayer() != null) {
+    		Utility.getMediaPlayer().stop();
+    	}
+    	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.sharephoto));
+    	Utility.getMediaPlayer().start();
     }
 
 }
