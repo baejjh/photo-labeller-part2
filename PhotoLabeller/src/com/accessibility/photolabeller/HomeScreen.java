@@ -1,6 +1,7 @@
 package com.accessibility.photolabeller;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
 
@@ -18,7 +19,7 @@ import android.util.Log;
  * Browse - Takes user to Browse Activity to browse images and listen to tags
  * Options - Present options menu for voice instructions, camera options, etc.
  */
-public class HomeScreen extends Activity {
+public class HomeScreen extends Activity{
 
 	private SharedPreferences mPreferences;
 	private MenuView menuView;
@@ -26,8 +27,6 @@ public class HomeScreen extends Activity {
 	private static final String TAG = "HOME SCREEN";
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
-	private static final String INST_VERBOSE = "Home Screen. Touch screen to navigate, and double tap to take actions.";
-	private static final String INST_SHORT = "Home Screen.";
 	private static final String VOICE_INSTR_PREF = "voiceInstructions";
 
 	/** Called when the activity is first created. */
@@ -46,12 +45,7 @@ public class HomeScreen extends Activity {
 		menuView.setButtonNames("Capture", "Browse", "Options");
 		
 		doubleClicker = new DoubleClicker();
-		
-		// check if TTS installed on device
-		// Intent checkIntent = new Intent();
-		// checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-		// startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
-
+	
 		setFileNumbering();
 		setInstructionPreferences();
 		Utility.setVibrator((Vibrator) getSystemService(Context.VIBRATOR_SERVICE));
@@ -59,7 +53,19 @@ public class HomeScreen extends Activity {
 	}
 
 	public void playInstructions() {
-		Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		int option = mPreferences.getInt(VOICE_INSTR_PREF, 0);
+		if(option == 0) {
+			playLongInstructions();
+		}
+		else if(option == 1) {
+			playShortInstructions();
+		}
+		else {
+			Utility.getVibrator().vibrate(150);
+		}
 	}
 	
     private class MyRowListener implements RowListener {
@@ -74,7 +80,7 @@ public class HomeScreen extends Activity {
 					launchPhotoTaker();
 				} else {
 					Log.v(TAG, "CAPTURE OVER!");
-					Utility.getTextToSpeech().say("Take Photos");
+					playTakePhotos();
 				}
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
@@ -82,7 +88,7 @@ public class HomeScreen extends Activity {
 					launchPhotoBrowse();
 				} else {
 					Log.v(TAG, "BROWSE OVER!");
-					Utility.getTextToSpeech().say("Browse Photos");
+					playBrowsePhotos();
 				}
 			} else if (focusedButton == Btn.THREE) {
 				if (doubleClicker.isDoubleClicked()) {
@@ -90,7 +96,7 @@ public class HomeScreen extends Activity {
 					launchOptions();
 				} else {
 					Log.v(TAG, "OPTIONS OVER!");
-					Utility.getTextToSpeech().say("Options");
+					playOptions();
 				}
 			}
 
@@ -101,7 +107,7 @@ public class HomeScreen extends Activity {
         }
 
 		public void onTwoFingersUp() {
-			finish();
+			exitApp();
 		}
 	}
     
@@ -142,48 +148,19 @@ public class HomeScreen extends Activity {
 		}
 		
 	}
-	/*
-	public void onInit(int arg0) {
-		speaker.setLanguage(Locale.US);
-		say(VERBOSE_INST);
-	}
 	
-	/*
-
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onActivityResult(int, int,
-	 * android.content.Intent)
-	 * 
-	 * Initialize TTS if already installed on device, otherwise install it
-	 */
-	/*
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == MY_DATA_CHECK_CODE) {
-			if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-				// success, create the TTS instance
-				speaker = new TextToSpeech(this, this);
-			} else {
-				// missing data, install it
-				Intent installIntent = new Intent();
-				installIntent
-						.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-				startActivity(installIntent);
-			}
-		}
-	}
-	*/
 	public void onStop(){
 		super.onStop();
-		Utility.getTextToSpeech().stop();
+		/*if(mp != null) {
+			mp.stop();
+		}*/
 	}
 	
 	public void  onPause(){
 		super.onPause();
-		Utility.getTextToSpeech().stop();
-		
+		/*if(mp != null) {
+			mp.stop();
+		}*/
 	}
 	
 	public void onRestart(){
@@ -197,5 +174,53 @@ public class HomeScreen extends Activity {
 	public void onBackPressed() {
 	   return;
 	}
-
+	
+	public void exitApp() {
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.goodbye));
+		Utility.getMediaPlayer().start();
+		finish();
+	}
+	
+	public void playTakePhotos() {
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.takephoto));
+		Utility.getMediaPlayer().start();
+	}
+	
+	public void playBrowsePhotos() {
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.browsephoto));
+		Utility.getMediaPlayer().start();
+	}
+	
+	public void playOptions() {
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.options));
+		Utility.getMediaPlayer().start();
+	}
+	
+	public void playLongInstructions(){
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.hsfullinst));
+		Utility.getMediaPlayer().start();
+	}
+	
+	public void playShortInstructions() {
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.hsshortinst));
+		Utility.getMediaPlayer().start();
+	}
 }
