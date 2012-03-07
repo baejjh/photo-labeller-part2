@@ -55,7 +55,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     String s;
     String audioPath;
     AudioManager audiomanager;
-    private boolean firstDisplay; // monitor first display image
     
     
     
@@ -64,12 +63,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	SQLiteDatabase mDb;
 	Cursor mCursor;
 	
-	//INSTRUCTIONS
-	private static final String INST_VERBOSE = "Browse screen. Swipe screen to browse" +
-			"photos. Tap screen to ree play tag. Hold down screen to delete or " +
-			"share picture.";
-	private static final String INST_SHORT = "Browse screen.";
-	
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +70,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photobrowse);
 		
-		firstDisplay = true;
 		
 		//Initialize database
 		mHelper = new DbHelper(this);
@@ -97,6 +89,11 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		Log.d(TAG, parentFolder.getPath().toString());
 		mp.setOnPreparedListener(this);
 		addFlipperImages(imageFrame, parentFolder);
+		
+		if(Utility.getMediaPlayer() != null) {
+			Utility.getMediaPlayer().stop();
+		}
+		Utility.playInstructionsMP(this, R.raw.browsefullinstr, R.raw.browseshortinstr, mPreferences);
 
 		// Gesture detection
 		gestureDetector = new GestureDetector(new MyGestureDetector());
@@ -105,7 +102,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			public boolean onTouch(View v, MotionEvent event) {
 	
 				int action = event.getAction();
-				if (action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2) {
+				if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) && event.getPointerCount() == 2) {
 					finish();
 					return true;
 				}
@@ -139,45 +136,16 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 
 	private void addFlipperImages(ViewFlipper flipper, File parent)
 	{
-		//ImageList = new ArrayList<String>();
-    	//AudioList = new ArrayList<String>();
-		//imageCount = parent.listFiles().length;
-		/*for (int count = 0; count < imageCount; count++) {
-			s = parent.listFiles()[count].getAbsolutePath();
-			if (s.endsWith(".jpg"))
-			{
-				ImageList.add(s);
-			}
-			else
-			{
-				AudioList.add(s);
-			}
-		}*/
-		//ImageView imageView = new ImageView(this);
-		//imageCount = ImageList.size();
 		if (isDataBaseEmpty())
 		{
-		    Utility.getTextToSpeech().say("Photo browse screen. No images found." +
-		    		"Double click to return to home screen. ");
-		
 			imageView = new ImageView(this);
 			params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
 			Bitmap imbm = BitmapFactory.decodeResource(getResources(), R.drawable.noimagefound);
 			imageView.setImageBitmap(imbm);
 			imageView.setLayoutParams(params);
 			flipper.addView(imageView);
-			Log.d("TAG", "just before say");
-			
 		}
 		else {
-			//int row = GlobalVariables.getRowId();
-			/*
-			if(row != -1) {
-				mCursor = mDb.
-			} else {
-				mCursor.moveToLast();
-			}
-			*/
 			mCursor.moveToLast();
 			s = mCursor.getString(1);
 			audioPath = mCursor.getString(2);
@@ -202,27 +170,30 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			{
 				e.printStackTrace();
 			}
-			//imageView.setImageDrawable(Drawable.createFromPath(imagePath));
-			//System.gc();
-			
-			// if activity just created, play instructions instead of first image tag
-			if(firstDisplay){
-				firstDisplay = false;
-				Utility.playInstructions(INST_VERBOSE, INST_SHORT, mPreferences);
-			} else {
-				Utility.getTextToSpeech().stop();
-				playTag(audioPath);
-			}
 		}
 	}
 	
 	class MyGestureDetector extends SimpleOnGestureListener
 	{
-		@SuppressWarnings("static-access")
 		public boolean onSingleTapConfirmed(MotionEvent e)
 		{
-			Utility.getTextToSpeech().stop();
-			if (!isDataBaseEmpty()) {
+			if(Utility.getMediaPlayer() != null) {
+				Utility.getMediaPlayer().stop();
+			}
+			Utility.playInstructionsMP(PhotoBrowse.this, R.raw.browsefullinstr, R.raw.shortinstrset, mPreferences);
+			return true;
+		}
+		
+		/*
+         *  return to home screen on a double tap
+         * 
+         */
+        public boolean onDoubleTap(MotionEvent e) {
+        	if(Utility.getMediaPlayer() != null) {
+    			Utility.getMediaPlayer().stop();
+    		}
+        	if (!isDataBaseEmpty()) {
+        		
 				mp.reset();
 				playTag(audioPath);
 				
@@ -240,33 +211,25 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 				return true;
 			}
 			else {
-				//ttsProviderImpl.say("No images found");
-				Utility.getTextToSpeech().say("No images found");
+				Utility.getMediaPlayer().stop();
+				Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this,R.raw.noimagesfound));
+				Utility.getMediaPlayer().start();
 				return true;
 			}
-			
-		}
-		
-		/*
-         *  return to home screen on a double tap
-         * 
-         */
-        public boolean onDoubleTap(MotionEvent e) {
-        	playSoundEffects(R.raw.imagechange);
-        	finish();
-			return true;
         }
         
         @Override
         public void onLongPress(MotionEvent e) {
-        	if (s != null) {
-        		playSoundEffects(R.raw.imagechange);
+        	if (!isDataBaseEmpty()) {
             	Utility.setImagePath(s);
             	Utility.setAudioPath(audioPath);
             	Utility.setRowId(mCursor.getInt(0));
-            	//startActivity(new Intent(PhotoBrowse.this, DeleteOrShare.class));
             	startActivityForResult(new Intent(PhotoBrowse.this, DeleteOrShare.class),requestCode);
-            	//finish();
+        	}
+        	else {
+        		Utility.getMediaPlayer().stop();
+        		Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.noimagesfound));
+        		Utility.getMediaPlayer().start();
         	}
        }
         
@@ -306,15 +269,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 						if(mCursor.isAfterLast())
 						{
 							if(isOnlyOnePicture()) {
-								playSoundEffects(R.raw.onlyonepic);
+								Utility.getMediaPlayer().stop();
+								Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.onlyonepic));
+								Utility.getMediaPlayer().start();
 							}
 							else {
-								playSoundEffects(R.raw.endpic);
+								Utility.getMediaPlayer().stop();
+								Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.endpic));
+								Utility.getMediaPlayer().start();
 							}
 							mCursor.moveToLast();
 						} else
 						{
-							mp.reset();
+							Utility.getMediaPlayer().stop();
 							s = mCursor.getString(1);
 							audioPath = mCursor.getString(2);
 							try 
@@ -327,9 +294,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 								Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
 								playSoundEffects(R.raw.imagechange);
 								imageView.setImageBitmap(imbm);
-								//imageView.setLayoutParams(params);
-								//imageFrame.addView(imageView);
-								playTag(audioPath);
 							} 	
 							catch (FileNotFoundException e)
 							{
@@ -341,9 +305,11 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 							}
 						}
 					}
-					//imageView.setImageDrawable(Drawable.createFromPath(imagePath));
-					//System.gc();
-					//imageFrame.showNext();*/
+					else {
+						Utility.getMediaPlayer().stop();
+						Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.noimagesfound));
+						Utility.getMediaPlayer().start();
+					}
 				}
 				else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY)
 				{
@@ -356,15 +322,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 						mCursor.moveToPrevious();
 						if(mCursor.isBeforeFirst()) {
 							if(isOnlyOnePicture()) {
-								playSoundEffects(R.raw.onlyonepic);
+								Utility.getMediaPlayer().stop();
+								Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this,R.raw.onlyonepic));
+								Utility.getMediaPlayer().start();
 							}
 							else {
-								playSoundEffects(R.raw.endpic);
+								Utility.getMediaPlayer().stop();
+								Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.endpic));
+								Utility.getMediaPlayer().start();
 							}
 							mCursor.moveToFirst();
 						} else
 						{
-							mp.reset();
+							Utility.getMediaPlayer().stop();
 							s = mCursor.getString(1);
 							audioPath = mCursor.getString(2);
 							try 
@@ -377,9 +347,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 								Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
 								playSoundEffects(R.raw.imagechange);
 								imageView.setImageBitmap(imbm);
-								//imageView.setLayoutParams(params);
-								//imageFrame.addView(imageView);
-								playTag(audioPath);
 							} 	
 							catch (FileNotFoundException e)
 							{
@@ -391,7 +358,11 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 							}
 						}
 					}
-					/*imageFrame.showPrevious();*/
+					else {
+						Utility.getMediaPlayer().stop();
+						Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this,R.raw.noimagesfound));
+						Utility.getMediaPlayer().start();
+					}
 				}
 			}
 			catch (Exception e)
@@ -525,10 +496,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	public void onPause(){
 		super.onPause();
 		mp.stop();
-		Utility.getTextToSpeech().stop();
-		//change
-		//finish();
-	
 	}
 	
 	
@@ -568,35 +535,42 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		// delete image
 		int rowId = Utility.getRowId();
 		mDb.delete(DbHelper.TABLE_NAME, "_id = " + rowId, null);
-		playSoundEffects(R.raw.paperrip);
+		Utility.getMediaPlayer().stop();
+		Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.browseshortinstr));
+		Utility.getMediaPlayer().start();
 		// load updated database
 		mCursor.requery();
-		// move cursor to the next in line picture
-		mCursor.moveToFirst();
-		mCursor.move(rowPosition);
-		if(mCursor.isAfterLast()) {
-			mCursor.moveToLast();
-		}
-		
-		// show next in line picture
-		mp.reset();
-		s = mCursor.getString(1);
-		audioPath = mCursor.getString(2);
-		try 
-		{
+		if(isDataBaseEmpty()) {
 			params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
-			FileInputStream imageStream = new FileInputStream(s);
-			BitmapFactory.Options o = new BitmapFactory.Options();
-			o.inPurgeable = true;
-			o.inInputShareable = true;
-			Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
-			playSoundEffects(R.raw.imagechange);
+			Bitmap imbm = BitmapFactory.decodeResource(getResources(), R.drawable.noimagefound);
 			imageView.setImageBitmap(imbm);
-			playTag(audioPath);
-		} 	
-		catch (IOException e)
-		{
-			e.printStackTrace();
+		}
+		else {
+			// move cursor to the next in line picture
+			mCursor.moveToFirst();
+			mCursor.move(rowPosition);
+			if(mCursor.isAfterLast()) {
+				mCursor.moveToLast();
+			}
+			
+			// show next in line picture
+			s = mCursor.getString(1);
+			audioPath = mCursor.getString(2);
+			try 
+			{
+				params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
+				FileInputStream imageStream = new FileInputStream(s);
+				BitmapFactory.Options o = new BitmapFactory.Options();
+				o.inPurgeable = true;
+				o.inInputShareable = true;
+				Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
+				playSoundEffects(R.raw.imagechange);
+				imageView.setImageBitmap(imbm);
+			} 	
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
     }
 }
