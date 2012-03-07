@@ -88,15 +88,7 @@ public class DeleteOrShare extends Activity {
 		finish();
     }
     
-    
-    public void launchPhotoBrowse() {
-    	startActivity(new Intent(this, PhotoBrowse.class));
-		finish();
-    }
-    
     public void launchShareImage() {
-    	//startActivity(new Intent(this, TouchKeyboard.class));
-    	//startActivity(new Intent(this, MailSender.class));
     	Intent in = new Intent();
     	setResult(2, in);
     	finish();
@@ -116,14 +108,13 @@ public class DeleteOrShare extends Activity {
     @Override
     public void onPause() {
     	super.onPause();
-    	Utility.getTextToSpeech().stop();
     }
     
     public void playSharePhoto() {
     	if(Utility.getMediaPlayer() != null) {
     		Utility.getMediaPlayer().stop();
     	}
-    	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.deletephoto));
+    	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.sharephoto));
     	Utility.getMediaPlayer().start();
     }
     
@@ -131,7 +122,7 @@ public class DeleteOrShare extends Activity {
     	if(Utility.getMediaPlayer() != null) {
     		Utility.getMediaPlayer().stop();
     	}
-    	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.sharephoto));
+    	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.deletephoto));
     	Utility.getMediaPlayer().start();
     }
 

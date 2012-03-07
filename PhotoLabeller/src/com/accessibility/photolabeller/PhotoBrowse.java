@@ -525,6 +525,9 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
  		   startActivityForResult(new Intent(this, MailSender.class), requestCode);
  	   }
  	   else {
+ 		   Utility.getMediaPlayer().stop();
+ 		   Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.browseshortinstr));
+ 		   Utility.getMediaPlayer().start();
  		   //result code = 3. do nothing
  	   }
     }
