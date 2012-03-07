@@ -49,25 +49,8 @@ public class HomeScreen extends Activity{
 		setFileNumbering();
 		setInstructionPreferences();
 		Utility.setVibrator((Vibrator) getSystemService(Context.VIBRATOR_SERVICE));
-		playInstructions();
-	}
-
-	public void playInstructions() {
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
-		int option = mPreferences.getInt(VOICE_INSTR_PREF, 0);
-		if(option == 0) {
-			playLongInstructions();
-		}
-		else if(option == 1) {
-			playShortInstructions();
-		}
-		else {
-			Utility.getVibrator().vibrate(150);
-		}
-	}
-	
+		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
+	}	
     private class MyRowListener implements RowListener {
     	
         public void onRowOver() {
@@ -165,7 +148,7 @@ public class HomeScreen extends Activity{
 	
 	public void onRestart(){
 		super.onRestart();
-		playInstructions();
+		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
 		menuView.requestFocus();
 		menuView.resetButtonFocus();
 	}
@@ -205,22 +188,6 @@ public class HomeScreen extends Activity{
 			Utility.getMediaPlayer().stop();
 		}
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.options));
-		Utility.getMediaPlayer().start();
-	}
-	
-	public void playLongInstructions(){
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
-		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.hsfullinst));
-		Utility.getMediaPlayer().start();
-	}
-	
-	public void playShortInstructions() {
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
-		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.hsshortinst));
 		Utility.getMediaPlayer().start();
 	}
 }
