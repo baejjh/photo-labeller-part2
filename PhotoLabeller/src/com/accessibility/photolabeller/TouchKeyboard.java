@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -47,6 +48,8 @@ import android.widget.TextView;
 public class TouchKeyboard extends Activity implements OnTouchListener, 
 		OnDoubleTapListener, OnGestureListener, OnFocusChangeListener, 
 		OnLongClickListener {
+	
+	private SharedPreferences mPreferences;
 	
 	// Phonetic spellings for each of the keys; some characters aren't 
 	// pronounced correctly if just the single character is given to the 
@@ -212,7 +215,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	public void onCreate(Bundle savedInstanceState) {
 		Log.v(TAG, "+++ ON CREATE  +++");
 		super.onCreate(savedInstanceState);
-		
+		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
 		Utility.setReceiverEmail("");
 
 		// Setup the entered text structures.
@@ -293,7 +296,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	public boolean onTouch(View v, MotionEvent me) {
 		Log.v(TAG, "onTouch");
 		int action = me.getAction();
-		if (action == MotionEvent.ACTION_POINTER_UP && me.getPointerCount() == 2) {
+		if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) && me.getPointerCount() == 2) {
 			Intent in = new Intent();
 			setResult(3,in);
 			finish();
@@ -703,18 +706,23 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	
 	/** Speak full instructions for the keyboard. */
 	private void speakInstructions() {
-		Utility.getTextToSpeech().say("To use the touchscreen kee board hold phone vertically. " +
+		String longInst = "Kee board screen. Enter email address of recipient. Use two fingers swipe action to return to photo browse screen." +
+		"To use the touchscreen kee board hold phone vertically. " +
 				"Pressing down your finger and sliding it over the screen's " +
 				"keys will tell you which key you are currently over.  " +
 				"Releasing your finger will select and activate whichever " +
-				"key you are leaving.");
-		Utility.getTextToSpeech().say("The keys above the kee board will allow you to delete " +
+				"key you are leaving." +
+	"The keys above the kee board will allow you to delete " +
 				"and move forward and backward through the text that you " +
 				"have already entered.  The keys below the keyboard will " +
 				"allow you to hear what you have already entered and to " +
 				"hear these instructions again. When you have finished " +
 				"typing, press the bottom right key in order to leave the " +
-				"keyboard.");
+				"keyboard.";
+		String shortInst = "Kee board screen. Enter email address of recipient.";
+		
+		Utility.getMediaPlayer().stop();
+		Utility.playInstructions(longInst, shortInst, mPreferences);
 	}
 	
 // ************************************************************************* //

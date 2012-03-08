@@ -127,7 +127,31 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 					public void run()
 					{
 						handler.postDelayed(runnable, 3000);
-						imageFrame.showNext();
+						//imageFrame.showNext();
+						Utility.getMediaPlayer().stop();
+						mCursor.moveToNext();
+						if(mCursor.isAfterLast()) {
+							mCursor.moveToFirst();
+						}
+						s = mCursor.getString(1);
+						audioPath = mCursor.getString(2);
+						try 
+						{
+							params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
+							FileInputStream imageStream = new FileInputStream(s);
+							BitmapFactory.Options o = new BitmapFactory.Options();
+							o.inPurgeable = true;
+							o.inInputShareable = true;
+							Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
+							playSoundEffects(R.raw.imagechange);
+							imageView.setImageBitmap(imbm);
+							mp.reset();
+							playTag(audioPath);
+						} 	
+						catch (IOException e)
+						{
+							e.printStackTrace();
+						}
 					}
 				};
 				handler.postDelayed(runnable, 500);
