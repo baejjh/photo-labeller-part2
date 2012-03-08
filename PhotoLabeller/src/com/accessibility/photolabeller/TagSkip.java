@@ -85,9 +85,7 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 		 };
 		 tv.setOnClickListener(this);
 		 tv.setOnTouchListener(gestureListener);
-		 if(Utility.getMediaPlayer() != null) {
-			 Utility.getMediaPlayer().stop();
-		 }
+		 Utility.getMediaPlayer().reset();
 		 Utility.playInstructionsMP(this,R.raw.taglonginstr, R.raw.tagshortinstr, mPreferences);
 	 }
 	 
@@ -142,9 +140,7 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 	}
 	
 	private void startRecording() {
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
+		Utility.getMediaPlayer().reset();
 		String fileName = audioFileName + currentFileNumber;
 		String internalStoragePath = getFilesDir().toString();
 		recorder = new AudioRecorder(fileName, internalStoragePath);
@@ -167,9 +163,7 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 			Log.d(TAG, mCursor.getString(0) + ", " + mCursor.getString(1) + ", " + mCursor.getString(2));
 			updateCurrentFileNumber(currentFileNumber);
 			
-			if(Utility.getMediaPlayer() != null) {
-				Utility.getMediaPlayer().stop();
-			}
+			Utility.getMediaPlayer().reset();
 			isRecording = false;
 			Intent in = new Intent();
 			setResult(2, in);
@@ -189,9 +183,7 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 	private void skipRecording(){
 		//Utility.getTextToSpeech().stop();
 		// set the file name using the file counter and create path to save file
-			if(Utility.getMediaPlayer() != null) {
-				Utility.getMediaPlayer().stop();
-			}
+			Utility.getMediaPlayer().reset();
 			String fileName = audioFileName + currentFileNumber;
 			String internalStoragePath = getFilesDir().toString();
 			

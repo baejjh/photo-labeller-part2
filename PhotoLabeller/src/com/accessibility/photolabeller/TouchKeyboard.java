@@ -721,7 +721,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 				"keyboard.";
 		String shortInst = "Kee board screen. Enter email address of recipient.";
 		
-		Utility.getMediaPlayer().stop();
+		Utility.getMediaPlayer().reset();
 		Utility.playInstructions(longInst, shortInst, mPreferences);
 	}
 	

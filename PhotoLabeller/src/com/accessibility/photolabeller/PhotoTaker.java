@@ -61,9 +61,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
+		Utility.getMediaPlayer().reset();
 		setContentView(R.layout.clickpicture);
 		
 		//Initialize database
@@ -246,13 +244,13 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
  	   Log.d("CheckStartActivity","onActivityResult and resultCode = "+resultCode);
  	   super.onActivityResult(requestCode, resultCode, data);
  	   if(resultCode == 1) {
- 		   Utility.getMediaPlayer().stop();
+ 		   Utility.getMediaPlayer().reset();
  		   Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.skippedtagging));
  		   Utility.getMediaPlayer().start();
  	   }
  	   else {
  		   // result code == 2
- 		  Utility.getMediaPlayer().stop();
+ 		  Utility.getMediaPlayer().reset();
  		  Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.tagsaved));
  		  Utility.getMediaPlayer().start();
  	   }
@@ -261,10 +259,8 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	
 	private void playSoundEffects(int imageId)
 	{	
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
 		
+		Utility.getMediaPlayer().reset();
     	Utility.setMediaPlayer(MediaPlayer.create(this, imageId));
     	Utility.getMediaPlayer().start();
     }
