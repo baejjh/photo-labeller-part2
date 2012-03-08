@@ -47,8 +47,7 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 		 setContentView(R.layout.tagskip);
 		 tv = (TextView)findViewById(R.id.tagskipview);
 		 tv.setText("Start Recording");
-		 
-		 
+		  
 		 
 		//Initialize database
 		mHelper = new DbHelper(this);
