@@ -148,7 +148,7 @@ public class HomeScreen extends Activity{
 	
 	public void onRestart(){
 		super.onRestart();
-		Utility.getMediaPlayer().stop();
+		Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
 		menuView.requestFocus();
 		menuView.resetButtonFocus();
@@ -156,7 +156,7 @@ public class HomeScreen extends Activity{
 	
 	public void onResume() {
 		super.onResume();
-		Utility.getMediaPlayer().stop();
+		Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
 		menuView.requestFocus();
 		menuView.resetButtonFocus();
@@ -169,7 +169,7 @@ public class HomeScreen extends Activity{
 	
 	public void exitApp() {
 		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
+			Utility.getMediaPlayer().reset();
 		}
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.goodbye));
 		Utility.getMediaPlayer().start();
@@ -178,7 +178,7 @@ public class HomeScreen extends Activity{
 	
 	public void playTakePhotos() {
 		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
+			Utility.getMediaPlayer().reset();
 		}
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.takephoto));
 		Utility.getMediaPlayer().start();
@@ -186,7 +186,7 @@ public class HomeScreen extends Activity{
 	
 	public void playBrowsePhotos() {
 		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
+			Utility.getMediaPlayer().reset();
 		}
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.browsephoto));
 		Utility.getMediaPlayer().start();
@@ -194,7 +194,7 @@ public class HomeScreen extends Activity{
 	
 	public void playOptions() {
 		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
+			Utility.getMediaPlayer().reset();
 		}
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.options));
 		Utility.getMediaPlayer().start();
