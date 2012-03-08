@@ -104,7 +104,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	
 				int action = event.getAction();
 				if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) && event.getPointerCount() == 2) {
-					Utility.getMediaPlayer().stop();
 					finish();
 					return true;
 				}
