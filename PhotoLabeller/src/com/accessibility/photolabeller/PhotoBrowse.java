@@ -278,6 +278,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 				// right to left swipe
 				if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY)
 				{
+					mp.reset();
 					handler.removeCallbacks(runnable);
 					imageFrame.setInAnimation(inFromRightAnimation());
 					imageFrame.setOutAnimation(outToLeftAnimation());
@@ -332,6 +333,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 				}
 				else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY)
 				{
+					mp.reset();
 					handler.removeCallbacks(runnable);
 					imageFrame.setInAnimation(inFromLeftAnimation());
 					imageFrame.setOutAnimation(outToRightAnimation());
