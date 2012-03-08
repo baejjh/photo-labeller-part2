@@ -299,6 +299,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) && me.getPointerCount() == 2) {
 			Intent in = new Intent();
 			setResult(3,in);
+			Utility.getTextToSpeech().say("");
 			finish();
 			return true;
 		}
@@ -510,6 +511,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 			//finish();
 			Intent in = new Intent();
 			setResult(5, in);
+			Utility.getTextToSpeech().say("");
 			finish();
 		}
 		else {
