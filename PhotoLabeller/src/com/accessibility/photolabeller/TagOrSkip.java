@@ -48,10 +48,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.tagorskip);
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
-
+		Utility.getMediaPlayer().reset();
 		menuView = (MenuView) findViewById(R.id.menu_view3);
 		menuView.setFocusable(true);
 		menuView.setFocusableInTouchMode(true);
@@ -117,7 +114,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		if (!isRecording) {
 			//Utility.getTextToSpeech().stop();
 			// set the file name using the file counter and create path to save file
-			Utility.getMediaPlayer().stop();
+			Utility.getMediaPlayer().reset();
 			String fileName = audioFileName + currentFileNumber;
 			String internalStoragePath = getFilesDir().toString();
 
@@ -142,9 +139,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 			Log.d(TAG, mCursor.getString(0) + ", " + mCursor.getString(1) + ", " + mCursor.getString(2));
 			updateCurrentFileNumber(currentFileNumber);
 			
-			if(Utility.getMediaPlayer() != null) {
-				Utility.getMediaPlayer().stop();
-			}
+			Utility.getMediaPlayer().reset();
 			mp = MediaPlayer.create(this, R.raw.tagsaved);
 			mp.setOnCompletionListener(this);
 	    	mp.start();
@@ -161,7 +156,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		isTaggingskipped = true;
 		//Utility.getTextToSpeech().stop();
 		// set the file name using the file counter and create path to save file
-		Utility.getMediaPlayer().stop();
+		Utility.getMediaPlayer().reset();
 		String fileName = audioFileName + currentFileNumber;
 		String internalStoragePath = getFilesDir().toString();
 		
@@ -187,9 +182,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		//MediaPlayer m = MediaPlayer.create(this, R.raw.tagskipped);
 		//m.setOnCompletionListener(this);
     	//m.start();
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
+		Utility.getMediaPlayer().reset();
 		mp = MediaPlayer.create(this, R.raw.tagskipped);
 		mp.setOnCompletionListener(this);
     	mp.start();
@@ -253,7 +246,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	@Override
 	public void onPause() {
 		super.onPause();
-		Utility.getTextToSpeech().stop();
+		//Utility.getTextToSpeech().stop();
 		//finish();
 	}
 
@@ -306,17 +299,13 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	}
 	
 	public void playTagPhoto() {
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
+		Utility.getMediaPlayer().reset();
 		Utility.setMediaPlayer(MediaPlayer.create(this,R.raw.tagphoto));
 		Utility.getMediaPlayer().start();
 	}
 	
 	public void playSkipTagging() {
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
-		}
+		Utility.getMediaPlayer().reset();
 		Utility.setMediaPlayer(MediaPlayer.create(this,R.raw.skiptagging));
 		Utility.getMediaPlayer().start();
 	}

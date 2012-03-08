@@ -33,7 +33,7 @@ public class DeleteOrShare extends Activity {
 		doubleClicker = new DoubleClicker();
         
 		mPreferences = getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
-		Utility.getMediaPlayer().stop();
+		Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.delsharefullinstr,R.raw.delshareshortinstr, mPreferences);
      }
 
@@ -111,17 +111,13 @@ public class DeleteOrShare extends Activity {
     }
     
     public void playSharePhoto() {
-    	if(Utility.getMediaPlayer() != null) {
-    		Utility.getMediaPlayer().stop();
-    	}
+		Utility.getMediaPlayer().reset();
     	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.sharephoto));
     	Utility.getMediaPlayer().start();
     }
     
     public void playDeletePhoto() {
-    	if(Utility.getMediaPlayer() != null) {
-    		Utility.getMediaPlayer().stop();
-    	}
+		Utility.getMediaPlayer().reset();
     	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.deletephoto));
     	Utility.getMediaPlayer().start();
     }

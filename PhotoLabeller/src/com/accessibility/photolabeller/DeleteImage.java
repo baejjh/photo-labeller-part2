@@ -46,7 +46,7 @@ public class DeleteImage extends Activity {
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
         
 		mPreferences = getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
-		Utility.getMediaPlayer().stop();
+		Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.confirmdeletefullinstr,R.raw.confirmdeleteshortinstr, mPreferences);
      }
 
@@ -65,7 +65,7 @@ public class DeleteImage extends Activity {
 					finish();
 				} else {
 					Log.v(TAG, "CONFIRM OVER!");
-					Utility.getMediaPlayer().stop();
+					Utility.getMediaPlayer().reset();
 					Utility.playInstructionsMP(DeleteImage.this, R.raw.confirmdeletefullinstr, R.raw.confirmdeleteshortinstr, mPreferences);
 				}
 			}
