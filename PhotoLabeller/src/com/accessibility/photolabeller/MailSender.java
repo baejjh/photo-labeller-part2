@@ -195,12 +195,12 @@ public class MailSender extends Activity implements OnCompletionListener {
 		protected void onPostExecute(Boolean success){
 			timer.cancel();
 			if(success){
-				//Utility.getTextToSpeech().say("Image and tag shared successfully");
+				Utility.getTextToSpeech().stop();
 				playMessage(R.raw.photosharelong);
 				send.setText("Photo shared successfully.");
 				//send.setClickable(true);
 			} else {
-				//Utility.getTextToSpeech().say("Photo share failed");
+				Utility.getTextToSpeech().stop();
 				playMessage(R.raw.photofaillong);
 				send.setText("Photo share failed.");
 				//send.setClickable(true);
