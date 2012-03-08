@@ -92,7 +92,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		addFlipperImages(imageFrame, parentFolder);
 		
 		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().stop();
+			Utility.getMediaPlayer().reset();
 		}
 		Utility.playInstructionsMP(this, R.raw.browsefullinstr, R.raw.browseshortinstr, mPreferences);
 
@@ -128,7 +128,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 					{
 						handler.postDelayed(runnable, 3000);
 						//imageFrame.showNext();
-						Utility.getMediaPlayer().stop();
+						Utility.getMediaPlayer().reset();
 						mCursor.moveToNext();
 						if(mCursor.isAfterLast()) {
 							mCursor.moveToFirst();
@@ -203,7 +203,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		public boolean onSingleTapConfirmed(MotionEvent e)
 		{
 			if(Utility.getMediaPlayer() != null) {
-				Utility.getMediaPlayer().stop();
+				Utility.getMediaPlayer().reset();
 			}
 			Utility.playInstructionsMP(PhotoBrowse.this, R.raw.browsefullinstr, R.raw.shortinstrset, mPreferences);
 			return true;
@@ -215,7 +215,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
          */
         public boolean onDoubleTap(MotionEvent e) {
         	if(Utility.getMediaPlayer() != null) {
-    			Utility.getMediaPlayer().stop();
+    			Utility.getMediaPlayer().reset();
     		}
         	if (!isDataBaseEmpty()) {
         		
@@ -236,7 +236,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 				return true;
 			}
 			else {
-				Utility.getMediaPlayer().stop();
+				Utility.getMediaPlayer().reset();
 				Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this,R.raw.noimagesfound));
 				Utility.getMediaPlayer().start();
 				return true;
@@ -252,7 +252,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
             	startActivityForResult(new Intent(PhotoBrowse.this, DeleteOrShare.class),requestCode);
         	}
         	else {
-        		Utility.getMediaPlayer().stop();
+        		Utility.getMediaPlayer().reset();
         		Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.noimagesfound));
         		Utility.getMediaPlayer().start();
         	}
@@ -294,19 +294,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 						if(mCursor.isAfterLast())
 						{
 							if(isOnlyOnePicture()) {
-								Utility.getMediaPlayer().stop();
+								Utility.getMediaPlayer().reset();
 								Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.onlyonepic));
 								Utility.getMediaPlayer().start();
 							}
 							else {
-								Utility.getMediaPlayer().stop();
+								Utility.getMediaPlayer().reset();
 								Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.endpic));
 								Utility.getMediaPlayer().start();
 							}
 							mCursor.moveToLast();
 						} else
 						{
-							Utility.getMediaPlayer().stop();
+							Utility.getMediaPlayer().reset();
 							s = mCursor.getString(1);
 							audioPath = mCursor.getString(2);
 							try 
@@ -331,7 +331,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 						}
 					}
 					else {
-						Utility.getMediaPlayer().stop();
+						Utility.getMediaPlayer().reset();
 						Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.noimagesfound));
 						Utility.getMediaPlayer().start();
 					}
@@ -347,19 +347,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 						mCursor.moveToPrevious();
 						if(mCursor.isBeforeFirst()) {
 							if(isOnlyOnePicture()) {
-								Utility.getMediaPlayer().stop();
+								Utility.getMediaPlayer().reset();
 								Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this,R.raw.onlyonepic));
 								Utility.getMediaPlayer().start();
 							}
 							else {
-								Utility.getMediaPlayer().stop();
+								Utility.getMediaPlayer().reset();
 								Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.endpic));
 								Utility.getMediaPlayer().start();
 							}
 							mCursor.moveToFirst();
 						} else
 						{
-							Utility.getMediaPlayer().stop();
+							Utility.getMediaPlayer().reset();
 							s = mCursor.getString(1);
 							audioPath = mCursor.getString(2);
 							try 
@@ -384,7 +384,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 						}
 					}
 					else {
-						Utility.getMediaPlayer().stop();
+						Utility.getMediaPlayer().reset();
 						Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this,R.raw.noimagesfound));
 						Utility.getMediaPlayer().start();
 					}
@@ -546,7 +546,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
  	   }
  	   else if (resultCode == 4) {
  		   // delete picture
- 			Utility.getMediaPlayer().stop();
+ 			Utility.getMediaPlayer().reset();
  			Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.deletedphoto));
  			Utility.getMediaPlayer().start();
  		    confirmDelete();
@@ -556,12 +556,12 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
  		   startActivityForResult(new Intent(this, MailSender.class), requestCode);
  	   }
  	   else if (resultCode == 6) {
- 		   Utility.getMediaPlayer().stop();
+ 		   Utility.getMediaPlayer().reset();
  		   Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.cancelleddeletion));
  		   Utility.getMediaPlayer().start();
  	   }
  	   else {
- 		   Utility.getMediaPlayer().stop();
+ 		   Utility.getMediaPlayer().reset();
  		   Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.browseshortinstr));
  		   Utility.getMediaPlayer().start();
  		   //result code = 3. do nothing

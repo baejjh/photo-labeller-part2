@@ -60,9 +60,6 @@ public class Utility extends Application {
 	}
 	
 	public static void setMediaPlayer(MediaPlayer m) {
-		if(mp != null) {
-			mp.reset();
-		}
 		mp = m; 
 	}
 	
