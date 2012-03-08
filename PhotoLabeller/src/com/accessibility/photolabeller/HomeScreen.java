@@ -148,6 +148,7 @@ public class HomeScreen extends Activity{
 	
 	public void onRestart(){
 		super.onRestart();
+		Utility.getMediaPlayer().stop();
 		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
 		menuView.requestFocus();
 		menuView.resetButtonFocus();
