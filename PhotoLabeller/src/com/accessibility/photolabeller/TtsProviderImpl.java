@@ -38,6 +38,12 @@ public void init(Context context) {
 @Override
 public void stop() {
 	tts.stop();
-	
 }
+
+@Override
+public boolean isSpeaking(){
+	return tts.isSpeaking();
+}
+
+
 }

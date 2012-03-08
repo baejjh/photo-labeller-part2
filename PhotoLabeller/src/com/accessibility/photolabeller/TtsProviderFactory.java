@@ -13,6 +13,8 @@ public abstract void shutdown();
 
 public abstract void stop();
 
+public abstract boolean isSpeaking();
+
 
 
 private static TtsProviderFactory sInstance;

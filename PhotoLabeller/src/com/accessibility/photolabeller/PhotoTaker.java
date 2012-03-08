@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Camera;
@@ -133,11 +134,40 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
+		/*
 		try {
 			mCamera.setPreviewDisplay(mPreview.getHolder());
 		} catch (Exception e) {
 			e.printStackTrace();
+		}*/
+		//mCamera = Camera.open();
+		try {
+			
+		Camera.Parameters parameters = mCamera.getParameters();
+				
+		if (this.getResources().getConfiguration().orientation !=
+		Configuration.ORIENTATION_LANDSCAPE) {
+		// This is an undocumented although widely known feature
+		parameters.set("orientation", "portrait");
+		// For Android 2.2 and above
+		//mCamera.setDisplayOrientation(90);
+		// Uncomment for Android 2.0 and above
+		parameters.setRotation(90);
+		} else {
+		// This is an undocumented although widely known feature
+		parameters.set("orientation", "landscape");
+		// For Android 2.2 and above
+		//mCamera.setDisplayOrientation(0);
+		// Uncomment for Android 2.0 and above
+		parameters.setRotation(0);
 		}
+		mCamera.setParameters(parameters);
+		mCamera.setPreviewDisplay(mPreview.getHolder());
+		} catch (IOException exception) {
+		mCamera.release();
+		Log.v(TAG,exception.getMessage());
+		}
+		mCamera.startPreview();
 		
 	}
 
