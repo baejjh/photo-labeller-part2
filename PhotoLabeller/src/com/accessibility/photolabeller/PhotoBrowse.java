@@ -201,7 +201,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		public boolean onSingleTapConfirmed(MotionEvent e)
 		{
 			Utility.getMediaPlayer().reset();
-			Utility.playInstructionsMP(PhotoBrowse.this, R.raw.browsefullinstr, R.raw.shortinstrset, mPreferences);
+			Utility.playInstructionsMP(PhotoBrowse.this, R.raw.browsefullinstr, R.raw.browseshortinstr, mPreferences);
 			return true;
 		}
 		
