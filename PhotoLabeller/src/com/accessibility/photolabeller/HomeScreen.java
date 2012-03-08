@@ -154,6 +154,14 @@ public class HomeScreen extends Activity{
 		menuView.resetButtonFocus();
 	}
 	
+	public void onResume() {
+		super.onResume();
+		Utility.getMediaPlayer().stop();
+		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
+		menuView.requestFocus();
+		menuView.resetButtonFocus();
+	}
+	
 	@Override
 	public void onBackPressed() {
 	   return;
