@@ -42,6 +42,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	public static final String PREF_NAME = "myPreferences";
 	public static final String VERBOSE_INST = "Camera View. Single click screen to take photo, or two finger click to return to home screen.";
 	public static final String INST_SHORT = "Camera View.";
+	
 
 	//DATABASE globals
 	DbHelper mHelper;
@@ -52,6 +53,8 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
     View.OnTouchListener gestureListener;
     Camera mCamera;
 	SurfaceView mPreview;
+	
+	int requestCode;
 	
 		
 	
@@ -105,7 +108,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	
 	public void onRestart(){
 		super.onRestart();
-		Utility.playInstructionsMP(this, R.raw.camlonginst, R.raw.camshortinst,mPreferences);
+		//Utility.playInstructionsMP(this, R.raw.camlonginst, R.raw.camshortinst,mPreferences);
 	}
 	
 	
@@ -180,9 +183,9 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	}
 	
 	private void tagOrSkip() {
-		Intent tagOrSkipIntent = new Intent(this, TagSkip.class);
-		startActivity(tagOrSkipIntent);
-		
+		/*Intent tagOrSkipIntent = new Intent(this, TagSkip.class);
+		startActivity(tagOrSkipIntent);*/
+		startActivityForResult(new Intent(PhotoTaker.this, TagSkip.class),requestCode);
 	}
 
 	/*
@@ -237,6 +240,24 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	public void onBackPressed() {
 	   return;
 	}
+	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+ 	   Log.d("CheckStartActivity","onActivityResult and resultCode = "+resultCode);
+ 	   super.onActivityResult(requestCode, resultCode, data);
+ 	   if(resultCode == 1) {
+ 		   Utility.getMediaPlayer().stop();
+ 		   Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.skippedtagging));
+ 		   Utility.getMediaPlayer().start();
+ 	   }
+ 	   else {
+ 		   // result code == 2
+ 		  Utility.getMediaPlayer().stop();
+ 		  Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.tagsaved));
+ 		  Utility.getMediaPlayer().start();
+ 	   }
+ 	   
+    }
 	
 	private void playSoundEffects(int imageId)
 	{	

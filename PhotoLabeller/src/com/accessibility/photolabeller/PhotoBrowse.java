@@ -50,6 +50,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	List<String> ImageList;
     List<String> AudioList;
     MediaPlayer mp = new MediaPlayer();
+    MediaPlayer m;
     int imageCount;
     int requestCode;
     String s;
@@ -462,7 +463,10 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 
 	private void playSoundEffects(int imageId)
 	{	
-    	MediaPlayer m = MediaPlayer.create(this, imageId);
+		if(m != null) {
+			m.reset();
+		}
+    	m = MediaPlayer.create(this, imageId);
     	m.start();
     }
 	
@@ -518,11 +522,19 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
  	   }
  	   else if (resultCode == 4) {
  		   // delete picture
- 		   confirmDelete();
+ 			Utility.getMediaPlayer().stop();
+ 			Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.deletedphoto));
+ 			Utility.getMediaPlayer().start();
+ 		    confirmDelete();
  	   }
  	   else if (resultCode == 5) {
  		   //Utility.getTextToSpeech().say("Sending image");
  		   startActivityForResult(new Intent(this, MailSender.class), requestCode);
+ 	   }
+ 	   else if (resultCode == 6) {
+ 		   Utility.getMediaPlayer().stop();
+ 		   Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.cancelleddeletion));
+ 		   Utility.getMediaPlayer().start();
  	   }
  	   else {
  		   Utility.getMediaPlayer().stop();
@@ -538,9 +550,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		// delete image
 		int rowId = Utility.getRowId();
 		mDb.delete(DbHelper.TABLE_NAME, "_id = " + rowId, null);
-		Utility.getMediaPlayer().stop();
-		Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.browseshortinstr));
-		Utility.getMediaPlayer().start();
 		// load updated database
 		mCursor.requery();
 		if(isDataBaseEmpty()) {

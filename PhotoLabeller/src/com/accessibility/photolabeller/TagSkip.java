@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -70,6 +71,9 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 					 // if recording in progress, do nothing when two finger motion occurs
 					 if(!isRecording){
 						 skipRecording();
+						 Intent in = new Intent();
+						 setResult(1, in);
+						 finish();
 					 }
 					 return true;
 				 }
@@ -166,9 +170,13 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 			if(Utility.getMediaPlayer() != null) {
 				Utility.getMediaPlayer().stop();
 			}
-			MediaPlayer mp = MediaPlayer.create(this, R.raw.tagsaved);
+			isRecording = false;
+			Intent in = new Intent();
+			setResult(2, in);
+			finish();
+			/*MediaPlayer mp = MediaPlayer.create(this, R.raw.tagsaved);
 			mp.setOnCompletionListener(this);
-	    	mp.start();
+	    	mp.start();*/
 	    	
 			//isRecording = false;
 			//finish();
@@ -204,9 +212,6 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 			}
 			
 			updateCurrentFileNumber(currentFileNumber);
-			
-		
-		finish();
 	}
 	
 	// This method copies a resource file to the given destination dest
@@ -260,11 +265,5 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 				e.printStackTrace();
 			}
 		}
-		else {
-			isRecording = false;
-			finish();
-		}
-	}
-	 
-	 
+	} 
 }
