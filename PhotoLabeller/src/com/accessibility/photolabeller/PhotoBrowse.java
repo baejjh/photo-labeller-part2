@@ -254,7 +254,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         	}
        }
         
-		@SuppressWarnings("static-access")
 		public boolean onSingleTapUp(MotionEvent e)
 		{			
 			//slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
@@ -277,21 +276,37 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			{
 				if (e1.getY() - e2.getY() > SWIPE_MAX_OFF_PATH&& Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
 					Log.d("slideShow", "slideShowAccepted");
-					audioPath = mCursor.getString(2);
-					int duration = getAudioDuration(audioPath);
+					//audioPath = mCursor.getString(2);
+					if(isDataBaseEmpty()) {
+						Utility.getMediaPlayer().reset();
+						Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.noimagesfound));
+						Utility.getMediaPlayer().start();
+						return true;
+					}
+					mp.reset();
+					Utility.getMediaPlayer().reset();
+					Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.startslideshow));
+					int duration = Utility.getMediaPlayer().getDuration();
 					Log.d("slideShow", "duration= " + duration);
-					playTag(audioPath);
+					Utility.getMediaPlayer().start();
+					//playTag(audioPath);
 					runnable = new Runnable()
 					{
 						public void run()
 						{
 							Utility.getMediaPlayer().reset();
+							/*mCursor.moveToNext();
+							if(mCursor.isAfterLast()) {
+								mCursor.moveToFirst();
+							}*/
+							s = mCursor.getString(1);
+							audioPath = mCursor.getString(2);
+							
 							mCursor.moveToNext();
 							if(mCursor.isAfterLast()) {
 								mCursor.moveToFirst();
 							}
-							s = mCursor.getString(1);
-							audioPath = mCursor.getString(2);
+							
 							int wait = getAudioDuration(audioPath);
 							handler.postDelayed(runnable, wait);
 							//imageFrame.showNext();
