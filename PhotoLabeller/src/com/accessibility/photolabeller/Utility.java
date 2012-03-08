@@ -99,7 +99,7 @@ public class Utility extends Application {
 	
 	public static void playInstructionsMP(Activity activity,int fullInst, int shortInst, SharedPreferences pref) {
 		if(mp != null) {
-			mp.stop();
+			mp.reset();
 		}
 		int option = pref.getInt(VOICE_INSTR_PREF, 0);
 		if(option == 0) {

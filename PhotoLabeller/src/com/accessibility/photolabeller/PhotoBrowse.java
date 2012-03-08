@@ -91,9 +91,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		mp.setOnPreparedListener(this);
 		addFlipperImages(imageFrame, parentFolder);
 		
-		if(Utility.getMediaPlayer() != null) {
-			Utility.getMediaPlayer().reset();
-		}
+		Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.browsefullinstr, R.raw.browseshortinstr, mPreferences);
 
 		// Gesture detection
@@ -202,9 +200,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	{
 		public boolean onSingleTapConfirmed(MotionEvent e)
 		{
-			if(Utility.getMediaPlayer() != null) {
-				Utility.getMediaPlayer().reset();
-			}
+			Utility.getMediaPlayer().reset();
 			Utility.playInstructionsMP(PhotoBrowse.this, R.raw.browsefullinstr, R.raw.shortinstrset, mPreferences);
 			return true;
 		}
@@ -214,9 +210,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
          * 
          */
         public boolean onDoubleTap(MotionEvent e) {
-        	if(Utility.getMediaPlayer() != null) {
-    			Utility.getMediaPlayer().reset();
-    		}
+			Utility.getMediaPlayer().reset();
         	if (!isDataBaseEmpty()) {
         		
 				mp.reset();
@@ -523,7 +517,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	@Override
 	public void onPause(){
 		super.onPause();
-		mp.stop();
+		mp.reset();
 	}
 	
 	
