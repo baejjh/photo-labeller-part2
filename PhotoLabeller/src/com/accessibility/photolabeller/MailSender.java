@@ -13,85 +13,25 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.widget.Button;
 
 public class MailSender extends Activity implements OnCompletionListener {
 	
 	private static final String TAG = "MAILSENDER";
+	
 	Timer timer;
-	//private GestureDetector gestureDetector;
-	//View.OnTouchListener gestureListener;
-	Button send;
+	MyTextView send;
 		
 	@Override 
 	public void onCreate(Bundle icicle) { 
 	  super.onCreate(icicle); 
 	  setContentView(R.layout.mailsender);
-	  send = (Button) findViewById(R.id.send_email);
+	  send = (MyTextView) findViewById(R.id.send_mail);
 	  new MailSendTask(send).execute();
-	
 	  
-	  
-	// Gesture detection
-      //gestureDetector = new GestureDetector(new MyGestureDetector());
-      /*gestureListener = new View.OnTouchListener() {
-          public boolean onTouch(View v, MotionEvent event) {
-          	int action = event.getAction();
-				if (action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2) {
-					finish();
-					return true;
-				}
-				else if (gestureDetector.onTouchEvent(event))
-                  return true;
-              else
-                  return false;
-          }
-      };*/
-	  
-	 //send.setOnTouchListener(gestureListener);
-	  /*send.setOnClickListener(new View.OnClickListener() { 
-	    public void onClick(View view) { 
-	    	// makes asynchronous call to send email here
-	    	new MailSendTask(send).execute();
-	     } 
-	  }); */
 	}
 	
-	/*
-	 * Inner GestureDetector class
-	 */
-	//class MyGestureDetector extends SimpleOnGestureListener {
-		
-		/*
-		 * single tap should play back instructions
-		 */
-        /*public boolean onSingleTapConfirmed(MotionEvent e) {
-        	return false;
-        }*/
-        
-        /*public boolean onSingleTapUp(MotionEvent e) {
-           return false;
-        }
-
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-        	float velocityY) {
-            return false;
-        }*/
-        
-        /*
-         *  double click takes a picture
-         * 
-         */
-        /*public boolean onDoubleTap(MotionEvent e) {
-        	new MailSendTask(send).execute();
-            return true;
-        }*/
-
-    //}
+	
 	
 	/**
 	 * This class used to send email with attached image and audio tags
@@ -101,9 +41,9 @@ public class MailSender extends Activity implements OnCompletionListener {
 	private class MailSendTask extends AsyncTask<Void, Void, Boolean>{
 		private static final String TAG = "MAILSENDTASK_ASYNC";
 		private Mail m;
-		private Button send;
+		private MyTextView send;
 				
-		public MailSendTask(Button send){
+		public MailSendTask(MyTextView send){
 			this.m = new Mail("talkingmemories@gmail.com", "talkingmemories2012"); 
 			this.send = send;
 		}
