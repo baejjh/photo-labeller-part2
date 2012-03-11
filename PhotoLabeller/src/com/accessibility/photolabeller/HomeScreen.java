@@ -148,7 +148,7 @@ public class HomeScreen extends Activity{
 	
 	public void onRestart(){
 		super.onRestart();
-		Utility.getMediaPlayer().reset();
+		//Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
 		menuView.requestFocus();
 		menuView.resetButtonFocus();
@@ -156,7 +156,7 @@ public class HomeScreen extends Activity{
 	
 	public void onResume() {
 		super.onResume();
-		Utility.getMediaPlayer().reset();
+		//Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
 		menuView.requestFocus();
 		menuView.resetButtonFocus();
