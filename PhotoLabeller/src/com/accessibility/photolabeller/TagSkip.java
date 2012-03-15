@@ -40,7 +40,6 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 	 SQLiteDatabase mDb;
 	 Cursor mCursor;
 	 
-
 	 @Override
 	 public void onCreate(Bundle savedInstanceState) {
 		 super.onCreate(savedInstanceState);
@@ -48,14 +47,12 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 		 tv = (TextView)findViewById(R.id.tagskipview);
 		 tv.setText("Start Recording");
 		  
-		 
 		//Initialize database
 		mHelper = new DbHelper(this);
 		//Open data base Connections
 		mDb = mHelper.getWritableDatabase();
 		String[] columns = new String[] {"_id", DbHelper.COL_IMG, DbHelper.COL_AUD};
 		mCursor = mDb.query(DbHelper.TABLE_NAME, columns, null, null, null, null, null);
-		
 		
 		mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
 		currentFileNumber = getCurrentFileNumber();		
@@ -167,12 +164,6 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 			Intent in = new Intent();
 			setResult(2, in);
 			finish();
-			/*MediaPlayer mp = MediaPlayer.create(this, R.raw.tagsaved);
-			mp.setOnCompletionListener(this);
-	    	mp.start();*/
-	    	
-			//isRecording = false;
-			//finish();
 		} catch (IOException e) {
 			Log.d(TAG, e.getMessage().toString());
 			e.printStackTrace();
@@ -219,14 +210,11 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 		buffer=outputStream.toByteArray();
 		
 		// A copy of your file now exist in buffer, so you can use a FileOutputStream to save the buffer to a new file.
-
 		FileOutputStream fos = new FileOutputStream(dest);
 		fos.write(buffer);
 		fos.close();		
 	}
 	
-	
-
 	/*
 	 * get the current index for file numbering
 	 */

@@ -43,7 +43,7 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	Cursor mCursor;
 	Thread waitThread;
 
-	/** Called when the activity is first created. */
+	// Called when the activity is first created
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -112,7 +112,6 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 
 	private void startRecording() {
 		if (!isRecording) {
-			//Utility.getTextToSpeech().stop();
 			// set the file name using the file counter and create path to save file
 			Utility.getMediaPlayer().reset();
 			String fileName = audioFileName + currentFileNumber;
@@ -144,17 +143,13 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 			mp.setOnCompletionListener(this);
 	    	mp.start();
 	    	
-			//isRecording = false;
-			//finish();
 		} catch (IOException e) {
-			Log.d(TAG, e.getMessage().toString());
 			e.printStackTrace();
 		}
 	}
 	
 	private void skipRecording(){
 		isTaggingskipped = true;
-		//Utility.getTextToSpeech().stop();
 		// set the file name using the file counter and create path to save file
 		Utility.getMediaPlayer().reset();
 		String fileName = audioFileName + currentFileNumber;
@@ -167,7 +162,6 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		mCursor.requery();
 		mCursor.moveToLast();
 		Log.d(TAG, mCursor.getString(0) + ", " + mCursor.getString(1) + ", " + mCursor.getString(2));
-		
 	
 		try {
 			copyResourceToExternal(R.raw.notagrecorded, internalStoragePath+"/"+fileName+".3gp");
@@ -179,29 +173,10 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		
 		updateCurrentFileNumber(currentFileNumber);
 		
-		//MediaPlayer m = MediaPlayer.create(this, R.raw.tagskipped);
-		//m.setOnCompletionListener(this);
-    	//m.start();
 		Utility.getMediaPlayer().reset();
 		mp = MediaPlayer.create(this, R.raw.tagskipped);
 		mp.setOnCompletionListener(this);
     	mp.start();
-		//Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.skiptagging));
-		//final int duration = Utility.getMediaPlayer().getDuration();
-		//Utility.getMediaPlayer().start();
-		//initializeWaitThread(duration);
-		//waitThread.start();
-		//sleep(duration);
-		/*long delay = duration;
-		  long period = duration;
-		  Timer timer = new Timer();
-		  timer.scheduleAtFixedRate(
-				  new TimerTask() {
-					  public void run() {
-						  isTaggingskipped = false;
-						  finish();
-					  }
-				  }, delay,period);*/
 	}
 	
 	// This method copies a resource file to the given destination dest
@@ -218,14 +193,11 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 		buffer=outputStream.toByteArray();
 		
 		// A copy of your file now exist in buffer, so you can use a FileOutputStream to save the buffer to a new file.
-
 		FileOutputStream fos = new FileOutputStream(dest);
 		fos.write(buffer);
 		fos.close();		
 	}
 	
-	
-
 	/*
 	 * get the current index for file numbering
 	 */
@@ -246,14 +218,11 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	@Override
 	public void onPause() {
 		super.onPause();
-		//Utility.getTextToSpeech().stop();
-		//finish();
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		//finish();
 	}
 
 	// this is called when the screen rotates.
@@ -263,7 +232,6 @@ public class TagOrSkip extends Activity implements OnCompletionListener {
 	{
 		super.onConfigurationChanged(newConfig);
 		setContentView(R.layout.tagorskip);
-
 		initializeSettings();
 	}
 

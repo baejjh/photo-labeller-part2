@@ -1,5 +1,4 @@
 package com.accessibility.photolabeller;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
@@ -12,13 +11,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.widget.Button;
 
+/*
+ * MailSender Activity which sends an email with an image and its audio tag
+ * to the intended recipient.
+ */
 public class MailSender extends Activity implements OnCompletionListener {
-	
-	private static final String TAG = "MAILSENDER";
-	
 	Timer timer;
 	MyTextView send;
 		
@@ -30,16 +28,13 @@ public class MailSender extends Activity implements OnCompletionListener {
 	  new MailSendTask(send).execute();
 	  
 	}
-	
-	
-	
-	/**
+
+	/*
 	 * This class used to send email with attached image and audio tags
 	 * asynchronously
 	 * 
 	 */
 	private class MailSendTask extends AsyncTask<Void, Void, Boolean>{
-		private static final String TAG = "MAILSENDTASK_ASYNC";
 		private Mail m;
 		private MyTextView send;
 				
@@ -59,22 +54,21 @@ public class MailSender extends Activity implements OnCompletionListener {
 		// run on background thread
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			
 			TelephonyManager mgr = (TelephonyManager) getSystemService("phone");
 			String phoneNumber = mgr.getLine1Number();
-			Log.d(TAG, phoneNumber);
 			
-			  long delay = 5000;
-			  long period = 5000;
-			  timer = new Timer();
-			  timer.scheduleAtFixedRate(
-					  new TimerTask() {
-						  public void run() {
-							  Utility.getTextToSpeech().say("sending email. Please wait");
-						  }
-					  }, delay,period);
+			// Play feedback every 5 seconds
+			long delay = 5000;
+			long period = 5000;
+			timer = new Timer();
+			timer.scheduleAtFixedRate(
+				new TimerTask() {
+					public void run() {
+						  Utility.getTextToSpeech().say("sending email. Please wait");
+			  		}
+				}, delay,period);
 			  
-			  // hard coded recipient email addresses to be changed later
+			  // Talking memories sharing email title
 		      String[] toArr = {Utility.getReceiverEmail()}; 
 		      m.setTo(toArr); 
 		      m.setFrom("talkingmemories@gmail.com"); 
@@ -83,23 +77,16 @@ public class MailSender extends Activity implements OnCompletionListener {
 		    		   "Play the audio tag using QuickTime."); 
 		 
 		      try { 
-		    	  
 		    	  // get path of attachments to send
 		    	  File srcImgFile = new File(Utility.getImagePath());
 		    	  File srcAudFile = new File(Utility.getAudioPath());
 		  		  File destImgFile = new File(Environment.getExternalStorageDirectory(), "tmImage.jpg");
 		  		  File destAudFile = new File(Environment.getExternalStorageDirectory(), "tmAudio.3gp");
-		  		  Log.d(TAG, "Image attached: " + Environment.getExternalStorageDirectory().toString()+ "/tmImage.jpg");
-		  		  Log.d(TAG, "Tag attached: " + Environment.getExternalStorageDirectory().toString()+ "/tmImage.3gp");
-		  		
 		  		try {
-		  			
 		  			//copy attachment files from internal storage to external storage
 		  			Utility.copyFile(srcImgFile, destImgFile);
 		  			Utility.copyFile(srcAudFile, destAudFile);
-		  			Log.d(TAG, "After copying files to external location");
 		  		} catch (IOException e) {
-		  			Log.d(TAG, "Failed copying files to external location: " + e.getMessage().toString());
 		  			return false;
 		  		}
 		  		
@@ -108,24 +95,15 @@ public class MailSender extends Activity implements OnCompletionListener {
 		  		String fileAudPath = Environment.getExternalStorageDirectory().toString()+ "/tmAudio.3gp";
 		        m.addAttachment(fileImgPath, "tmImage.jpg");
 		        m.addAttachment(fileAudPath, "tmAudio.3gp");
-		        Log.d(TAG, "After attaching attachments");
-		        
 		        
 		        // try sending the email
 		        if(m.send()) { 
-		        	Log.d(TAG, "Email sent successfully");
 		        	return true;
-		          //Toast.makeText(MailSender.this, "Email was sent successfully.", Toast.LENGTH_LONG).show(); 
 		        } else { 
-		        	Log.d(TAG, "Email sending fail");
 		        	return false;
-		          //Toast.makeText(MailSender.this, "Email was not sent.", Toast.LENGTH_LONG).show(); 
 		        } 
 		      } catch(Exception e) {
-		    	  Log.e(TAG, "Email send fail: " + e.getMessage().toString()); 
 		    	  return false;
-		        //Toast.makeText(MailApp.this, "There was a problem sending the email.", Toast.LENGTH_LONG).show(); 
-		        
 		      }
 			
 		}
@@ -138,17 +116,12 @@ public class MailSender extends Activity implements OnCompletionListener {
 				Utility.getTextToSpeech().stop();
 				playMessage(R.raw.photosharelong);
 				send.setText("Photo shared successfully.");
-				//send.setClickable(true);
 			} else {
 				Utility.getTextToSpeech().stop();
 				playMessage(R.raw.photofaillong);
 				send.setText("Photo share failed.");
-				//send.setClickable(true);
 			}
 		}
-		
-		
-		
 	}	
 	
 	@Override
@@ -165,7 +138,6 @@ public class MailSender extends Activity implements OnCompletionListener {
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
-		//startActivity(new Intent(this, PhotoBrowse.class));
 		Intent in = new Intent();
 		setResult(3, in);
 		finish();

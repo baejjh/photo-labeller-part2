@@ -210,7 +210,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	private int mCursorIndex;
 	private String mCurrentString;
 	
-	/** Called when the activity is first created. */
+	// Called when the activity is first created
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.v(TAG, "+++ ON CREATE  +++");
@@ -236,7 +236,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		speakInstructions();
 	}
 	
-	/** Store a handle for each key on the given keyboard and the text display. */
+	// Store a handle for each key on the given keyboard and the text display
 	private void setupKeyboardViews(int[] keyboardIds) {
 		mLayout = (LinearLayout) findViewById(R.id.keyboard_layout);
 		mTextDisplay = (TextView) findViewById(R.id.text_display);
@@ -254,7 +254,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		drawString();
 	}
 	
-	/** Setup the layout and listeners for the given keyboard mode. */
+	// Setup the layout and listeners for the given keyboard mode
 	private void setupKeyboard(int keyboardMode) {
 		switch(keyboardMode) {
 		case QWERTY:
@@ -276,7 +276,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		setListeners();
 	}
 	
-	/** Set touch, focus and click listeners. */
+	// Set touch, focus and click listeners
 	private void setListeners() {
 		mLayout.setOnLongClickListener(this);
 		mLayout.setOnTouchListener(this);
@@ -291,7 +291,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		}
 	}
 	
-	/** Called for touches inside of a key or the text display. */
+	// Called for touches inside of a key or the text display
 	@Override
 	public boolean onTouch(View v, MotionEvent me) {
 		Log.v(TAG, "onTouch");
@@ -317,7 +317,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		
 	}
 	
-	/** Called for touches outside of a key or the text display. */
+	// Called for touches outside of a key or the text display
 	@Override
 	public boolean onTouchEvent(MotionEvent me) {
 		Log.v(TAG, "onTouchEvent");
@@ -331,7 +331,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		}
 	}
 	
-	/** Consumes the motion event with either focus or click based actions. */
+	// Consumes the motion event with either focus or click based actions
 	private boolean consumeTouchEvent(MotionEvent me) {
 		double x = me.getRawX();
 		double y = me.getRawY();
@@ -343,8 +343,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		dim[0] = mTextDisplay.getWidth();
 		dim[1] = mTextDisplay.getHeight();
 		// The motion event occurred over the text display.
-		if(x <= (loc[0] + dim[0]) && y <= (loc[1] + dim[1])) {/////////////TODO: Don't I need to add: && x >= loc[0] && y >= loc[1]  ?!?!?!?!?
-			//////////////////////TODO: - read the character that is under the users finger (if the 
+		if(x <= (loc[0] + dim[0]) && y <= (loc[1] + dim[1])) {/////////////Don't I need to add: && x >= loc[0] && y >= loc[1]  ?!?!?!?!? 
 			//////////////////////			user is past the last character, then say so).
 			//////////////////////		- if there is more text than fits in the width of the screen, 
 			//////////////////////			and the motion event is near either end of the TextView, 
@@ -371,7 +370,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 				dim[1] = mKeys[i].getHeight();
 				
 				// The motion event occurs over a key.
-				if(x >= loc[0] && x <= (loc[0] + dim[0]) && y >= loc[1] && y <= (loc[1] + dim[1])) {/////////////TODO: Don't I need to add:  ?!?!?!?!?
+				if(x >= loc[0] && x <= (loc[0] + dim[0]) && y >= loc[1] && y <= (loc[1] + dim[1])) {///////////// Don't I need to add:  ?!?!?!?!?
 					// Save which key this is.
 					if(i != mLastKey) {
 						mLastKey = i;
@@ -404,7 +403,7 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		return eventConsumed;
 	}
 	
-	/**
+	/*
 	 * Speak the highlighted letter according to its PRONUNCIATION_MAP value, 
 	 * which has phonetic spellings for some letters that aren't pronounced 
 	 * correctly if just a single letter is given.
@@ -426,11 +425,8 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		}
 	}
 	
-	/** Activate the given key according to its text value. */
+	// Activate the given key according to its text value
 	private void keyPressed(String keyText) {
-		// Slight vibrational feedback.
-		//PhoneWandActivity.buzz(PhoneWandActivity.KEY_ENTRY_VIBES);
-		
 		if(keyText.equals("ABC")) {
 			setupKeyboard(QWERTY);
 		} else if(keyText.equals("?123")) {
@@ -478,13 +474,11 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	
 	/** Speak the currently entered text. */
 	private void consumeDoubleTapEvent(MotionEvent me) {
-		//TODO:
 	}
 	
 	/** Speak the instructions for the keyboard. */
 	@Override
 	public boolean onLongClick(View arg0) {
-		//TODO:
 		return true;
 	}
 	
@@ -506,9 +500,6 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 		Log.d("share", mCurrentString);
 		if(isValidEmail(mCurrentString.trim())) {
 			Utility.setReceiverEmail(mCurrentString);
-			//Utility.getTextToSpeech().say("Sending image to " + mCurrentString);
-			//startActivity(new Intent(this, MailSender.class));
-			//finish();
 			Intent in = new Intent();
 			setResult(5, in);
 			Utility.getTextToSpeech().say("");
@@ -769,17 +760,10 @@ public class TouchKeyboard extends Activity implements OnTouchListener,
 	}
 	
 	public boolean isValidEmail(String s) {
-		//String  expression="^[\\w\\-]([\\.\\w])+[\\w]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
 		String  expression="^\\S+@\\S+$";
 		String email = s;
 	    Pattern pattern = Pattern.compile(expression,Pattern.CASE_INSENSITIVE);
 	    Matcher m = pattern.matcher(email);
-		//Pattern p = Pattern.compile("");    
-		//Match the given string with the pattern
-		//Matcher m = p.matcher(s);
-		 
-		//check whether match is found 
-		//Log.d("share", String.valueOf(m.matches()));
 		return m.matches();
 	}
 }

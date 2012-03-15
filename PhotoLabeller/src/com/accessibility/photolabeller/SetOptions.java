@@ -1,5 +1,4 @@
 package com.accessibility.photolabeller;
-
 import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
 
@@ -9,8 +8,13 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 
+/*
+ * SetOptions Activity which presents user with three buttons:
+ * LongInstr - Set user preference to long instructions feedback
+ * ShortInstr - Set user preference to short instructions feedback
+ * None - Set user preference to vibrating 
+ */
 public class SetOptions extends Activity implements OnCompletionListener{
-	
 	public static final String PREF_NAME = "myPreferences";
 	private SharedPreferences mPreferences;
 	private MediaPlayer m;
@@ -24,7 +28,7 @@ public class SetOptions extends Activity implements OnCompletionListener{
 	private static final String INST_SHORT = "Option screen.";
 	private static final String VOICE_INSTR_PREF = "voiceInstructions";
 	
-	/** Called when the activity is first created. */
+	// Called when the activity is first created
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

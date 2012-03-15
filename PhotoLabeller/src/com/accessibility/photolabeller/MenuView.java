@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
  
 public class MenuView extends View {
- 
     public enum Btn {
         NONE(0),
         ONE(1),
@@ -69,7 +68,6 @@ public class MenuView extends View {
         _paint = new Paint();
         _paint.setColor(Color.WHITE);
         _paint.setStyle(Paint.Style.STROKE);
-        
         _buttonCount = 3;
         _button1 = "Button1";
         _button2 = "Button2";

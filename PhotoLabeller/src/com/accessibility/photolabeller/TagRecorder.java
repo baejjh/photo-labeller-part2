@@ -27,12 +27,10 @@ public class TagRecorder extends Activity implements OnClickListener{
 	private static final String VERBOSE_INST_RECORD = "Touch screen to begin recording. " +
 			" Touch screen again to stop recording. ";
 	
-	
 	//DataBase globals
 	DbHelper mHelper;
 	SQLiteDatabase mDb;
 	Cursor mCursor;
-	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,12 +48,6 @@ public class TagRecorder extends Activity implements OnClickListener{
 		initializeUI();
 		isRecording = false;
 		Utility.getTextToSpeech().say(VERBOSE_INST_RECORD);
-		/*mPreferences = getSharedPreferences(HomeScreen.PREF_NAME, Activity.MODE_WORLD_READABLE);
-		button = (Button)findViewById(R.id.StartandStop);
-		button.setOnClickListener(this);
-		
-		// get the current file counter value from Shared  Preferences
-		currentFileNumber = getCurrentFileNumber();*/
 	}
 	
 	private void initializeUI() {
@@ -145,6 +137,4 @@ public class TagRecorder extends Activity implements OnClickListener{
 
 	    initializeUI();
 	}
-	
-
 }

@@ -1,5 +1,4 @@
 package com.accessibility.photolabeller;
-
 import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
 
@@ -8,55 +7,60 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
 
+/*
+ * Delete or Share Activity which presents user with two buttons:
+ * Delete - on double click, takes the user to confirmation screen
+ * Share - on double click, takes the user to the keyboard screen
+ */
 public class DeleteOrShare extends Activity {
 	private SharedPreferences mPreferences;
 	public static final String PREF_NAME = "myPreferences";
-	private static final String TAG = "DELETE SHARE";
-
 	private MenuView menuView;
 	private DoubleClicker doubleClicker;
 
-	/** Called when the activity is first created. */
+	// Called when the activity is first created
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.deleteorshare);
         
+        // Initialize the view
 		menuView = (MenuView) findViewById(R.id.menu_view);
 		menuView.setFocusable(true);
 		menuView.setFocusableInTouchMode(true);
 		menuView.setRowListener(new MyRowListener());
 		menuView.setButtonNames("Delete", "Share");
 		
+		// Initialize the double clicker
 		doubleClicker = new DoubleClicker();
         
+		// Get the current preferences
 		mPreferences = getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
+		
+		// Play instructions
 		Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.delsharefullinstr,R.raw.delshareshortinstr, mPreferences);
      }
 
     private class MyRowListener implements RowListener {
-    	
         public void onRowOver() {
         	Btn focusedButton = menuView.getFocusedButton();
 			doubleClicker.click(focusedButton);
-
 			if (focusedButton == Btn.ONE) {
 				if (doubleClicker.isDoubleClicked()) {
-					Log.v(TAG, "Double Clicked - Delete");
+					// Go to the confirmation activity
 					launchDeleteImage();
 				} else {
-					Log.v(TAG, "DELETE OVER!");
+					// Play user feedback
 					playDeletePhoto();
 				}
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
-					Log.v(TAG, "Double Clicked - Share");
+					// Go to the keyboard activity
 					launchShareImage();
 				} else {
-					Log.v(TAG, "SHARE OVER!");
+					// Play user feedback
 					playSharePhoto();
 				}
 			}
@@ -66,22 +70,22 @@ public class DeleteOrShare extends Activity {
         	doubleClicker.reset();
         }
 
+		// Go back to browse screen
 		public void onTwoFingersUp() {
-			Log.v(TAG, "Two Fingers Up");
 			Intent in = new Intent();
 			setResult(3,in);
-			//launchPhotoBrowse();
 			finish();
 		}
 	}
     
+    // Start the delete confirmation activity
     public void launchDeleteImage() {
-    	//startActivity(new Intent(this, DeleteImage.class));
     	Intent in = new Intent();
     	setResult(1,in);
 		finish();
     }
     
+    // Start the keyboard activity
     public void launchShareImage() {
     	Intent in = new Intent();
     	setResult(2, in);
@@ -98,12 +102,14 @@ public class DeleteOrShare extends Activity {
     	super.onPause();
     }
     
+    // Play feedback over share button
     public void playSharePhoto() {
 		Utility.getMediaPlayer().reset();
     	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.sharephoto));
     	Utility.getMediaPlayer().start();
     }
     
+    // Play feedback over delete button
     public void playDeletePhoto() {
 		Utility.getMediaPlayer().reset();
     	Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.deletephoto));

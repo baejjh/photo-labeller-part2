@@ -1,5 +1,4 @@
 package com.accessibility.photolabeller;
-
 import java.util.Date; 
 import java.util.Properties; 
 import javax.activation.CommandMap; 
@@ -17,28 +16,19 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage; 
 import javax.mail.internet.MimeMultipart; 
  
- 
 public class Mail extends javax.mail.Authenticator{ 
   private String _user; 
   private String _pass; 
- 
   private String[] _to; 
   private String _from; 
- 
   private String _port; 
   private String _sport; 
- 
   private String _host; 
- 
   private String _subject; 
   private String _body; 
- 
   private boolean _auth; 
-   
   private boolean _debuggable; 
- 
   private Multipart _multipart; 
- 
  
   public Mail() { 
     _host = "smtp.gmail.com"; // default smtp server 
@@ -68,27 +58,21 @@ public class Mail extends javax.mail.Authenticator{
  
   public Mail(String user, String pass) { 
     this(); 
- 
     _user = user; 
     _pass = pass; 
   } 
  
   public boolean send() throws Exception { 
     Properties props = _setProperties(); 
- 
     if(!_user.equals("") && !_pass.equals("") && _to.length > 0 && !_from.equals("") && !_subject.equals("") && !_body.equals("")) { 
       Session session = Session.getInstance(props, this); 
- 
       MimeMessage msg = new MimeMessage(session); 
-       
       msg.setFrom(new InternetAddress(_from)); 
-       
       InternetAddress[] addressTo = new InternetAddress[_to.length]; 
       for (int i = 0; i < _to.length; i++) { 
         addressTo[i] = new InternetAddress(_to[i]); 
       } 
-        msg.setRecipients(MimeMessage.RecipientType.TO, addressTo); 
- 
+      msg.setRecipients(MimeMessage.RecipientType.TO, addressTo); 
       msg.setSubject(_subject); 
       msg.setSentDate(new Date()); 
  
@@ -114,7 +98,6 @@ public class Mail extends javax.mail.Authenticator{
     DataSource source = new FileDataSource(path); 
     messageBodyPart.setDataHandler(new DataHandler(source)); 
     messageBodyPart.setFileName(filename); 
- 
     _multipart.addBodyPart(messageBodyPart); 
   } 
  
@@ -164,5 +147,4 @@ public class Mail extends javax.mail.Authenticator{
   public void setSubject(String string) {
 	  this._subject = string;
   }
-  
 } 
