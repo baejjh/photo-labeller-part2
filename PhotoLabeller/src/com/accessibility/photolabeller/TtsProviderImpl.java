@@ -15,10 +15,6 @@ public void say(String sayThis) {
 
 @Override
 public void onInit(int status) {
-    /*Locale loc = new Locale("", "", "");
-    if (tts.isLanguageAvailable(loc) >= TextToSpeech.LANG_AVAILABLE) {
-        tts.setLanguage(loc);
-    }*/
 	tts.setLanguage(Locale.US);
 }
 
@@ -28,7 +24,6 @@ public void shutdown() {
 
 @Override
 public void init(Context context) {
-	// TODO Auto-generated method stub
 	if (tts == null) {
         tts = new TextToSpeech(context, this);
     }

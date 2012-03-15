@@ -1,5 +1,4 @@
 package com.accessibility.photolabeller;
-
 import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import com.accessibility.photolabeller.MenuView.RowListener;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 /*
  * Home Screen Activity which presents user with three buttons:
@@ -24,12 +22,11 @@ public class HomeScreen extends Activity{
 	private SharedPreferences mPreferences;
 	private MenuView menuView;
 	private DoubleClicker doubleClicker;
-	private static final String TAG = "HOME SCREEN";
 	private static final String FILE_NUMBER = "fileNum";
 	public static final String PREF_NAME = "myPreferences";
 	private static final String VOICE_INSTR_PREF = "voiceInstructions";
 
-	/** Called when the activity is first created. */
+	// Called when the activity is first created
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,26 +56,20 @@ public class HomeScreen extends Activity{
 
 			if (focusedButton == Btn.ONE) {
 				if (doubleClicker.isDoubleClicked()) {
-					Log.v(TAG, "Double Clicked - Capture");
 					launchPhotoTaker();
 				} else {
-					Log.v(TAG, "CAPTURE OVER!");
 					playTakePhotos();
 				}
 			} else if (focusedButton == Btn.TWO) {
 				if (doubleClicker.isDoubleClicked()) {
-					Log.v(TAG, "Double Clicked - Browse");
 					launchPhotoBrowse();
 				} else {
-					Log.v(TAG, "BROWSE OVER!");
 					playBrowsePhotos();
 				}
 			} else if (focusedButton == Btn.THREE) {
 				if (doubleClicker.isDoubleClicked()) {
-					Log.v(TAG, "Double Clicked - Options");
 					launchOptions();
 				} else {
-					Log.v(TAG, "OPTIONS OVER!");
 					playOptions();
 				}
 			}
@@ -134,21 +125,14 @@ public class HomeScreen extends Activity{
 	
 	public void onStop(){
 		super.onStop();
-		/*if(mp != null) {
-			mp.stop();
-		}*/
 	}
 	
 	public void  onPause(){
 		super.onPause();
-		/*if(mp != null) {
-			mp.stop();
-		}*/
 	}
 	
 	public void onRestart(){
 		super.onRestart();
-		//Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
 		menuView.requestFocus();
 		menuView.resetButtonFocus();
@@ -156,7 +140,6 @@ public class HomeScreen extends Activity{
 	
 	public void onResume() {
 		super.onResume();
-		//Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.hsfullinst, R.raw.hsshortinst, mPreferences);
 		menuView.requestFocus();
 		menuView.resetButtonFocus();
@@ -174,18 +157,21 @@ public class HomeScreen extends Activity{
 		finish();
 	}
 	
+	// Play feedback over take button
 	public void playTakePhotos() {
 		Utility.getMediaPlayer().reset();
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.takephoto));
 		Utility.getMediaPlayer().start();
 	}
 	
+	// Play feedback over browse button
 	public void playBrowsePhotos() {
 		Utility.getMediaPlayer().reset();
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.browsephoto));
 		Utility.getMediaPlayer().start();
 	}
 	
+	// Play feedback over options button
 	public void playOptions() {
 		Utility.getMediaPlayer().reset();
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.options));

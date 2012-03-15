@@ -49,16 +49,13 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	DbHelper mHelper;
 	SQLiteDatabase mDb;
 	Cursor mCursor;
-	
-	
+
     View.OnTouchListener gestureListener;
     Camera mCamera;
 	SurfaceView mPreview;
 	
 	int requestCode;
-	
-		
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -107,10 +104,7 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	
 	public void onRestart(){
 		super.onRestart();
-		//Utility.playInstructionsMP(this, R.raw.camlonginst, R.raw.camshortinst,mPreferences);
 	}
-	
-	
 	
 	@Override
 	public void onDestroy() {
@@ -134,13 +128,6 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
-		/*
-		try {
-			mCamera.setPreviewDisplay(mPreview.getHolder());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
-		//mCamera = Camera.open();
 		try {
 			
 		Camera.Parameters parameters = mCamera.getParameters();
@@ -211,8 +198,6 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
 	}
 	
 	private void tagOrSkip() {
-		/*Intent tagOrSkipIntent = new Intent(this, TagSkip.class);
-		startActivity(tagOrSkipIntent);*/
 		startActivityForResult(new Intent(PhotoTaker.this, TagSkip.class),requestCode);
 	}
 
@@ -279,17 +264,14 @@ public class PhotoTaker extends Activity implements SurfaceHolder.Callback, Shut
  		   Utility.getMediaPlayer().start();
  	   }
  	   else {
- 		   // result code == 2
  		  Utility.getMediaPlayer().reset();
  		  Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.tagsaved));
  		  Utility.getMediaPlayer().start();
  	   }
- 	   
     }
 	
 	private void playSoundEffects(int imageId)
 	{	
-		
 		Utility.getMediaPlayer().reset();
     	Utility.setMediaPlayer(MediaPlayer.create(this, imageId));
     	Utility.getMediaPlayer().start();

@@ -627,7 +627,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
  		    confirmDelete();
  	   }
  	   else if (resultCode == 5) {
- 		   //Utility.getTextToSpeech().say("Sending image");
  		   startActivityForResult(new Intent(this, MailSender.class), requestCode);
  	   }
  	   else if (resultCode == 6) {
@@ -639,7 +638,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
  		   Utility.getMediaPlayer().reset();
  		   Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.browseshortinstr));
  		   Utility.getMediaPlayer().start();
- 		   //result code = 3. do nothing
  	   }
     }
 	
