@@ -100,12 +100,13 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		
 		imageFrame = (ViewFlipper) findViewById(R.id.imageFrames);
-
+		
+		// Get the path of images and voice tags
 		File parentFolder = getFilesDir();
-		Log.d(TAG, parentFolder.getPath().toString());
 		mp.setOnPreparedListener(this);
 		addFlipperImages(imageFrame, parentFolder);
 		
+		// Play instructions
 		Utility.getMediaPlayer().reset();
 		Utility.playInstructionsMP(this, R.raw.browsefullinstr, R.raw.browseshortinstr, mPreferences);
 
@@ -130,52 +131,13 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		handler = new Handler();
 		imageFrame.setOnClickListener(PhotoBrowse.this);
 		imageFrame.setOnTouchListener(gestureListener);
-		//slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
-		/*slideShowBtn.setOnClickListener(new OnClickListener()
-		{
-			public void onClick(View arg0)
-			{
-				runnable = new Runnable()
-				{
-					public void run()
-					{
-						handler.postDelayed(runnable, 3000);
-						//imageFrame.showNext();
-						Utility.getMediaPlayer().reset();
-						mCursor.moveToNext();
-						if(mCursor.isAfterLast()) {
-							mCursor.moveToFirst();
-						}
-						s = mCursor.getString(1);
-						audioPath = mCursor.getString(2);
-						try 
-						{
-							params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
-							FileInputStream imageStream = new FileInputStream(s);
-							BitmapFactory.Options o = new BitmapFactory.Options();
-							o.inPurgeable = true;
-							o.inInputShareable = true;
-							Bitmap imbm = BitmapFactory.decodeFileDescriptor(imageStream.getFD(), null, o);
-							playSoundEffects(R.raw.imagechange);
-							imageView.setImageBitmap(imbm);
-							mp.reset();
-							playTag(audioPath);
-						} 	
-						catch (IOException e)
-						{
-							e.printStackTrace();
-						}
-					}
-				};
-				handler.postDelayed(runnable, 500);
-			}
-		});*/
 	}
 
 	private void addFlipperImages(ViewFlipper flipper, File parent)
 	{
 		if (isDataBaseEmpty())
 		{
+			// NO images taken yet, so show a default proper image
 			imageView = new ImageView(this);
 			params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
 			Bitmap imbm = BitmapFactory.decodeResource(getResources(), R.drawable.noimagefound);
@@ -184,6 +146,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			flipper.addView(imageView);
 		}
 		else {
+			// Show the most recent picture first
 			mCursor.moveToLast();
 			s = mCursor.getString(1);
 			audioPath = mCursor.getString(2);
@@ -215,34 +178,20 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	{
 		public boolean onSingleTapConfirmed(MotionEvent e)
 		{
+			// replay instructions
 			Utility.getMediaPlayer().reset();
 			mp.reset();
 			Utility.playInstructionsMP(PhotoBrowse.this, R.raw.browsefullinstr, R.raw.browseshortinstr, mPreferences);
 			return true;
 		}
 		
-		/*
-         *  return to home screen on a double tap
-         * 
-         */
+		// play voice tag
         public boolean onDoubleTap(MotionEvent e) {
 			Utility.getMediaPlayer().reset();
         	if (!isDataBaseEmpty()) {
-        		
 				mp.reset();
 				playTag(audioPath);
-				
-				//slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
-				//slideShowBtn.setVisibility(slideShowBtn.VISIBLE);
 				handler.removeCallbacks(runnable);
-				/*runnable = new Runnable()
-				{
-					public void run()
-					{
-						slideShowBtn.setVisibility(slideShowBtn.INVISIBLE);
-					}
-				};
-				handler.postDelayed(runnable, 2000);*/
 				return true;
 			}
 			else {
@@ -253,6 +202,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			}
         }
         
+        // Open DeleteOrShare activity
         @Override
         public void onLongPress(MotionEvent e) {
         	if (!isDataBaseEmpty()) {
@@ -270,17 +220,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
         
 		public boolean onSingleTapUp(MotionEvent e)
 		{			
-			//slideShowBtn = (RelativeLayout) findViewById(R.id.slideShowBtn);
-			//slideShowBtn.setVisibility(slideShowBtn.VISIBLE);
 			handler.removeCallbacks(runnable);
-			/*runnable = new Runnable()
-			{
-				public void run()
-				{
-					slideShowBtn.setVisibility(slideShowBtn.INVISIBLE);
-				}
-			};
-			handler.postDelayed(runnable, 2000);*/
 			return true;
 		}
 	
@@ -290,29 +230,24 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			{
 				if (e1.getY() - e2.getY() > SWIPE_MAX_OFF_PATH&& Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
 					Log.d("slideShow", "slideShowAccepted");
-					//audioPath = mCursor.getString(2);
 					if(isDataBaseEmpty()) {
 						Utility.getMediaPlayer().reset();
 						Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.noimagesfound));
 						Utility.getMediaPlayer().start();
 						return true;
 					}
+					// Start a slide show
 					mp.reset();
 					Utility.getMediaPlayer().reset();
 					Utility.setMediaPlayer(MediaPlayer.create(PhotoBrowse.this, R.raw.startslideshow));
 					int duration = Utility.getMediaPlayer().getDuration();
 					Log.d("slideShow", "duration= " + duration);
 					Utility.getMediaPlayer().start();
-					//playTag(audioPath);
 					runnable = new Runnable()
 					{
 						public void run()
 						{
 							Utility.getMediaPlayer().reset();
-							/*mCursor.moveToNext();
-							if(mCursor.isAfterLast()) {
-								mCursor.moveToFirst();
-							}*/
 							s = mCursor.getString(1);
 							audioPath = mCursor.getString(2);
 							
@@ -323,7 +258,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 							
 							int wait = getAudioDuration(audioPath);
 							handler.postDelayed(runnable, wait);
-							//imageFrame.showNext();
 							try 
 							{
 								params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT);
@@ -515,6 +449,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		return outtoRight;
 	}
 	
+	// play voice tag
 	private void playTag(String s)
 	{	
     	try
@@ -540,7 +475,6 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
     	catch (IllegalStateException e)
     	{
     		Log.e(TAG, e.getMessage().toString());
-    		//e.printStackTrace();
     	}
             	
 	}
@@ -574,6 +508,7 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 		mp.start();
 	}
 
+	// play sound effects
 	private void playSoundEffects(int imageId)
 	{	
 		if(m != null) {
@@ -586,9 +521,11 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	private boolean isDataBaseEmpty() {
 		Cursor cur = mDb.rawQuery("SELECT COUNT(*) FROM " + DbHelper.TABLE_NAME, null);
 		if (cur != null) {
-		    cur.moveToFirst();                       // Always one row returned.
+			// Always one row returned.
+		    cur.moveToFirst();                       
 		    if (cur.getInt (0) == 0)
-		    {               // Zero count means empty table.
+		    {       
+		    	 // Zero count means empty table.
 		        return true;
 	        }
 		    return false;
@@ -599,9 +536,11 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 	private boolean isOnlyOnePicture() {
 		Cursor cur = mDb.rawQuery("SELECT COUNT(*) FROM " + DbHelper.TABLE_NAME, null);
 		if (cur != null) {
-		    cur.moveToFirst();                       // Always one row returned.
+			// Always one row returned.
+		    cur.moveToFirst();                       
 		    if (cur.getInt (0) == 1)
-		    {               // Zero count means empty table.
+		    {            
+		    	// Zero count means empty table.
 		        return true;
 	        }
 		    return false;
