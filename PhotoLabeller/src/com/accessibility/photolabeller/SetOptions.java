@@ -1,3 +1,19 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - MenuView
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Presents user with three buttons:
+ * LongInstr - Set user preference to long instructions feedback
+ * ShortInstr - Set user preference to short instructions feedback
+ * None - Set user preference to vibrating 
+ */
+
 package com.accessibility.photolabeller;
 import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
@@ -8,12 +24,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 
-/*
- * SetOptions Activity which presents user with three buttons:
- * LongInstr - Set user preference to long instructions feedback
- * ShortInstr - Set user preference to short instructions feedback
- * None - Set user preference to vibrating 
- */
 public class SetOptions extends Activity implements OnCompletionListener{
 	public static final String PREF_NAME = "myPreferences";
 	private SharedPreferences mPreferences;

@@ -1,3 +1,17 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - MenuView
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Allows user to either proceed with voice tagging
+ * or skip tagging and go back to taking another picture.
+ */
+
 package com.accessibility.photolabeller;
 
 import java.io.ByteArrayOutputStream;
@@ -17,10 +31,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.util.Log;
 
-/*
- * Activity that allows user to either proceed with voice tagging
- * or skip tagging and go back to taking another picture.
- */
 public class TagOrSkip extends Activity implements OnCompletionListener {
 
 	private static final String FILE_NUMBER_KEY = "fileNum";

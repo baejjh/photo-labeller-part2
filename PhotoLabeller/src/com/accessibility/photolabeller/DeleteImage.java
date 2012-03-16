@@ -1,3 +1,17 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - DeleteImage
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Presents user with one button: 
+ * Confirm - confirms deleting image on double click
+ */
+
 package com.accessibility.photolabeller;
 import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
@@ -9,10 +23,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
-/*
- * Delete image Activity which presents user with one button:
- * Confirm - confirms deleting image on double click
- */
 public class DeleteImage extends Activity {
 	private SharedPreferences mPreferences;
 	public static final String PREF_NAME = "myPreferences";

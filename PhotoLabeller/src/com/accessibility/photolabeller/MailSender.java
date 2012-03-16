@@ -1,3 +1,16 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - HomeScreen
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Sends an email with an image and its audio tag to the intended recipient
+ */
+
 package com.accessibility.photolabeller;
 import java.io.File;
 import java.io.IOException;
@@ -12,10 +25,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
 
-/*
- * MailSender Activity which sends an email with an image and its audio tag
- * to the intended recipient.
- */
 public class MailSender extends Activity implements OnCompletionListener {
 	Timer timer;
 	MyTextView send;

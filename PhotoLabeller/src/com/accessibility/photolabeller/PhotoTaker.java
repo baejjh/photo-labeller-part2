@@ -1,3 +1,16 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - MenuView
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Displays camera preview on the screen
+ */
+
 package com.accessibility.photolabeller;
 
 import java.io.File;
@@ -27,11 +40,6 @@ import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
 
-/*
- * Camera screen: Displays camera preview on the screen
- * Actions: Single tap on screen : Takes a photo
- * 			Double tap on screen : Goes back to the home screen
- */
 public class PhotoTaker extends Activity implements SurfaceHolder.Callback, ShutterCallback,
 														PictureCallback, OnClickListener{
 	

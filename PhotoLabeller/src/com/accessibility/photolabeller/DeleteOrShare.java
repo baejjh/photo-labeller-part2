@@ -1,3 +1,18 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - DeleteOrShare
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Presents user with two buttons:
+ * Delete - on double click, takes the user to confirmation screen
+ * Share - on double click, takes the user to the keyboard screen
+ */
+
 package com.accessibility.photolabeller;
 import com.accessibility.photolabeller.MenuView.Btn;
 import com.accessibility.photolabeller.MenuView.RowListener;
