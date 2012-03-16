@@ -1,3 +1,15 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - AudioRecorder
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Initializes, starts, and stops the recorder
+ */
 package com.accessibility.photolabeller;
 
 import java.io.IOException;

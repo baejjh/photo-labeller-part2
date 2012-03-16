@@ -1,3 +1,16 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - DoubleClicker
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Detects double clicks
+ */
+
 package com.accessibility.photolabeller;
 
 import java.sql.Timestamp;
@@ -5,7 +18,6 @@ import java.util.Stack;
 
 import com.accessibility.photolabeller.MenuView.Btn;
 
-// a DoubleClicker object that detects double clicks
 public class DoubleClicker {
 	
 	private static final int DOUBLE_CLICK_DELAY = 1000; // 1 second = 1000

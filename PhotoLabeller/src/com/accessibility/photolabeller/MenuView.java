@@ -1,3 +1,16 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - MenuView
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Uses a canvas to draw a view that is accessible
+ */
+
 package com.accessibility.photolabeller;
 
 import android.content.Context;

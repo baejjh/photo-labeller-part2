@@ -1,9 +1,21 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - DbHelper
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Prepares database to save images and their associated tags
+ */
+
 package com.accessibility.photolabeller;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-// Prepare database to save images and their associated tags
 public class DbHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "db";
 	private static final int DB_VERSION = 1;

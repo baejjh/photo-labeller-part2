@@ -1,3 +1,19 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - HomeScreen
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Presents user with three buttons:
+ * Click - Takes user to ClickPicture Activity to click and save pictures
+ * Browse - Takes user to Browse Activity to browse images and listen to tags
+ * Options - Present options menu for voice instructions, camera options, etc.
+ */
+
 package com.accessibility.photolabeller;
 import android.app.Activity;
 import android.media.MediaPlayer;
@@ -11,12 +27,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-/*
- * Home Screen Activity which presents user with three buttons:
- * Click - Takes user to ClickPicture Activity to click and save pictures
- * Browse - Takes user to Browse Activity to browse images and listen to tags
- * Options - Present options menu for voice instructions, camera options, etc.
- */
 public class HomeScreen extends Activity{
 
 	private SharedPreferences mPreferences;

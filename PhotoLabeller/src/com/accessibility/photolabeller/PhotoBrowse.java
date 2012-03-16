@@ -1,3 +1,17 @@
+/**
+ * @author Abdelelah Salama(engobada@cs.washington.edu)
+ * @author Chung Han(han@cs.washington.edu)
+ * @author Nikhil Karkarey(nikhilkarkarey@gmail.com)
+ * 
+ * Talking Memories - MenuView
+ * 
+ * Designed to meet the requirements of the Winter 2012 UW course, 
+ * CSE 481H: Accessibility Capstone
+ * 
+ * Allows users to browse their taken photos and
+ * hear back their recorded voice tags
+ */
+
 package com.accessibility.photolabeller;
 
 import java.io.File;
