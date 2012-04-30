@@ -259,4 +259,10 @@ public class TagSkip extends Activity implements OnClickListener, OnCompletionLi
 			}
 		}
 	} 
+	
+	protected void onDestroy(){
+		//Close the database
+		mDb.close();
+	    super.onDestroy();
+	}
 }

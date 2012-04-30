@@ -161,7 +161,8 @@ public class HomeScreen extends Activity{
 	}
 	
 	public void exitApp() {
-		Utility.getMediaPlayer().reset();
+		if (Utility.getMediaPlayer() != null)
+			Utility.getMediaPlayer().reset();
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.goodbye));
 		Utility.getMediaPlayer().start();
 		finish();
@@ -169,21 +170,24 @@ public class HomeScreen extends Activity{
 	
 	// Play feedback over take button
 	public void playTakePhotos() {
-		Utility.getMediaPlayer().reset();
+		if (Utility.getMediaPlayer() != null)
+			Utility.getMediaPlayer().reset();
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.takephoto));
 		Utility.getMediaPlayer().start();
 	}
 	
 	// Play feedback over browse button
 	public void playBrowsePhotos() {
-		Utility.getMediaPlayer().reset();
+		if (Utility.getMediaPlayer() != null)
+			Utility.getMediaPlayer().reset();
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.browsephoto));
 		Utility.getMediaPlayer().start();
 	}
 	
 	// Play feedback over options button
 	public void playOptions() {
-		Utility.getMediaPlayer().reset();
+		if (Utility.getMediaPlayer() != null)
+			Utility.getMediaPlayer().reset();
 		Utility.setMediaPlayer(MediaPlayer.create(this, R.raw.options));
 		Utility.getMediaPlayer().start();
 	}

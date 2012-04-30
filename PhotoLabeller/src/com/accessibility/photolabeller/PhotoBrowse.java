@@ -635,5 +635,11 @@ public class PhotoBrowse extends Activity implements OnClickListener, OnPrepared
 			}
 		}
     }
+	
+	protected void onDestroy(){
+		//Close the database
+		mDb.close();
+	    super.onDestroy();
+	}
 }
 
